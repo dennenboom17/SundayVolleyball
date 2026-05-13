@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunday Guelph Volleyball</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #F5EFE0;
+    --navy: #0D1B2A;
+    --gold: #E8A820;
+    --sky: #4DB8D4;
+    --coral: #E8502A;
+    --white: #FDFAF4;
+    --muted: #8A8070;
+    --border: rgba(13,27,42,0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--sand);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+    height: 64px;
+    box-shadow: 0 2px 20px rgba(0,0,0,.35);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.7rem;
+    color: var(--gold);
+    letter-spacing: 2px;
+    cursor: pointer;
+  }
+
+  .nav-logo span { color: var(--sky); }
+
+  .nav-links { display: flex; gap: 0.25rem; }
+
+  .nav-links button {
+    background: none; border: none; cursor: pointer;
+    color: rgba(255,255,255,.75);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .875rem;
+    font-weight: 500;
+    letter-spacing: .5px;
+    padding: .45rem .9rem;
+    border-radius: 6px;
+    transition: all .2s;
+  }
+
+  .nav-links button:hover, .nav-links button.active {
+    background: rgba(232,168,32,.18);
+    color: var(--gold);
+  }
+
+  /* ── HERO ── */
+  #home {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--navy);
+    padding-top: 64px;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, #1a3355 0%, var(--navy) 70%);
+  }
+
+  /* volleyball net SVG decoration */
+  .net-dec {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 140px;
+    opacity: .12;
+  }
+
+  .ball-dec {
+    position: absolute;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: 20px solid rgba(232,168,32,.15);
+    top: 12%; right: 8%;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .ball-dec::after {
+    content: '';
+    position: absolute; inset: 12px;
+    border-radius: 50%;
+    border: 10px solid rgba(77,184,212,.1);
+    animation: float 6s ease-in-out infinite reverse;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-18px) rotate(8deg); }
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    text-align: center;
+    padding: 2rem;
+    animation: fadeUp .8s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: .8rem;
+    letter-spacing: 3px;
+    color: var(--sky);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    line-height: .95;
+    color: var(--white);
+    letter-spacing: 3px;
+    margin-bottom: 1.2rem;
+  }
+
+  .hero-title .accent { color: var(--gold); }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,.6);
+    max-width: 520px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+  }
+
+  .hero-buttons {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-block;
+    padding: .8rem 2rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: .95rem;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all .22s;
+    letter-spacing: .3px;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+  }
+  .btn-primary:hover { background: #f0b730; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,168,32,.35); }
+
+  .btn-secondary {
+    background: transparent;
+    border-color: rgba(255,255,255,.3);
+    color: var(--white);
+  }
+  .btn-secondary:hover { border-color: var(--sky); color: var(--sky); transform: translateY(-2px); }
+
+  .btn-coral {
+    background: var(--coral);
+    color: #fff;
+  }
+  .btn-coral:hover { background: #f0602e; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,80,42,.35); }
+
+  .btn-sky {
+    background: var(--sky);
+    color: var(--navy);
+  }
+  .btn-sky:hover { background: #3fcae8; transform: translateY(-2px); }
+
+  .btn-outline {
+    background: transparent;
+    border-color: var(--navy);
+    color: var(--navy);
+  }
+  .btn-outline:hover { background: var(--navy); color: var(--white); }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 5rem 2rem;
+    display: none;
+  }
+
+  section.active {
+    display: block;
+    animation: fadeUp .5s ease both;
+  }
+
+  #home { display: flex; }
+
+  .section-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: .75rem;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: .75rem;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    letter-spacing: 2px;
+    line-height: 1;
+    margin-bottom: 1.5rem;
+    color: var(--navy);
+  }
+
+  .section-title .accent { color: var(--coral); }
+
+  .divider {
+    width: 60px; height: 4px;
+    background: var(--gold);
+    border-radius: 2px;
+    margin-bottom: 2rem;
+  }
+
+  /* ── INFO CARDS ── */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem;
+    transition: transform .2s, box-shadow .2s;
+  }
+
+  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(13,27,42,.1); }
+
+  .card-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .card h3 {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: .5rem;
+  }
+
+  .card p {
+    font-size: .9rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: var(--navy);
+    border-radius: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0;
+    overflow: hidden;
+    margin: 2rem 0;
+  }
+
+  .stat {
+    padding: 1.75rem;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,.08);
+  }
+
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: .78rem;
+    color: rgba(255,255,255,.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: .3rem;
+  }
+
+  /* ── FORMS ── */
+  .form-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 18px;
+    padding: 2.5rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 540px) { .form-row { grid-template-columns: 1fr; } }
+
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: .82rem;
+    font-weight: 600;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: .45rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: .75rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .95rem;
+    background: var(--sand);
+    color: var(--navy);
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--sky);
+    box-shadow: 0 0 0 3px rgba(77,184,212,.2);
+    background: var(--white);
+  }
+
+  .form-group textarea { min-height: 90px; resize: vertical; }
+
+  .form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230D1B2A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+
+  .form-submit {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    border: none;
+  }
+
+  /* ── SUCCESS TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    background: var(--navy);
+    color: var(--white);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-size: .9rem;
+    font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0,0,0,.3);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all .4s cubic-bezier(.34,1.56,.64,1);
+    z-index: 999;
+    display: flex; align-items: center; gap: .75rem;
+    max-width: 340px;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .toast-icon { font-size: 1.3rem; }
+
+  /* ── PICKUP TABLE ── */
+  .pickup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .pickup-slot {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pickup-slot::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--sky);
+  }
+
+  .pickup-slot.full::before { background: var(--coral); }
+  .pickup-slot.filling::before { background: var(--gold); }
+
+  .slot-date {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+    color: var(--navy);
+    margin-bottom: .25rem;
+  }
+
+  .slot-time {
+    font-size: .82rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .slot-spots {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .spots-badge {
+    display: inline-block;
+    padding: .2rem .65rem;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .badge-open { background: rgba(77,184,212,.15); color: var(--sky); }
+  .badge-filling { background: rgba(232,168,32,.2); color: #a0700a; }
+  .badge-full { background: rgba(232,80,42,.12); color: var(--coral); }
+
+  /* ── SCORES TABLE ── */
+  .scores-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+    font-size: .9rem;
+  }
+
+  .scores-table th {
+    text-align: left;
+    padding: .75rem 1rem;
+    background: var(--navy);
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+    font-size: .75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .scores-table th:first-child { border-radius: 8px 0 0 0; }
+  .scores-table th:last-child { border-radius: 0 8px 0 0; }
+
+  .scores-table td {
+    padding: .75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  .scores-table tr:last-child td { border-bottom: none; }
+  .scores-table tr:nth-child(even) td { background: rgba(245,239,224,.5); }
+  .scores-table tr:hover td { background: rgba(77,184,212,.06); }
+
+  .score-pill {
+    display: inline-block;
+    padding: .2rem .6rem;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: .85rem;
+    background: rgba(13,27,42,.07);
+  }
+
+  .win { color: #1a7a3e; font-weight: 700; }
+  .lose { color: var(--coral); }
+
+  /* ── SCHEDULE ── */
+  .schedule-week {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .schedule-week-header {
+    background: var(--navy);
+    color: var(--white);
+    padding: .9rem 1.5rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 1.5px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .schedule-week-header .week-date { color: var(--gold); font-size: .85rem; font-family: 'DM Mono', monospace; letter-spacing: 0; }
+
+  .schedule-game {
+    display: flex; align-items: center;
+    padding: .85rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+  }
+
+  .schedule-game:last-child { border-bottom: none; }
+
+  .game-time {
+    font-family: 'DM Mono', monospace;
+    font-size: .78rem;
+    color: var(--muted);
+    min-width: 60px;
+  }
+
+  .game-teams { flex: 1; font-weight: 500; }
+  .game-vs { color: var(--muted); font-size: .8rem; margin: 0 .5rem; }
+  .game-court { font-size: .78rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  /* ── HELPERS ── */
+  .note {
+    background: rgba(77,184,212,.1);
+    border-left: 3px solid var(--sky);
+    border-radius: 0 8px 8px 0;
+    padding: .9rem 1.2rem;
+    font-size: .88rem;
+    color: var(--navy);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .note a { color: var(--sky); }
+
+  .tag {
+    display: inline-block;
+    background: rgba(232,168,32,.15);
+    color: #8a6200;
+    font-size: .75rem;
+    font-weight: 600;
+    padding: .2rem .6rem;
+    border-radius: 20px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255,255,255,.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+    vertical-align: middle;
+    margin-right: .5rem;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer {
+    background: var(--navy);
+    color: rgba(255,255,255,.45);
+    text-align: center;
+    padding: 2.5rem 1rem;
+    font-size: .82rem;
+    line-height: 1.8;
+  }
+
+  footer .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: .5rem;
+  }
+
+  footer a { color: var(--sky); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showSection('home')">SUNDAY<span>GVB</span></div>
+  <div class="nav-links">
+    <button onclick="showSection('home')" id="nav-home" class="active">Home</button>
+    <button onclick="showSection('register')" id="nav-register">Register</button>
+    <button onclick="showSection('pickup')" id="nav-pickup">Pick-Up</button>
+    <button onclick="showSection('scores')" id="nav-scores">Scores</button>
+    <button onclick="showSection('schedule')" id="nav-schedule">Schedule</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<section id="home" class="active">
+  <div class="hero-bg"></div>
+  <div class="ball-dec"></div>
+  <svg class="net-dec" viewBox="0 0 1440 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <line x1="0" y1="70" x2="1440" y2="70" stroke="white" stroke-width="4"/>
+    <line x1="720" y1="0" x2="720" y2="140" stroke="white" stroke-width="4"/>
+    <rect x="0" y="0" width="1440" height="140" stroke="white" stroke-width="1" fill="none"/>
+    <line x1="360" y1="0" x2="360" y2="140" stroke="white" stroke-width="1"/>
+    <line x1="1080" y1="0" x2="1080" y2="140" stroke="white" stroke-width="1"/>
+    <line x1="180" y1="0" x2="180" y2="140" stroke="white" stroke-width="1"/>
+    <line x1="540" y1="0" x2="540" y2="140" stroke="white" stroke-width="1"/>
+    <line x1="900" y1="0" x2="900" y2="140" stroke="white" stroke-width="1"/>
+    <line x1="1260" y1="0" x2="1260" y2="140" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="35" x2="1440" y2="35" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="105" x2="1440" y2="105" stroke="white" stroke-width="1"/>
+  </svg>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Guelph, Ontario · Est. 2010</div>
+    <div class="hero-title">SUNDAY<br><span class="accent">GUELPH</span><br>VOLLEYBALL</div>
+    <p class="hero-sub">Competitive co-ed volleyball every Sunday, 1:00–6:00 PM. 6-2 formation. Two seasons per year. A community built on the love of the game.</p>
+    <div class="hero-buttons">
+      <button class="btn btn-primary" onclick="showSection('register')">Register for Season</button>
+      <button class="btn btn-secondary" onclick="showSection('pickup')">Sign Up for Pick-Up</button>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT (sub-section within home that shows below fold) -->
+<section id="about-info" style="display:none; background: var(--sand); padding: 4rem 2rem;">
+  <div class="section-inner">
+    <div class="section-label">About the League</div>
+    <div class="section-title">HOW IT <span class="accent">WORKS</span></div>
+    <div class="divider"></div>
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-num">2</div><div class="stat-label">Seasons / Year</div></div>
+      <div class="stat"><div class="stat-num">5h</div><div class="stat-label">Weekly Play</div></div>
+      <div class="stat"><div class="stat-num">6v6</div><div class="stat-label">Format</div></div>
+      <div class="stat"><div class="stat-num">3</div><div class="stat-label">Games / Sunday</div></div>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-icon">🗓️</div><h3>Season Schedule</h3><p>Fall: September–December. Winter: January–April. Games every Sunday, 1–6 PM, excluding holidays & gym closures.</p></div>
+      <div class="card"><div class="card-icon">🏐</div><h3>Competitive Format</h3><p>We use 6-2 (sometimes 5-1) formation with dedicated Power, Middle, Setter, and Right-side positions.</p></div>
+      <div class="card"><div class="card-icon">📍</div><h3>Location</h3><p>Gym locations in Guelph announced at the start of each season. Check the schedule tab for court assignments.</p></div>
+      <div class="card"><div class="card-icon">🤝</div><h3>Our Mission</h3><p>Promote active lifestyles, skill development, and social networking in a friendly, competitive environment.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- REGISTRATION -->
+<section id="register">
+  <div class="section-inner">
+    <div class="section-label">Join the League</div>
+    <div class="section-title">PLAYER <span class="accent">REGISTRATION</span></div>
+    <div class="divider"></div>
+
+    <div class="note">
+      ℹ️ Registrations are saved to a Google Sheet. You'll receive a confirmation email once your spot is confirmed. Registration is open for the <strong>Winter 2026</strong> season.
+    </div>
+
+    <div class="form-card">
+      <div class="tag">🏐 Season Registration</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="reg-first" placeholder="Jane" required>
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="reg-last" placeholder="Smith" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="reg-email" placeholder="jane@example.com" required>
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="reg-phone" placeholder="(519) 555-0100">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Preferred Position</label>
+          <select id="reg-position">
+            <option value="">Select position</option>
+            <option>Setter</option>
+            <option>Outside Hitter / Power</option>
+            <option>Middle Blocker</option>
+            <option>Right Side / Opposite</option>
+            <option>Libero / Defensive Specialist</option>
+            <option>No Preference</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Skill Level</label>
+          <select id="reg-skill">
+            <option value="">Select level</option>
+            <option>Recreational</option>
+            <option>Intermediate</option>
+            <option>Competitive</option>
+            <option>Advanced</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Season</label>
+        <select id="reg-season">
+          <option>Winter 2026 (Jan–Apr)</option>
+          <option>Fall 2026 (Sep–Dec)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>How did you hear about us?</label>
+        <select id="reg-referral">
+          <option value="">Select one</option>
+          <option>Friend / Teammate</option>
+          <option>Social Media</option>
+          <option>Google Search</option>
+          <option>Returning Player</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Additional Notes (optional)</label>
+        <textarea id="reg-notes" placeholder="Any injuries, team requests, or questions…"></textarea>
+      </div>
+      <button class="btn btn-primary form-submit" id="reg-btn" onclick="submitRegistration()">Register Now</button>
+    </div>
+  </div>
+</section>
+
+<!-- PICKUP -->
+<section id="pickup">
+  <div class="section-inner">
+    <div class="section-label">Casual Play</div>
+    <div class="section-title">PICK-UP <span class="accent">SIGN UP</span></div>
+    <div class="divider"></div>
+
+    <div class="note">
+      Pick-up games run on select Sundays for non-registered players or subs. Sign up below to claim a spot. Max 12 players per session (2 full teams). Spots are first-come, first-served.
+    </div>
+
+    <div class="pickup-grid" id="pickup-slots">
+      <!-- generated by JS -->
+    </div>
+
+    <div class="form-card" style="margin-top:2rem;">
+      <div class="tag">✋ Reserve Your Spot</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="pu-first" placeholder="Alex">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="pu-last" placeholder="Lee">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="pu-email" placeholder="alex@example.com">
+      </div>
+      <div class="form-group">
+        <label>Select Date</label>
+        <select id="pu-date">
+          <option value="May 18, 2026 – 1:00–3:00 PM">May 18, 2026 – 1:00–3:00 PM</option>
+          <option value="May 25, 2026 – 1:00–3:00 PM">May 25, 2026 – 1:00–3:00 PM</option>
+          <option value="June 1, 2026 – 1:00–3:00 PM">June 1, 2026 – 1:00–3:00 PM</option>
+          <option value="June 8, 2026 – 1:00–3:00 PM">June 8, 2026 – 1:00–3:00 PM</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Experience Level</label>
+        <select id="pu-level">
+          <option>Recreational</option>
+          <option>Intermediate</option>
+          <option>Competitive</option>
+        </select>
+      </div>
+      <button class="btn btn-sky form-submit" id="pu-btn" onclick="submitPickup()">Claim My Spot</button>
+    </div>
+  </div>
+</section>
+
+<!-- SCORES -->
+<section id="scores">
+  <div class="section-inner">
+    <div class="section-label">Results</div>
+    <div class="section-title">SCORE <span class="accent">SUBMISSION</span></div>
+    <div class="divider"></div>
+
+    <!-- Submit score form -->
+    <div class="form-card" style="margin-bottom:2.5rem;">
+      <div class="tag">📋 Submit a Score</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Your Team Name</label>
+          <input type="text" id="sc-team1" placeholder="The Blockers">
+        </div>
+        <div class="form-group">
+          <label>Opponent Team Name</label>
+          <input type="text" id="sc-team2" placeholder="Spike Squad">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Your Score</label>
+          <input type="number" id="sc-score1" placeholder="25" min="0">
+        </div>
+        <div class="form-group">
+          <label>Opponent Score</label>
+          <input type="number" id="sc-score2" placeholder="22" min="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Game Date</label>
+          <input type="date" id="sc-date">
+        </div>
+        <div class="form-group">
+          <label>Court / Gym</label>
+          <select id="sc-court">
+            <option>Court A – GCVI</option>
+            <option>Court B – GCVI</option>
+            <option>Centennial CVI</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Submitted by (your name)</label>
+        <input type="text" id="sc-submitter" placeholder="Jane Smith">
+      </div>
+      <button class="btn btn-coral form-submit" id="sc-btn" onclick="submitScore()">Submit Score</button>
+    </div>
+
+    <!-- Recent scores table -->
+    <div class="section-label" style="margin-top:2rem;">Recent Results</div>
+    <table class="scores-table" id="scores-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Home Team</th>
+          <th>Score</th>
+          <th>Away Team</th>
+          <th>Court</th>
+        </tr>
+      </thead>
+      <tbody id="scores-body">
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section id="schedule">
+  <div class="section-inner">
+    <div class="section-label">Winter 2026 Season</div>
+    <div class="section-title">GAME <span class="accent">SCHEDULE</span></div>
+    <div class="divider"></div>
+
+    <div class="note">Games are played every Sunday, 1:00 PM – 6:00 PM. Each team plays 3 games per session. Courts are at <strong>GCVI – Guelph Collegiate Vocational Institute</strong>.</div>
+
+    <div id="schedule-list">
+      <!-- generated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✅</span>
+  <span id="toast-msg">Success!</span>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">SUNDAY GVB</span>
+  Sunday Guelph Competitive Volleyball League<br>
+  Guelph, Ontario · Questions? <a href="mailto:info@sundayguelphvb.com">info@sundayguelphvb.com</a><br><br>
+  <small style="opacity:.5">© 2026 Sunday Guelph Volleyball · All rights reserved</small>
+</footer>
+
+<script>
+// ── GOOGLE SHEETS INTEGRATION ──────────────────────────────
+// Replace these with your actual Google Apps Script Web App URLs
+// Instructions: Tools > Script editor in Google Sheets → deploy as web app → paste URL below
+const SHEETS_ENDPOINTS = {
+  registration: 'https://script.google.com/macros/s/YOUR_REGISTRATION_SCRIPT_ID/exec',
+  pickup:       'https://script.google.com/macros/s/YOUR_PICKUP_SCRIPT_ID/exec',
+  scores:       'https://script.google.com/macros/s/YOUR_SCORES_SCRIPT_ID/exec',
+};
+
+// ── NAVIGATION ──────────────────────────────────────────────
+const sections = ['home','register','pickup','scores','schedule'];
+
+function showSection(id) {
+  sections.forEach(s => {
+    const el = document.getElementById(s);
+    const nav = document.getElementById('nav-' + s);
+    if (el) el.classList.toggle('active', s === id);
+    if (nav) nav.classList.toggle('active', s === id);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── TOAST ───────────────────────────────────────────────────
+function showToast(msg, success = true) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-icon').textContent = success ? '✅' : '❌';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ── POST TO GOOGLE SHEETS (via Apps Script) ──────────────────
+async function postToSheets(endpoint, data) {
+  // Check if the user has set up their Google Sheets endpoint
+  if (endpoint.includes('YOUR_')) {
+    // Simulate success for demo mode
+    return { result: 'demo' };
+  }
+  const params = new URLSearchParams(data);
+  const res = await fetch(endpoint + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+  return { result: 'ok' };
+}
+
+// ── FORM HELPERS ─────────────────────────────────────────────
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  if (loading) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner"></span> Submitting…`;
+  } else {
+    btn.disabled = false;
+  }
+}
+
+function val(id) { return document.getElementById(id)?.value?.trim() || ''; }
+
+// ── REGISTRATION ─────────────────────────────────────────────
+async function submitRegistration() {
+  const first = val('reg-first'), last = val('reg-last'), email = val('reg-email');
+  if (!first || !last || !email) { showToast('Please fill in required fields.', false); return; }
+
+  setLoading('reg-btn', true);
+  const data = {
+    timestamp:  new Date().toISOString(),
+    firstName:  first,
+    lastName:   last,
+    email:      email,
+    phone:      val('reg-phone'),
+    position:   val('reg-position'),
+    skill:      val('reg-skill'),
+    season:     val('reg-season'),
+    referral:   val('reg-referral'),
+    notes:      val('reg-notes'),
+    type:       'registration'
+  };
+
+  try {
+    await postToSheets(SHEETS_ENDPOINTS.registration, data);
+    showToast(`Welcome, ${first}! Your registration has been received.`);
+    ['reg-first','reg-last','reg-email','reg-phone','reg-notes'].forEach(id => { document.getElementById(id).value = ''; });
+  } catch(e) {
+    showToast('Something went wrong. Please try again.', false);
+  }
+
+  document.getElementById('reg-btn').disabled = false;
+  document.getElementById('reg-btn').textContent = 'Register Now';
+}
+
+// ── PICKUP ────────────────────────────────────────────────────
+async function submitPickup() {
+  const first = val('pu-first'), last = val('pu-last'), email = val('pu-email');
+  if (!first || !last || !email) { showToast('Please fill in all fields.', false); return; }
+
+  setLoading('pu-btn', true);
+  const data = {
+    timestamp: new Date().toISOString(),
+    firstName: first,
+    lastName:  last,
+    email:     email,
+    date:      val('pu-date'),
+    level:     val('pu-level'),
+    type:      'pickup'
+  };
+
+  try {
+    await postToSheets(SHEETS_ENDPOINTS.pickup, data);
+    showToast(`You're in, ${first}! See you on the court.`);
+    ['pu-first','pu-last','pu-email'].forEach(id => { document.getElementById(id).value = ''; });
+  } catch(e) {
+    showToast('Something went wrong. Please try again.', false);
+  }
+
+  document.getElementById('pu-btn').disabled = false;
+  document.getElementById('pu-btn').textContent = 'Claim My Spot';
+}
+
+// ── SCORES ────────────────────────────────────────────────────
+const localScores = [];
+
+async function submitScore() {
+  const t1 = val('sc-team1'), t2 = val('sc-team2'), s1 = val('sc-score1'), s2 = val('sc-score2');
+  const submitter = val('sc-submitter'), date = val('sc-date');
+  if (!t1 || !t2 || !s1 || !s2 || !date) { showToast('Please fill in all score fields.', false); return; }
+
+  setLoading('sc-btn', true);
+  const data = {
+    timestamp:  new Date().toISOString(),
+    gameDate:   date,
+    homeTeam:   t1,
+    homeScore:  s1,
+    awayTeam:   t2,
+    awayScore:  s2,
+    court:      val('sc-court'),
+    submitter:  submitter,
+    type:       'score'
+  };
+
+  try {
+    await postToSheets(SHEETS_ENDPOINTS.scores, data);
+    localScores.unshift(data);
+    renderScoresTable();
+    showToast('Score submitted! Thanks for keeping the records up to date.');
+    ['sc-team1','sc-team2','sc-score1','sc-score2','sc-date','sc-submitter'].forEach(id => { document.getElementById(id).value = ''; });
+  } catch(e) {
+    showToast('Something went wrong. Please try again.', false);
+  }
+
+  document.getElementById('sc-btn').disabled = false;
+  document.getElementById('sc-btn').textContent = 'Submit Score';
+}
+
+function renderScoresTable() {
+  const tbody = document.getElementById('scores-body');
+  const allScores = [...localScores, ...sampleScores];
+  tbody.innerHTML = allScores.map(s => {
+    const h = parseInt(s.homeScore), a = parseInt(s.awayScore);
+    const homeClass = h > a ? 'win' : 'lose';
+    const awayClass = a > h ? 'win' : 'lose';
+    const d = s.gameDate ? new Date(s.gameDate + 'T12:00:00').toLocaleDateString('en-CA', {month:'short',day:'numeric',year:'numeric'}) : '—';
+    return `<tr>
+      <td>${d}</td>
+      <td class="${homeClass}">${s.homeTeam}</td>
+      <td><span class="score-pill">${s.homeScore} – ${s.awayScore}</span></td>
+      <td class="${awayClass}">${s.awayTeam}</td>
+      <td><small>${s.court || '—'}</small></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── SAMPLE DATA ───────────────────────────────────────────────
+const sampleScores = [
+  { gameDate:'2026-05-04', homeTeam:'The Blockers',  homeScore:'25', awayTeam:'Spike Squad',     awayScore:'21', court:'Court A – GCVI' },
+  { gameDate:'2026-05-04', homeTeam:'Net Ninjas',     homeScore:'18', awayTeam:'Volley Llamas',   awayScore:'25', court:'Court B – GCVI' },
+  { gameDate:'2026-04-27', homeTeam:'Dig Dug FC',     homeScore:'25', awayTeam:'Block Party',     awayScore:'23', court:'Court A – GCVI' },
+  { gameDate:'2026-04-27', homeTeam:'Spike Squad',    homeScore:'25', awayTeam:'Dig Dug FC',      awayScore:'14', court:'Court B – GCVI' },
+  { gameDate:'2026-04-20', homeTeam:'Volley Llamas',  homeScore:'22', awayTeam:'The Blockers',    awayScore:'25', court:'Court A – GCVI' },
+];
+
+const pickupData = [
+  { date:'May 18, 2026', time:'1:00–3:00 PM', spots:8,  max:12 },
+  { date:'May 25, 2026', time:'1:00–3:00 PM', spots:11, max:12 },
+  { date:'June 1, 2026', time:'1:00–3:00 PM', spots:5,  max:12 },
+  { date:'June 8, 2026', time:'1:00–3:00 PM', spots:0,  max:12 },
+];
+
+const scheduleData = [
+  {
+    week: 'Week 17', date: 'May 18, 2026',
+    games: [
+      { time:'1:00 PM', h:'The Blockers', a:'Net Ninjas',     court:'A' },
+      { time:'2:00 PM', h:'Spike Squad',  a:'Volley Llamas',  court:'B' },
+      { time:'3:00 PM', h:'Dig Dug FC',   a:'Block Party',    court:'A' },
+      { time:'4:00 PM', h:'Net Ninjas',   a:'Dig Dug FC',     court:'B' },
+    ]
+  },
+  {
+    week: 'Week 16', date: 'May 11, 2026',
+    games: [
+      { time:'1:00 PM', h:'Block Party',   a:'The Blockers', court:'A' },
+      { time:'2:00 PM', h:'Volley Llamas', a:'Net Ninjas',   court:'B' },
+      { time:'3:00 PM', h:'Dig Dug FC',    a:'Spike Squad',  court:'A' },
+      { time:'4:00 PM', h:'The Blockers',  a:'Volley Llamas',court:'B' },
+    ]
+  },
+];
+
+// ── RENDER PICKUP SLOTS ────────────────────────────────────────
+function renderPickup() {
+  document.getElementById('pickup-slots').innerHTML = pickupData.map(p => {
+    const open = p.max - p.spots;
+    let cls = 'open', badge = 'badge-open', label = `${open} spots left`;
+    if (open === 0)  { cls = 'full';    badge = 'badge-full';    label = 'FULL'; }
+    else if (open <= 3) { cls = 'filling'; badge = 'badge-filling'; }
+    return `<div class="pickup-slot ${cls}">
+      <div class="slot-date">${p.date}</div>
+      <div class="slot-time">🕐 ${p.time} · GCVI Gym</div>
+      <div class="slot-spots">
+        <span class="spots-badge ${badge}">${label}</span>
+        <span style="color:var(--muted);font-size:.8rem;">${p.spots}/${p.max} signed up</span>
+      </div>
+      ${open > 0 ? `<button class="btn btn-sky" style="width:100%;padding:.6rem;" onclick="document.getElementById('pu-date').value='${p.date} – ${p.time}';showSection('pickup');document.getElementById('pu-date').scrollIntoView();">Sign Up →</button>` : `<button class="btn" style="width:100%;padding:.6rem;opacity:.4;cursor:not-allowed;" disabled>Session Full</button>`}
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER SCHEDULE ────────────────────────────────────────────
+function renderSchedule() {
+  document.getElementById('schedule-list').innerHTML = scheduleData.map(w => `
+    <div class="schedule-week">
+      <div class="schedule-week-header">
+        <span>${w.week}</span>
+        <span class="week-date">${w.date}</span>
+      </div>
+      ${w.games.map(g => `
+        <div class="schedule-game">
+          <div class="game-time">${g.time}</div>
+          <div class="game-teams"><strong>${g.h}</strong><span class="game-vs">vs</span><strong>${g.a}</strong></div>
+          <div class="game-court">Court ${g.court}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderPickup();
+renderSchedule();
+renderScoresTable();
+
+// Set today's date as default for score form
+document.getElementById('sc-date').value = new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>
