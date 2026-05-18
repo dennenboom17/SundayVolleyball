@@ -625,7 +625,1233 @@
 
   footer a { color: var(--sky); text-decoration: none; }
 
-  /* ── PHOTO STRIP (hero) ── */
+  /* ══════════════════════════════════════════
+     MOBILE RESPONSIVE STYLES
+  ══════════════════════════════════════════ */
+
+  /* ── HAMBURGER BUTTON ── */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px; height: 40px;
+    background: none; border: none; cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    transition: background .2s;
+    flex-shrink: 0;
+  }
+  .hamburger:hover { background: rgba(255,255,255,.08); }
+  .hamburger .bar {
+    display: block;
+    width: 22px; height: 2px;
+    background: var(--white);
+    border-radius: 2px;
+    transition: all .3s ease;
+    transform-origin: center;
+  }
+  .hamburger.open .bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open .bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .hamburger.open .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* ── MOBILE NAV DRAWER ── */
+  @media (max-width: 768px) {
+    /* Show hamburger, hide desktop links */
+    .hamburger { display: flex; }
+    .nav-links {
+      display: none;
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      background: var(--navy);
+      flex-direction: column;
+      padding: .75rem 1rem 1.25rem;
+      gap: 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+      z-index: 99;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links button {
+      width: 100%;
+      text-align: left;
+      padding: .85rem 1rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .nav-links button:last-child { border-bottom: none; }
+
+    /* Shrink logo and auth pill on mobile */
+    .nav-logo { font-size: 1.3rem; }
+    .btn-nav-login { font-size: .75rem; padding: .3rem .65rem; }
+    .nav-user-pill { font-size: .75rem; padding: .25rem .6rem .25rem .4rem; }
+    .nav-user-pill .avatar { width: 22px; height: 22px; font-size: .65rem; }
+
+    /* Sections padding */
+    section { padding: 3.5rem 1rem 2.5rem; }
+
+    /* Hero */
+    #home { min-height: 100svh; padding-top: 64px; }
+    .hero-content { padding: 1rem; }
+    .hero-title { font-size: clamp(3rem, 14vw, 5rem); }
+    .hero-sub { font-size: .95rem; }
+    .hero-buttons { flex-direction: column; align-items: stretch; gap: .75rem; }
+    .hero-buttons .btn { text-align: center; }
+    .ball-dec { width: 100px; height: 100px; border-width: 12px; top: 8%; right: 4%; }
+    .hero-dots { bottom: 1.5rem; }
+
+    /* Photo gallery */
+    .photo-gallery { padding: 2.5rem 1rem; }
+    .gallery-grid {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 160px 160px 160px;
+    }
+    .gallery-item:first-child { grid-column: 1 / -1; grid-row: 1; }
+
+    /* Stats bar */
+    .stats-bar { grid-template-columns: 1fr 1fr; }
+    .stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .stat:nth-child(odd) { border-right: 1px solid rgba(255,255,255,.08); }
+    .stat:last-child, .stat:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+
+    /* Cards */
+    .cards { grid-template-columns: 1fr; gap: 1rem; }
+
+    /* Form card */
+    .form-card { padding: 1.5rem 1.1rem; border-radius: 14px; }
+    .form-row { grid-template-columns: 1fr; }
+
+    /* Toast */
+    .toast { left: 1rem; right: 1rem; bottom: 1rem; max-width: none; }
+
+    /* Pick-up grid */
+    .pickup-grid { grid-template-columns: 1fr; }
+
+    /* Scores table — hide less critical columns */
+    .scores-table th:last-child,
+    .scores-table td:last-child { display: none; }
+
+    /* Schedule */
+    .schedule-game { flex-wrap: wrap; gap: .4rem; padding: .75rem 1rem; }
+    .game-time { min-width: 50px; font-size: .72rem; }
+    .game-court { width: 100%; margin-top: .1rem; }
+
+    /* Standings */
+    .standings-header-bar { flex-direction: column; align-items: flex-start; gap: .75rem; }
+    .standings-season-select { width: 100%; }
+    .stat-cards-mini { grid-template-columns: 1fr 1fr; gap: .75rem; }
+    /* Hide less critical standings columns on small screens */
+    .standings-table th:nth-child(6),
+    .standings-table td:nth-child(6),
+    .standings-table th:nth-child(7),
+    .standings-table td:nth-child(7),
+    .standings-table th:nth-child(10),
+    .standings-table td:nth-child(10) { display: none; }
+    .tab-pills { gap: .35rem; }
+    .tab-pill { font-size: .78rem; padding: .4rem .8rem; }
+
+    /* Admin panel */
+    .admin-grid { grid-template-columns: 1fr; }
+    .admin-sidebar { position: static; }
+    .admin-sidebar-header { padding: 1rem 1.25rem; }
+    .admin-nav-item { padding: .8rem 1.25rem; }
+    .admin-card { padding: 1.25rem 1rem; }
+    .audience-toggle { gap: .4rem; }
+    .audience-btn { font-size: .8rem; padding: .45rem .85rem; }
+    .send-footer { flex-direction: column; align-items: stretch; }
+    .send-footer > div:last-child { flex-direction: column; }
+    .send-footer .btn { width: 100%; text-align: center; }
+
+    /* Section title sizing */
+    .section-title { font-size: clamp(2rem, 8vw, 3rem); }
+
+    /* Modal */
+    .modal { padding: 1.75rem 1.25rem; border-radius: 16px; }
+
+    /* H2H comparison */
+    #h2h-result > div:first-child { flex-direction: column; text-align: center; }
+
+    /* Player list tables — horizontal scroll */
+    .player-list-table { font-size: .8rem; }
+    .player-list-table th, .player-list-table td { padding: .5rem .65rem; }
+  }
+
+  @media (max-width: 420px) {
+    nav { padding: 0 1rem; }
+    .hero-title { font-size: clamp(2.6rem, 13vw, 4rem); }
+    .form-card { padding: 1.25rem .9rem; }
+    .section-title { font-size: 2rem; }
+    .stat-cards-mini { grid-template-columns: 1fr 1fr; }
+    .stat-card-mini .scm-num { font-size: 1.6rem; }
+    /* Standings: only show essential columns */
+    .standings-table th:nth-child(8),
+    .standings-table td:nth-child(8) { display: none; }
+    .standings-table th:nth-child(9),
+    .standings-table td:nth-child(9) .pct-bar-wrap { display: none; }
+  }
+
+  /* ── NAV AUTH BUTTON ── */
+  .nav-auth {
+    display: flex; align-items: center; gap: .5rem; margin-left: .5rem;
+  }
+  .btn-nav-login {
+    background: rgba(232,168,32,.15);
+    border: 1.5px solid rgba(232,168,32,.4);
+    color: var(--gold);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .82rem;
+    font-weight: 600;
+    padding: .38rem .9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .3px;
+  }
+  .btn-nav-login:hover { background: rgba(232,168,32,.28); border-color: var(--gold); }
+  .nav-user-pill {
+    display: none; align-items: center; gap: .5rem;
+    background: rgba(77,184,212,.12);
+    border: 1.5px solid rgba(77,184,212,.3);
+    border-radius: 20px;
+    padding: .3rem .85rem .3rem .5rem;
+    color: var(--sky);
+    font-size: .82rem;
+    font-weight: 600;
+  }
+  .nav-user-pill .avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--sky);
+    color: var(--navy);
+    font-size: .7rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-logout {
+    background: none; border: none; cursor: pointer;
+    color: rgba(255,255,255,.4);
+    font-size: .75rem;
+    padding: .2rem .4rem;
+    border-radius: 4px;
+    transition: color .2s;
+  }
+  .btn-logout:hover { color: var(--coral); }
+
+  /* ── LOGIN MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 300;
+    background: rgba(13,27,42,.75);
+    backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; animation: fadeUp .3s ease both; }
+
+  .modal {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 2.5rem;
+    width: 100%; max-width: 420px;
+    position: relative;
+    box-shadow: 0 24px 80px rgba(0,0,0,.4);
+  }
+
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: 1.4rem; line-height: 1;
+    transition: color .2s;
+  }
+  .modal-close:hover { color: var(--coral); }
+
+  .modal-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--navy);
+    letter-spacing: 2px;
+    margin-bottom: .25rem;
+  }
+  .modal-logo span { color: var(--sky); }
+
+  .modal-tabs {
+    display: flex; gap: 0;
+    background: var(--sand);
+    border-radius: 8px;
+    padding: 3px;
+    margin: 1.25rem 0;
+  }
+  .modal-tab {
+    flex: 1; text-align: center;
+    padding: .5rem;
+    font-size: .85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--muted);
+    transition: all .2s;
+  }
+  .modal-tab.active { background: var(--white); color: var(--navy); box-shadow: 0 1px 6px rgba(0,0,0,.1); }
+
+  .modal-panel { display: none; }
+  .modal-panel.active { display: block; }
+
+  .modal-footer-text {
+    margin-top: 1rem;
+    font-size: .8rem;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .error-msg {
+    background: rgba(232,80,42,.1);
+    border: 1px solid rgba(232,80,42,.25);
+    color: var(--coral);
+    border-radius: 7px;
+    padding: .6rem .9rem;
+    font-size: .83rem;
+    margin-bottom: 1rem;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  .success-msg {
+    background: rgba(26,122,62,.1);
+    border: 1px solid rgba(26,122,62,.25);
+    color: #1a7a3e;
+    border-radius: 7px;
+    padding: .6rem .9rem;
+    font-size: .83rem;
+    margin-bottom: 1rem;
+    display: none;
+  }
+  .success-msg.show { display: block; }
+
+  /* ── STANDINGS SECTION ── */
+  .standings-header-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .standings-season-select {
+    padding: .5rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem;
+    background: var(--white);
+    color: var(--navy);
+    cursor: pointer;
+    outline: none;
+  }
+
+  .standings-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+  }
+
+  .standings-table th {
+    padding: .7rem 1rem;
+    background: var(--navy);
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+    font-size: .72rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .standings-table th:first-child { text-align: left; border-radius: 8px 0 0 0; }
+  .standings-table th:last-child  { border-radius: 0 8px 0 0; }
+
+  .standings-table td {
+    padding: .75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    vertical-align: middle;
+  }
+  .standings-table td:first-child { text-align: left; }
+  .standings-table tr:last-child td { border-bottom: none; }
+  .standings-table tr:nth-child(even) td { background: rgba(245,239,224,.5); }
+  .standings-table tr:hover td { background: rgba(77,184,212,.06); }
+
+  .rank-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+  }
+  .rank-1 { background: var(--gold); color: var(--navy); }
+  .rank-2 { background: #C0C0C0; color: var(--navy); }
+  .rank-3 { background: #CD7F32; color: #fff; }
+  .rank-n { background: var(--sand); color: var(--muted); }
+
+  .team-name-cell { font-weight: 600; display: flex; align-items: center; gap: .6rem; }
+  .team-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .pct-bar-wrap {
+    width: 80px; background: var(--sand); border-radius: 4px;
+    height: 6px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: .4rem;
+  }
+  .pct-bar { height: 100%; border-radius: 4px; background: var(--sky); }
+
+  .win-cell  { color: #1a7a3e; font-weight: 700; }
+  .lose-cell { color: var(--coral); }
+
+  .standings-locked {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--muted);
+  }
+  .standings-locked .lock-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .standings-locked p { margin-bottom: 1.5rem; font-size: .95rem; }
+
+  .streak-badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: .7rem;
+    font-weight: 700;
+    padding: .15rem .45rem;
+    border-radius: 4px;
+    letter-spacing: .5px;
+  }
+  .streak-w { background: rgba(26,122,62,.12); color: #1a7a3e; }
+  .streak-l { background: rgba(232,80,42,.1); color: var(--coral); }
+
+  .tab-pills {
+    display: flex; gap: .5rem; margin-bottom: 2rem; flex-wrap: wrap;
+  }
+  .tab-pill {
+    padding: .45rem 1.1rem;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    font-size: .83rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all .2s;
+  }
+  .tab-pill.active {
+    background: var(--navy); color: var(--gold); border-color: var(--navy);
+  }
+
+  .stat-cards-mini {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat-card-mini {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    text-align: center;
+  }
+  .stat-card-mini .scm-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .stat-card-mini .scm-label {
+    font-size: .75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: .25rem;
+  }
+
+  /* ── ADMIN PANEL ── */
+  .admin-grid {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  @media (max-width: 720px) { .admin-grid { grid-template-columns: 1fr; } }
+
+  .admin-sidebar {
+    background: var(--navy);
+    border-radius: 16px;
+    overflow: hidden;
+    position: sticky;
+    top: 80px;
+  }
+
+  .admin-sidebar-header {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+
+  .admin-sidebar-header h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+  }
+
+  .admin-sidebar-header p {
+    font-size: .75rem;
+    color: rgba(255,255,255,.4);
+    margin-top: .2rem;
+  }
+
+  .admin-nav-item {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .9rem 1.5rem;
+    cursor: pointer;
+    color: rgba(255,255,255,.6);
+    font-size: .88rem;
+    font-weight: 500;
+    border: none; background: none; width: 100%; text-align: left;
+    transition: all .2s;
+    border-left: 3px solid transparent;
+  }
+  .admin-nav-item:hover { background: rgba(255,255,255,.05); color: var(--white); }
+  .admin-nav-item.active { background: rgba(232,168,32,.1); color: var(--gold); border-left-color: var(--gold); }
+  .admin-nav-item .item-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+  .admin-nav-item .item-badge {
+    margin-left: auto;
+    background: var(--coral);
+    color: #fff;
+    font-size: .68rem;
+    font-weight: 700;
+    padding: .1rem .45rem;
+    border-radius: 10px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .admin-main { min-width: 0; }
+
+  .admin-panel { display: none; }
+  .admin-panel.active { display: block; animation: fadeUp .3s ease both; }
+
+  .admin-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-card h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+    color: var(--navy);
+    margin-bottom: .25rem;
+  }
+
+  .admin-card .card-sub {
+    font-size: .82rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  .audience-toggle {
+    display: flex; gap: .5rem; flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+
+  .audience-btn {
+    padding: .5rem 1.1rem;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    color: var(--muted);
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex; align-items: center; gap: .4rem;
+  }
+  .audience-btn:hover { border-color: var(--navy); color: var(--navy); }
+  .audience-btn.selected { background: var(--navy); color: var(--white); border-color: var(--navy); }
+  .audience-btn .ab-count {
+    background: rgba(255,255,255,.2);
+    padding: .05rem .4rem;
+    border-radius: 10px;
+    font-size: .72rem;
+    font-family: 'DM Mono', monospace;
+  }
+  .audience-btn:not(.selected) .ab-count { background: var(--sand); color: var(--muted); }
+
+  .recipient-preview {
+    background: var(--sand);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.25rem;
+    font-size: .83rem;
+    color: var(--navy);
+    min-height: 56px;
+  }
+
+  .recipient-tag {
+    display: inline-flex; align-items: center; gap: .3rem;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: .2rem .65rem;
+    font-size: .78rem;
+    font-weight: 500;
+    margin: .2rem;
+  }
+
+  .recipient-tag .rt-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  .email-subject-input {
+    width: 100%;
+    padding: .75rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .95rem;
+    background: var(--sand);
+    color: var(--navy);
+    outline: none;
+    margin-bottom: 1rem;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .email-subject-input:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(77,184,212,.2); background: var(--white); }
+
+  .email-body-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: .85rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .92rem;
+    background: var(--sand);
+    color: var(--navy);
+    outline: none;
+    resize: vertical;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .email-body-textarea:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(77,184,212,.2); background: var(--white); }
+
+  .toolbar {
+    display: flex; gap: .5rem; flex-wrap: wrap;
+    margin-bottom: .75rem;
+  }
+  .toolbar-btn {
+    padding: .3rem .7rem;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    background: var(--white);
+    font-size: .8rem;
+    cursor: pointer;
+    color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    transition: all .2s;
+  }
+  .toolbar-btn:hover { background: var(--sand); border-color: var(--navy); }
+
+  .send-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    margin-top: .5rem;
+  }
+
+  .send-meta { font-size: .8rem; color: var(--muted); }
+
+  .player-list-table {
+    width: 100%; border-collapse: collapse; font-size: .85rem;
+  }
+  .player-list-table th {
+    text-align: left; padding: .6rem .9rem;
+    background: var(--navy); color: var(--gold);
+    font-family: 'DM Mono', monospace; font-size: .7rem;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .player-list-table th:first-child { border-radius: 8px 0 0 0; }
+  .player-list-table th:last-child  { border-radius: 0 8px 0 0; }
+  .player-list-table td {
+    padding: .6rem .9rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .player-list-table tr:last-child td { border-bottom: none; }
+  .player-list-table tr:nth-child(even) td { background: rgba(245,239,224,.4); }
+  .player-list-table tr:hover td { background: rgba(77,184,212,.06); }
+
+  .list-type-badge {
+    display: inline-block; padding: .15rem .5rem;
+    border-radius: 10px; font-size: .7rem; font-weight: 700;
+    font-family: 'DM Mono', monospace; letter-spacing: .3px;
+  }
+  .badge-reg    { background: rgba(77,184,212,.15); color: #0a7a9a; }
+  .badge-pickup { background: rgba(232,168,32,.18); color: #8a6200; }
+
+  .admin-login-gate {
+    text-align: center; padding: 4rem 2rem;
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: 18px;
+  }
+  .admin-login-gate .gate-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .admin-login-gate h3 {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem;
+    letter-spacing: 1px; color: var(--navy); margin-bottom: .5rem;
+  }
+  .admin-login-gate p { color: var(--muted); font-size: .9rem; max-width: 300px; margin: 0 auto 1.5rem; line-height: 1.6; }
+
+  /* ── TEAMS PAGE ── */
+  .teams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  .team-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .team-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(13,27,42,.1); }
+
+  .team-card-header {
+    padding: 1.25rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+
+  .team-avatar {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .team-card-header h3 {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--navy);
+    margin-bottom: .15rem;
+  }
+
+  .team-card-header .team-meta {
+    font-size: .78rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .team-players-list {
+    padding: 0 1.5rem 1.25rem;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+  }
+
+  .team-player-row {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .55rem .75rem;
+    background: var(--sand);
+    border-radius: 8px;
+    font-size: .85rem;
+  }
+
+  .player-initials {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .7rem; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+
+  .player-info { flex: 1; min-width: 0; }
+  .player-info .pname { font-weight: 600; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .player-info .ppos  { font-size: .72rem; color: var(--muted); }
+
+  .pos-chip {
+    font-size: .68rem; font-weight: 700;
+    padding: .15rem .5rem;
+    border-radius: 10px;
+    white-space: nowrap;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .team-empty {
+    padding: .75rem 1.5rem 1.25rem;
+    font-size: .85rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .team-card-footer {
+    border-top: 1px solid var(--border);
+    padding: .75rem 1.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: .78rem;
+    color: var(--muted);
+  }
+
+  .teams-empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+  }
+  .teams-empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .teams-empty-state p { max-width: 320px; margin: 0 auto; line-height: 1.7; }
+
+  /* ── ADMIN TEAM ASSIGNMENT ── */
+  .assign-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    align-items: start;
+  }
+  @media (max-width: 720px) { .assign-layout { grid-template-columns: 1fr; } }
+
+  .assign-column h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    color: var(--navy);
+    margin-bottom: .75rem;
+    display: flex; align-items: center; gap: .5rem;
+  }
+
+  .unassigned-pool {
+    background: var(--sand);
+    border: 1.5px dashed var(--border);
+    border-radius: 12px;
+    padding: .75rem;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+  }
+
+  .assign-player-chip {
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem .75rem;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: .83rem;
+    cursor: pointer;
+    transition: all .2s;
+    user-select: none;
+  }
+  .assign-player-chip:hover { border-color: var(--sky); background: rgba(77,184,212,.06); }
+  .assign-player-chip.selected { border-color: var(--sky); background: rgba(77,184,212,.1); }
+
+  .team-assign-block {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: .75rem;
+  }
+
+  .team-assign-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .75rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background .2s;
+  }
+  .team-assign-header:hover { background: var(--sand); }
+
+  .team-assign-header .tah-left { display: flex; align-items: center; gap: .6rem; }
+  .team-assign-header h5 {
+    font-weight: 700; font-size: .9rem; color: var(--navy);
+  }
+
+  .team-color-dot {
+    width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  .team-assign-body {
+    padding: .5rem .75rem .75rem;
+    border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: .4rem;
+    min-height: 48px;
+  }
+
+  .assigned-chip {
+    display: flex; align-items: center; gap: .6rem;
+    padding: .45rem .65rem;
+    background: var(--sand);
+    border-radius: 7px;
+    font-size: .82rem;
+  }
+
+  .btn-remove-assign {
+    margin-left: auto;
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: .9rem;
+    padding: .1rem .3rem; border-radius: 4px;
+    transition: color .2s;
+    line-height: 1;
+  }
+  .btn-remove-assign:hover { color: var(--coral); }
+
+  .drop-hint {
+    text-align: center; padding: .5rem;
+    font-size: .78rem; color: var(--muted); font-style: italic;
+  }
+
+  .add-team-form {
+    display: flex; gap: .6rem; margin-bottom: 1rem; flex-wrap: wrap;
+  }
+  .add-team-form input {
+    flex: 1; min-width: 140px;
+    padding: .6rem .9rem;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem;
+    background: var(--sand);
+    color: var(--navy);
+    outline: none;
+    transition: border-color .2s;
+  }
+  .add-team-form input:focus { border-color: var(--sky); }
+
+  .color-picker-row {
+    display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1rem;
+  }
+  .color-swatch {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2.5px solid transparent;
+    cursor: pointer; transition: transform .15s, border-color .15s;
+  }
+  .color-swatch:hover { transform: scale(1.15); }
+  .color-swatch.chosen { border-color: var(--navy); transform: scale(1.1); }
+
+  @media (max-width: 768px) {
+    .teams-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── SCHEDULE MANAGER ── */
+  .schedule-week-mgr {
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: .75rem;
+    transition: box-shadow .2s;
+  }
+  .schedule-week-mgr:hover { box-shadow: 0 4px 16px rgba(13,27,42,.08); }
+
+  .swm-header {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .85rem 1rem;
+    cursor: pointer;
+    background: var(--navy);
+    user-select: none;
+    transition: background .2s;
+  }
+  .swm-header:hover { background: #162535; }
+
+  .swm-header-text { flex: 1; }
+  .swm-header-text .swm-week {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.05rem; letter-spacing: 1px; color: var(--gold);
+  }
+  .swm-header-text .swm-date {
+    font-size: .75rem; color: rgba(255,255,255,.45);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .swm-chevron {
+    color: rgba(255,255,255,.4); font-size: .8rem;
+    transition: transform .25s;
+  }
+  .swm-chevron.open { transform: rotate(180deg); }
+
+  .swm-actions {
+    display: flex; gap: .3rem;
+  }
+  .swm-icon-btn {
+    background: none; border: none; cursor: pointer;
+    color: rgba(255,255,255,.4); font-size: .9rem;
+    padding: .2rem .35rem; border-radius: 5px;
+    transition: color .2s;
+    line-height: 1;
+  }
+  .swm-icon-btn:hover { color: var(--white); }
+  .swm-icon-btn.del:hover { color: var(--coral); }
+
+  .swm-body {
+    display: none;
+    padding: .5rem .75rem .75rem;
+    background: var(--white);
+  }
+  .swm-body.open { display: block; }
+
+  /* Edit week header inline */
+  .swm-edit-header {
+    display: flex; gap: .5rem; padding: .6rem .75rem;
+    background: rgba(13,27,42,.04);
+    border-radius: 8px; margin-bottom: .75rem;
+    flex-wrap: wrap; align-items: center;
+  }
+  .swm-edit-header input {
+    flex: 1; min-width: 100px;
+    padding: .45rem .7rem;
+    border: 1.5px solid var(--border); border-radius: 7px;
+    font-family: 'DM Sans', sans-serif; font-size: .85rem;
+    background: var(--white); color: var(--navy);
+    outline: none;
+    transition: border-color .2s;
+  }
+  .swm-edit-header input:focus { border-color: var(--sky); }
+
+  /* Game rows */
+  .game-row-mgr {
+    display: grid;
+    grid-template-columns: 90px 1fr auto 70px 36px;
+    gap: .5rem; align-items: center;
+    padding: .45rem .25rem;
+    border-bottom: 1px solid rgba(13,27,42,.06);
+  }
+  .game-row-mgr:last-of-type { border-bottom: none; }
+
+  .game-row-mgr input, .game-row-mgr select {
+    padding: .4rem .6rem;
+    border: 1.5px solid var(--border); border-radius: 7px;
+    font-family: 'DM Sans', sans-serif; font-size: .82rem;
+    background: var(--sand); color: var(--navy);
+    outline: none; width: 100%;
+    transition: border-color .2s;
+  }
+  .game-row-mgr input:focus, .game-row-mgr select:focus { border-color: var(--sky); background: var(--white); }
+
+  .game-vs-label {
+    text-align: center; font-size: .7rem;
+    color: var(--muted); font-weight: 600;
+    padding: 0 .1rem;
+  }
+
+  .teams-vs-wrap {
+    display: grid; grid-template-columns: 1fr 28px 1fr; gap: .3rem; align-items: center;
+  }
+
+  .btn-del-game {
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: .95rem;
+    padding: .25rem; border-radius: 5px;
+    transition: color .2s; line-height: 1;
+  }
+  .btn-del-game:hover { color: var(--coral); }
+
+  .add-game-row {
+    display: flex; gap: .5rem; flex-wrap: wrap;
+    margin-top: .75rem; padding-top: .75rem;
+    border-top: 1px dashed var(--border);
+    align-items: flex-end;
+  }
+  .add-game-row .form-group { margin-bottom: 0; }
+  .add-game-row label { font-size: .72rem; }
+
+  .swm-save-bar {
+    display: flex; justify-content: flex-end; gap: .5rem;
+    margin-top: .75rem; padding-top: .75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 600px) {
+    .game-row-mgr {
+      grid-template-columns: 1fr 1fr 36px;
+      grid-template-rows: auto auto;
+    }
+    .game-row-mgr .time-input { grid-column: 1; }
+    .game-row-mgr .teams-vs-wrap { grid-column: 1 / -1; }
+    .game-row-mgr .court-input { grid-column: 2; }
+    .game-row-mgr .del-btn-col { grid-row: 1; grid-column: 3; }
+  }
+
+  /* ── PICKUP SESSION MANAGER ── */
+  .pu-session-row {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: .65rem;
+    overflow: hidden;
+    transition: box-shadow .2s;
+  }
+  .pu-session-row:hover { box-shadow: 0 3px 12px rgba(13,27,42,.08); }
+
+  .pu-session-header {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .75rem 1rem;
+    background: var(--sand);
+    cursor: pointer;
+  }
+
+  .pu-status-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  .pu-session-info { flex: 1; min-width: 0; }
+  .pu-session-info .pu-session-date {
+    font-weight: 700; font-size: .9rem; color: var(--navy);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .pu-session-info .pu-session-meta {
+    font-size: .75rem; color: var(--muted); font-family: 'DM Mono', monospace;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .pu-session-actions { display: flex; gap: .3rem; flex-shrink: 0; }
+  .pu-session-actions button {
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: .9rem; padding: .2rem .35rem;
+    border-radius: 5px; transition: color .2s; line-height: 1;
+  }
+  .pu-session-actions button:hover { color: var(--navy); }
+  .pu-session-actions button.del:hover { color: var(--coral); }
+
+  .pu-session-body {
+    display: none; padding: .85rem 1rem;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+  }
+  .pu-session-body.open { display: block; }
+
+  .pu-edit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .65rem;
+    margin-bottom: .75rem;
+  }
+  @media (max-width: 480px) { .pu-edit-grid { grid-template-columns: 1fr; } }
+
+  .pu-edit-grid .form-group { margin-bottom: 0; }
+
+  .pu-spot-bar {
+    display: flex; align-items: center; gap: .75rem;
+    background: var(--sand); border-radius: 8px;
+    padding: .65rem .9rem; margin-bottom: .75rem;
+  }
+  .pu-spot-bar-fill {
+    flex: 1; height: 8px; background: rgba(13,27,42,.1);
+    border-radius: 4px; overflow: hidden;
+  }
+  .pu-spot-bar-inner { height: 100%; border-radius: 4px; transition: width .3s; }
+  .pu-spot-bar-label { font-size: .8rem; font-weight: 600; white-space: nowrap; }
+
+  /* ── CONSENT BLOCKS ── */
+  .consent-block {
+    background: rgba(13,27,42,.04);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    margin: 1.25rem 0;
+  }
+
+  .consent-block-title {
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--navy);
+    margin-bottom: .75rem;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+
+  .consent-text {
+    font-size: .8rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: .9rem;
+    max-height: 110px;
+    overflow-y: auto;
+    padding-right: .25rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: .75rem;
+  }
+
+  .consent-text::-webkit-scrollbar { width: 4px; }
+  .consent-text::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .consent-checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .7rem;
+    cursor: pointer;
+  }
+
+  .consent-checkbox-row input[type="checkbox"] {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    accent-color: var(--navy);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: .15rem;
+  }
+
+  .consent-checkbox-row label {
+    font-size: .83rem;
+    font-weight: 500;
+    color: var(--navy);
+    cursor: pointer;
+    line-height: 1.5;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .consent-checkbox-row label span {
+    color: var(--coral);
+  }
+
+  .consent-error {
+    font-size: .78rem;
+    color: var(--coral);
+    margin-top: .5rem;
+    display: none;
+  }
+  .consent-error.show { display: block; }
+
+  /* ── BOT PROTECTION ── */
+  /* Honeypot: visually and functionally hidden from humans, but bots fill it in */
+  .hp-field {
+    opacity: 0;
+    position: absolute;
+    top: 0; left: 0;
+    height: 0; width: 0;
+    z-index: -1;
+    pointer-events: none;
+    tab-index: -1;
+  }
+
+  /* Rate-limit warning banner */
+  .bot-warning {
+    background: rgba(232,80,42,.1);
+    border: 1.5px solid rgba(232,80,42,.3);
+    border-radius: 10px;
+    padding: .85rem 1.1rem;
+    font-size: .88rem;
+    color: var(--coral);
+    margin-bottom: 1.25rem;
+    display: none;
+    align-items: center;
+    gap: .6rem;
+    line-height: 1.5;
+  }
+  .bot-warning.show { display: flex; }
+  .bot-warning .bw-icon { font-size: 1.2rem; flex-shrink: 0; }
   .hero-photo-strip {
     position: absolute;
     inset: 0;
@@ -766,13 +1992,32 @@
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo" onclick="showSection('home')">SUNDAY<span>GVB</span></div>
-  <div class="nav-links">
-    <button onclick="showSection('home')" id="nav-home" class="active">Home</button>
-    <button onclick="showSection('register')" id="nav-register">Register</button>
-    <button onclick="showSection('pickup')" id="nav-pickup">Pick-Up</button>
-    <button onclick="showSection('scores')" id="nav-scores">Scores</button>
-    <button onclick="showSection('schedule')" id="nav-schedule">Schedule</button>
+  <div class="nav-logo" onclick="showSection('home');closeMobileMenu()">SUNDAY<span>GVB</span></div>
+  <div class="nav-links" id="nav-links">
+    <button onclick="showSection('home');closeMobileMenu()" id="nav-home" class="active">Home</button>
+    <button onclick="showSection('register');closeMobileMenu()" id="nav-register">Register</button>
+    <button onclick="showSection('pickup');closeMobileMenu()" id="nav-pickup">Pick-Up</button>
+    <button onclick="showSection('schedule');closeMobileMenu()" id="nav-schedule">Schedule</button>
+    <button onclick="showSection('standings');closeMobileMenu()" id="nav-standings">Standings</button>
+    <button onclick="showSection('teams');closeMobileMenu()" id="nav-teams">Teams</button>
+    <button onclick="requireAdmin();closeMobileMenu()" id="nav-admin" style="display:none; color:var(--coral);">⚙ Admin</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:.5rem;">
+    <div class="nav-auth">
+      <!-- Logged-out state -->
+      <button class="btn-nav-login" id="nav-login-btn" onclick="openLoginModal()">🔐 Login</button>
+      <!-- Logged-in state -->
+      <div class="nav-user-pill" id="nav-user-pill">
+        <div class="avatar" id="nav-avatar">?</div>
+        <span id="nav-username">Player</span>
+        <button class="btn-logout" onclick="logout()" title="Log out">✕</button>
+      </div>
+    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Open menu">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
   </div>
 </nav>
 
@@ -877,18 +2122,29 @@
 
     <div class="form-card">
       <div class="tag">🏐 Season Registration</div>
+      <!-- Bot protection warning -->
+      <div class="bot-warning" id="reg-bot-warning">
+        <span class="bw-icon">🤖</span>
+        <span id="reg-bot-msg">Too many submissions. Please wait a moment before trying again.</span>
+      </div>
+      <!-- Honeypot: hidden from real users, bots fill this in -->
+      <div class="hp-field" aria-hidden="true">
+        <label>Leave this empty</label>
+        <input type="text" id="reg-hp" name="website" autocomplete="off" tabindex="-1">
+      </div>
+      <input type="hidden" id="reg-load-time" value="">
       <div class="form-row">
         <div class="form-group">
-          <label>First Name</label>
+          <label>First Name <span style="color:var(--coral)">*</span></label>
           <input type="text" id="reg-first" placeholder="Jane" required>
         </div>
         <div class="form-group">
-          <label>Last Name</label>
+          <label>Last Name <span style="color:var(--coral)">*</span></label>
           <input type="text" id="reg-last" placeholder="Smith" required>
         </div>
       </div>
       <div class="form-group">
-        <label>Email Address</label>
+        <label>Email Address <span style="color:var(--coral)">*</span></label>
         <input type="email" id="reg-email" placeholder="jane@example.com" required>
       </div>
       <div class="form-group">
@@ -897,8 +2153,8 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Preferred Position</label>
-          <select id="reg-position">
+          <label>Preferred Position <span style="color:var(--coral)">*</span></label>
+          <select id="reg-position" required>
             <option value="">Select position</option>
             <option>Setter</option>
             <option>Outside Hitter / Power</option>
@@ -909,8 +2165,8 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Skill Level</label>
-          <select id="reg-skill">
+          <label>Skill Level <span style="color:var(--coral)">*</span></label>
+          <select id="reg-skill" required>
             <option value="">Select level</option>
             <option>Recreational</option>
             <option>Intermediate</option>
@@ -941,6 +2197,53 @@
         <label>Additional Notes (optional)</label>
         <textarea id="reg-notes" placeholder="Any injuries, team requests, or questions…"></textarea>
       </div>
+
+      <!-- CONSENT: Liability Waiver -->
+      <div class="consent-block">
+        <div class="consent-block-title">⚠️ Liability Waiver &amp; Assumption of Risk</div>
+        <div class="consent-text">
+          Participation in Sunday Guelph Volleyball League ("SGVB") activities involves inherent physical risks, including but not limited to sprains, strains, fractures, and other injuries. By registering, I acknowledge that I am voluntarily participating in a recreational sport and that I assume all risks associated with my participation.<br><br>
+          I, on behalf of myself, my heirs, executors, administrators, and assigns, hereby release, waive, discharge, and covenant not to sue Sunday Guelph Volleyball, its organizers, volunteers, facility owners, and any associated parties (collectively "SGVB") from any and all liability, claims, demands, actions, or rights of action, whether arising from negligence or otherwise, that are related to, arise out of, or are in any way connected with my participation in SGVB activities.<br><br>
+          I confirm that I am physically fit and have no medical conditions that would prevent safe participation. I agree to abide by all league rules and the decisions of league organizers. I understand that this waiver is binding and includes any injuries sustained on or off the playing surface at SGVB events.
+        </div>
+        <div class="consent-checkbox-row">
+          <input type="checkbox" id="reg-consent-liability">
+          <label for="reg-consent-liability">I have read and agree to the Liability Waiver &amp; Assumption of Risk. I understand that participation involves physical risk and I voluntarily accept those risks. <span>*</span></label>
+        </div>
+        <div class="consent-error" id="reg-consent-liability-err">You must agree to the liability waiver to register.</div>
+      </div>
+
+      <!-- CONSENT: Contact & Communications -->
+      <div class="consent-block">
+        <div class="consent-block-title">📧 Consent to Contact</div>
+        <div class="consent-text">
+          By providing your email address and phone number, you consent to Sunday Guelph Volleyball contacting you for purposes directly related to your league participation. This includes:<br><br>
+          • Schedule updates, game reminders, and cancellation notices<br>
+          • Team assignments and roster information<br>
+          • League standings, scores, and seasonal updates<br>
+          • Administrative communications regarding fees or registration status<br><br>
+          We do not sell, rent, or share your personal information with third parties for marketing purposes. You may withdraw your consent at any time by emailing info@sundayguelphvb.com. Withdrawing consent may affect your ability to participate in the league. Our communications comply with Canada's Anti-Spam Legislation (CASL).
+        </div>
+        <div class="consent-checkbox-row">
+          <input type="checkbox" id="reg-consent-contact">
+          <label for="reg-consent-contact">I consent to Sunday Guelph Volleyball contacting me at the email address and phone number provided for league-related communications. <span>*</span></label>
+        </div>
+        <div class="consent-error" id="reg-consent-contact-err">You must consent to contact communications to register.</div>
+      </div>
+
+      <!-- CONSENT: Photo Release (optional) -->
+      <div class="consent-block">
+        <div class="consent-block-title">📸 Photo &amp; Media Release <span style="color:var(--muted);font-weight:400;font-size:.72rem;text-transform:none;letter-spacing:0;">(optional)</span></div>
+        <div class="consent-text">
+          From time to time, Sunday Guelph Volleyball may take photographs or video recordings at games and events for promotional purposes, including use on our website and social media channels. Your participation is entirely optional and will not affect your registration status.
+        </div>
+        <div class="consent-checkbox-row">
+          <input type="checkbox" id="reg-consent-photo">
+          <label for="reg-consent-photo">I consent to Sunday Guelph Volleyball using photographs or video recordings of me taken at league events for promotional and social media purposes.</label>
+        </div>
+      </div>
+
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem;"><span style="color:var(--coral)">*</span> Required fields</p>
       <button class="btn btn-primary form-submit" id="reg-btn" onclick="submitRegistration()">Register Now</button>
     </div>
   </div>
@@ -963,23 +2266,35 @@
 
     <div class="form-card" style="margin-top:2rem;">
       <div class="tag">✋ Reserve Your Spot</div>
+      <!-- Bot protection warning -->
+      <div class="bot-warning" id="pu-bot-warning">
+        <span class="bw-icon">🤖</span>
+        <span id="pu-bot-msg">Too many submissions. Please wait a moment before trying again.</span>
+      </div>
+      <!-- Honeypot: hidden from real users, bots fill this in -->
+      <div class="hp-field" aria-hidden="true">
+        <label>Leave this empty</label>
+        <input type="text" id="pu-hp" name="url" autocomplete="off" tabindex="-1">
+      </div>
+      <input type="hidden" id="pu-load-time" value="">
       <div class="form-row">
         <div class="form-group">
-          <label>First Name</label>
-          <input type="text" id="pu-first" placeholder="Alex">
+          <label>First Name <span style="color:var(--coral)">*</span></label>
+          <input type="text" id="pu-first" placeholder="Alex" required>
         </div>
         <div class="form-group">
-          <label>Last Name</label>
-          <input type="text" id="pu-last" placeholder="Lee">
+          <label>Last Name <span style="color:var(--coral)">*</span></label>
+          <input type="text" id="pu-last" placeholder="Lee" required>
         </div>
       </div>
       <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="pu-email" placeholder="alex@example.com">
+        <label>Email <span style="color:var(--coral)">*</span></label>
+        <input type="email" id="pu-email" placeholder="alex@example.com" required>
       </div>
       <div class="form-group">
-        <label>Select Date</label>
-        <select id="pu-date">
+        <label>Select Date <span style="color:var(--coral)">*</span></label>
+        <select id="pu-date" required>
+          <option value="">— Select a session —</option>
           <option value="May 18, 2026 – 1:00–3:00 PM">May 18, 2026 – 1:00–3:00 PM</option>
           <option value="May 25, 2026 – 1:00–3:00 PM">May 25, 2026 – 1:00–3:00 PM</option>
           <option value="June 1, 2026 – 1:00–3:00 PM">June 1, 2026 – 1:00–3:00 PM</option>
@@ -987,85 +2302,50 @@
         </select>
       </div>
       <div class="form-group">
-        <label>Experience Level</label>
-        <select id="pu-level">
-          <option>Recreational</option>
-          <option>Intermediate</option>
-          <option>Competitive</option>
+        <label>Preferred Position <span style="color:var(--coral)">*</span></label>
+        <select id="pu-position" required>
+          <option value="">— Select position —</option>
+          <option>Setter</option>
+          <option>Outside Hitter / Power</option>
+          <option>Middle Blocker</option>
+          <option>Right Side / Opposite</option>
+          <option>Libero / Defensive Specialist</option>
+          <option>No Preference</option>
         </select>
       </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem;"><span style="color:var(--coral)">*</span> Required fields</p>
+
+      <!-- CONSENT: Liability Waiver -->
+      <div class="consent-block">
+        <div class="consent-block-title">⚠️ Liability Waiver &amp; Assumption of Risk</div>
+        <div class="consent-text">
+          Participation in Sunday Guelph Volleyball pick-up sessions involves inherent physical risks including sprains, strains, fractures, and other injuries. By signing up, I acknowledge that I am voluntarily participating and that I assume all risks associated with my participation.<br><br>
+          I hereby release, waive, and discharge Sunday Guelph Volleyball, its organizers, volunteers, and facility owners from any and all liability, claims, or actions arising from my participation in pick-up sessions, whether arising from negligence or otherwise.<br><br>
+          I confirm that I am physically fit to participate safely. I agree to follow all facility rules and the directions of session organizers. I understand this waiver is binding upon myself, my heirs, and assigns.
+        </div>
+        <div class="consent-checkbox-row">
+          <input type="checkbox" id="pu-consent-liability">
+          <label for="pu-consent-liability">I have read and agree to the Liability Waiver &amp; Assumption of Risk for pick-up sessions. <span>*</span></label>
+        </div>
+        <div class="consent-error" id="pu-consent-liability-err">You must agree to the liability waiver to sign up.</div>
+      </div>
+
+      <!-- CONSENT: Contact -->
+      <div class="consent-block">
+        <div class="consent-block-title">📧 Consent to Contact</div>
+        <div class="consent-text">
+          By providing your email address, you consent to Sunday Guelph Volleyball contacting you with information related to your pick-up session signup, including confirmation, schedule changes, and cancellations. We will not use your contact information for unrelated marketing purposes. You may withdraw consent at any time by emailing info@sundayguelphvb.com.
+        </div>
+        <div class="consent-checkbox-row">
+          <input type="checkbox" id="pu-consent-contact">
+          <label for="pu-consent-contact">I consent to Sunday Guelph Volleyball contacting me at the email address provided regarding my pick-up session. <span>*</span></label>
+        </div>
+        <div class="consent-error" id="pu-consent-contact-err">You must consent to contact to complete your signup.</div>
+      </div>
+
+      <p style="font-size:.78rem;color:var(--muted);margin-top:.5rem;margin-bottom:.5rem;"><span style="color:var(--coral)">*</span> Required</p>
       <button class="btn btn-sky form-submit" id="pu-btn" onclick="submitPickup()">Claim My Spot</button>
     </div>
-  </div>
-</section>
-
-<!-- SCORES -->
-<section id="scores">
-  <div class="section-inner">
-    <div class="section-label">Results</div>
-    <div class="section-title">SCORE <span class="accent">SUBMISSION</span></div>
-    <div class="divider"></div>
-
-    <!-- Submit score form -->
-    <div class="form-card" style="margin-bottom:2.5rem;">
-      <div class="tag">📋 Submit a Score</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Your Team Name</label>
-          <input type="text" id="sc-team1" placeholder="The Blockers">
-        </div>
-        <div class="form-group">
-          <label>Opponent Team Name</label>
-          <input type="text" id="sc-team2" placeholder="Spike Squad">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Your Score</label>
-          <input type="number" id="sc-score1" placeholder="25" min="0">
-        </div>
-        <div class="form-group">
-          <label>Opponent Score</label>
-          <input type="number" id="sc-score2" placeholder="22" min="0">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Game Date</label>
-          <input type="date" id="sc-date">
-        </div>
-        <div class="form-group">
-          <label>Court / Gym</label>
-          <select id="sc-court">
-            <option>Court A – GCVI</option>
-            <option>Court B – GCVI</option>
-            <option>Centennial CVI</option>
-            <option>Other</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Submitted by (your name)</label>
-        <input type="text" id="sc-submitter" placeholder="Jane Smith">
-      </div>
-      <button class="btn btn-coral form-submit" id="sc-btn" onclick="submitScore()">Submit Score</button>
-    </div>
-
-    <!-- Recent scores table -->
-    <div class="section-label" style="margin-top:2rem;">Recent Results</div>
-    <table class="scores-table" id="scores-table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Home Team</th>
-          <th>Score</th>
-          <th>Away Team</th>
-          <th>Court</th>
-        </tr>
-      </thead>
-      <tbody id="scores-body">
-      </tbody>
-    </table>
   </div>
 </section>
 
@@ -1083,6 +2363,526 @@
     </div>
   </div>
 </section>
+
+<!-- STANDINGS (login-gated) -->
+<section id="standings">
+  <div class="section-inner">
+    <div class="standings-header-bar">
+      <div>
+        <div class="section-label">Winter 2026 Season</div>
+        <div class="section-title">LEAGUE <span class="accent">STANDINGS</span></div>
+        <div class="divider"></div>
+      </div>
+      <select class="standings-season-select" onchange="renderStandings()">
+        <option value="winter2026">Winter 2026</option>
+        <option value="fall2025">Fall 2025</option>
+      </select>
+    </div>
+
+    <!-- Summary mini-stats -->
+    <div class="stat-cards-mini" id="standings-mini-stats"></div>
+
+    <!-- Tab pills: Standings / Team Stats / Head-to-Head -->
+    <div class="tab-pills">
+      <button class="tab-pill active" id="pill-table"     onclick="switchStandingsTab('table')">📊 Standings Table</button>
+      <button class="tab-pill"        id="pill-teamstats" onclick="switchStandingsTab('teamstats')">🏐 Team Stats</button>
+      <button class="tab-pill"        id="pill-h2h"       onclick="switchStandingsTab('h2h')">⚔️ Head-to-Head</button>
+    </div>
+
+    <!-- Standings Table -->
+    <div id="tab-table">
+      <div style="overflow-x:auto;">
+        <table class="standings-table">
+          <thead>
+            <tr>
+              <th style="width:36px;">#</th>
+              <th style="text-align:left;">Team</th>
+              <th>GP</th>
+              <th>W</th>
+              <th>L</th>
+              <th>PF</th>
+              <th>PA</th>
+              <th>Diff</th>
+              <th>Pct</th>
+              <th>Streak</th>
+            </tr>
+          </thead>
+          <tbody id="standings-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Team Stats -->
+    <div id="tab-teamstats" style="display:none;">
+      <div style="overflow-x:auto;">
+        <table class="standings-table">
+          <thead>
+            <tr>
+              <th style="text-align:left;">Team</th>
+              <th>Avg PF</th>
+              <th>Avg PA</th>
+              <th>Best Win</th>
+              <th>Worst Loss</th>
+              <th>Home W</th>
+              <th>Away W</th>
+            </tr>
+          </thead>
+          <tbody id="teamstats-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Head-to-Head -->
+    <div id="tab-h2h" style="display:none;">
+      <div class="note">Select two teams below to see their head-to-head record.</div>
+      <div class="form-row" style="max-width:480px; margin-bottom:1.5rem;">
+        <div class="form-group">
+          <label>Team A</label>
+          <select id="h2h-a" onchange="renderH2H()"></select>
+        </div>
+        <div class="form-group">
+          <label>Team B</label>
+          <select id="h2h-b" onchange="renderH2H()"></select>
+        </div>
+      </div>
+      <div id="h2h-result"></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAMS -->
+<section id="teams">
+  <div class="section-inner" style="max-width:1100px;">
+    <div class="section-label">Winter 2026 Season</div>
+    <div class="section-title">TEAMS &amp; <span class="accent">PLAYERS</span></div>
+    <div class="divider"></div>
+
+    <div id="teams-public-content">
+      <!-- Populated by renderTeamsPage() -->
+    </div>
+  </div>
+</section>
+
+<!-- ADMIN -->
+<section id="admin">
+  <div class="section-inner" style="max-width:1100px;">
+    <div class="section-label">League Management</div>
+    <div class="section-title">ADMIN <span class="accent">PANEL</span></div>
+    <div class="divider"></div>
+
+    <!-- Gate: shown when not admin -->
+    <div id="admin-gate" class="admin-login-gate" style="display:none;">
+      <div class="gate-icon">🔒</div>
+      <h3>Admin Access Only</h3>
+      <p>This area is restricted to league administrators. Please sign in with your admin account.</p>
+      <button class="btn btn-primary" onclick="openLoginModal()">Sign In</button>
+    </div>
+
+    <!-- Admin UI: shown when admin is logged in -->
+    <div id="admin-ui" style="display:none;">
+      <div class="admin-grid">
+
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+          <div class="admin-sidebar-header">
+            <h3>⚙ Admin</h3>
+            <p id="admin-greeting">Welcome, Admin</p>
+          </div>
+          <button class="admin-nav-item active" id="anav-email" onclick="switchAdminTab('email')">
+            <span class="item-icon">✉️</span> Email Players
+          </button>
+          <button class="admin-nav-item" id="anav-scores" onclick="switchAdminTab('scores')">
+            <span class="item-icon">📋</span> Submit Scores
+          </button>
+          <button class="admin-nav-item" id="anav-teams" onclick="switchAdminTab('teams')">
+            <span class="item-icon">🏅</span> Manage Teams
+          </button>
+          <button class="admin-nav-item" id="anav-schedule-mgr" onclick="switchAdminTab('schedule-mgr')">
+            <span class="item-icon">📅</span> Manage Schedule
+          </button>
+          <button class="admin-nav-item" id="anav-players" onclick="switchAdminTab('players')">
+            <span class="item-icon">👥</span> Player List
+            <span class="item-badge" id="badge-players">0</span>
+          </button>
+          <button class="admin-nav-item" id="anav-pickup" onclick="switchAdminTab('pickup')">
+            <span class="item-icon">🏐</span> Manage Pick-Up
+            <span class="item-badge" id="badge-pickup">0</span>
+          </button>
+        </div>
+
+        <!-- Main content -->
+        <div class="admin-main">
+
+          <!-- EMAIL COMPOSER -->
+          <div class="admin-panel active" id="apanel-email">
+            <div class="admin-card">
+              <h3>📧 Compose Email</h3>
+              <p class="card-sub">Send an email to registered season players, pick-up signups, or both. Recipients are drawn from all submissions during this session.</p>
+
+              <!-- Audience selector -->
+              <label style="font-size:.78rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--navy);display:block;margin-bottom:.6rem;">Send To</label>
+              <div class="audience-toggle">
+                <button class="audience-btn selected" id="aud-registered" onclick="toggleAudience('registered')">
+                  🏅 Registered Players <span class="ab-count" id="aud-reg-count">0</span>
+                </button>
+                <button class="audience-btn" id="aud-pickup" onclick="toggleAudience('pickup')">
+                  ✋ Pick-Up Signups <span class="ab-count" id="aud-pu-count">0</span>
+                </button>
+                <button class="audience-btn" id="aud-all" onclick="toggleAudience('all')">
+                  👥 Everyone
+                </button>
+              </div>
+
+              <!-- Recipient preview -->
+              <label style="font-size:.78rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--navy);display:block;margin-bottom:.5rem;">Recipients Preview</label>
+              <div class="recipient-preview" id="recipient-preview">
+                <span style="color:var(--muted);font-style:italic;">No recipients selected yet — add submissions first or select an audience above.</span>
+              </div>
+
+              <!-- Template shortcuts -->
+              <label style="font-size:.78rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--navy);display:block;margin-bottom:.5rem;">Quick Templates</label>
+              <div class="toolbar" style="margin-bottom:1.25rem;">
+                <button class="toolbar-btn" onclick="applyTemplate('reminder')">📅 Game Reminder</button>
+                <button class="toolbar-btn" onclick="applyTemplate('cancel')">❌ Cancellation</button>
+                <button class="toolbar-btn" onclick="applyTemplate('standings')">🏆 Standings Update</button>
+                <button class="toolbar-btn" onclick="applyTemplate('welcome')">🎉 Welcome</button>
+                <button class="toolbar-btn" onclick="applyTemplate('clear')" style="color:var(--muted);">🗑 Clear</button>
+              </div>
+
+              <!-- Subject -->
+              <label style="font-size:.78rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--navy);display:block;margin-bottom:.45rem;">Subject <span style="color:var(--coral)">*</span></label>
+              <input class="email-subject-input" id="email-subject" placeholder="e.g. Sunday Game Reminder – May 18">
+
+              <!-- Body -->
+              <label style="font-size:.78rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--navy);display:block;margin-bottom:.45rem;">Message <span style="color:var(--coral)">*</span></label>
+              <div class="toolbar">
+                <button class="toolbar-btn" onclick="insertSnippet('[First Name]')" title="Personalise with first name">👤 First Name</button>
+                <button class="toolbar-btn" onclick="insertSnippet('[Game Date]')">📅 Game Date</button>
+                <button class="toolbar-btn" onclick="insertSnippet('[Location]')">📍 Location</button>
+                <button class="toolbar-btn" onclick="insertSnippet('[Time]')">🕐 Time</button>
+              </div>
+              <textarea class="email-body-textarea" id="email-body" placeholder="Write your message here…&#10;&#10;Use the snippet buttons above to insert personalised placeholders like [First Name]."></textarea>
+
+              <div class="send-footer">
+                <div class="send-meta" id="send-meta">0 recipients selected</div>
+                <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+                  <button class="btn btn-outline" onclick="previewEmail()">👁 Preview</button>
+                  <button class="btn btn-primary" id="send-btn" onclick="sendEmail()">✉️ Send Email</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sent log -->
+            <div class="admin-card" id="sent-log-card" style="display:none;">
+              <h3>📬 Sent Log</h3>
+              <p class="card-sub">Emails sent during this session.</p>
+              <div id="sent-log"></div>
+            </div>
+          </div>
+
+          <!-- REGISTERED PLAYERS LIST -->
+          <div class="admin-panel" id="apanel-players">
+            <div class="admin-card">
+              <h3>🏅 Registered Players</h3>
+              <p class="card-sub">All season registrations submitted during this session. In production, this pulls from your Google Sheet.</p>
+              <div style="overflow-x:auto;">
+                <table class="player-list-table" id="reg-player-table">
+                  <thead><tr>
+                    <th>Name</th><th>Email</th><th>Position</th><th>Skill</th><th>Season</th><th>Date</th>
+                  </tr></thead>
+                  <tbody id="reg-player-body">
+                    <tr><td colspan="6" style="color:var(--muted);font-style:italic;padding:1.5rem;">No registrations yet this session.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- MANAGE PICK-UP SESSIONS -->
+          <div class="admin-panel" id="apanel-pickup">
+
+            <!-- Add session -->
+            <div class="admin-card">
+              <h3>➕ Add Pick-Up Session</h3>
+              <p class="card-sub">Create a new pick-up slot. It appears immediately on the public Pick-Up page.</p>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Date <span style="color:var(--coral)">*</span></label>
+                  <input type="date" id="np-date">
+                </div>
+                <div class="form-group">
+                  <label>Time <span style="color:var(--coral)">*</span></label>
+                  <input type="text" id="np-time" placeholder="e.g. 1:00–3:00 PM">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Location</label>
+                  <input type="text" id="np-location" placeholder="GCVI Gym" value="GCVI Gym">
+                </div>
+                <div class="form-group">
+                  <label>Max Spots</label>
+                  <input type="number" id="np-max" value="12" min="1" max="100">
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="addPickupSession()" style="margin-top:.25rem;">Add Session</button>
+            </div>
+
+            <!-- Session list -->
+            <div class="admin-card">
+              <h3>📋 Pick-Up Sessions</h3>
+              <p class="card-sub">Edit dates, times, locations, spot counts, or capacity. Delete sessions that are no longer needed.</p>
+              <div id="pickup-session-list"></div>
+            </div>
+
+            <!-- Signups list -->
+            <div class="admin-card">
+              <h3>✋ Player Signups</h3>
+              <p class="card-sub">All pick-up signups submitted during this session.</p>
+              <div style="overflow-x:auto;">
+                <table class="player-list-table">
+                  <thead><tr>
+                    <th>Name</th><th>Email</th><th>Position</th><th>Session</th><th>Signed Up</th>
+                  </tr></thead>
+                  <tbody id="pickup-player-body">
+                    <tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:1.5rem;">No pick-up signups yet this session.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div><!-- /apanel-pickup -->
+
+          <!-- SCORES -->
+          <div class="admin-panel" id="apanel-scores">
+            <div class="admin-card">
+              <h3>📋 Submit a Score</h3>
+              <p class="card-sub">Record the result of a completed game. Submitted scores automatically update the public standings.</p>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Home Team <span style="color:var(--coral)">*</span></label>
+                  <input type="text" id="sc-team1" placeholder="The Blockers">
+                </div>
+                <div class="form-group">
+                  <label>Away Team <span style="color:var(--coral)">*</span></label>
+                  <input type="text" id="sc-team2" placeholder="Spike Squad">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Home Score <span style="color:var(--coral)">*</span></label>
+                  <input type="number" id="sc-score1" placeholder="25" min="0">
+                </div>
+                <div class="form-group">
+                  <label>Away Score <span style="color:var(--coral)">*</span></label>
+                  <input type="number" id="sc-score2" placeholder="22" min="0">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Game Date <span style="color:var(--coral)">*</span></label>
+                  <input type="date" id="sc-date">
+                </div>
+                <div class="form-group">
+                  <label>Court / Gym</label>
+                  <select id="sc-court">
+                    <option>Court A – GCVI</option>
+                    <option>Court B – GCVI</option>
+                    <option>Centennial CVI</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Submitted by</label>
+                <input type="text" id="sc-submitter" placeholder="Jane Smith">
+              </div>
+              <p style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem;"><span style="color:var(--coral)">*</span> Required fields</p>
+              <button class="btn btn-coral form-submit" id="sc-btn" onclick="submitScore()">Submit Score</button>
+            </div>
+
+            <!-- Recent results table -->
+            <div class="admin-card">
+              <h3>📊 Recent Results</h3>
+              <p class="card-sub">All submitted scores — updates the standings automatically.</p>
+              <div style="overflow-x:auto;">
+                <table class="scores-table" id="scores-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Home Team</th>
+                      <th>Score</th>
+                      <th>Away Team</th>
+                      <th>Court</th>
+                    </tr>
+                  </thead>
+                  <tbody id="scores-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- MANAGE TEAMS -->
+          <div class="admin-panel" id="apanel-teams">
+
+            <!-- Create team -->
+            <div class="admin-card">
+              <h3>➕ Create a Team</h3>
+              <p class="card-sub">Add a new team to the league. Pick a name and a colour — they'll appear on the public Teams page.</p>
+              <div class="add-team-form">
+                <input type="text" id="new-team-name" placeholder="Team name e.g. The Blockers" maxlength="30">
+                <button class="btn btn-primary" onclick="createTeam()">Add Team</button>
+              </div>
+              <label style="font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--navy);display:block;margin-bottom:.5rem;">Team Colour</label>
+              <div class="color-picker-row" id="color-picker-row"></div>
+            </div>
+
+            <!-- Assign players -->
+            <div class="admin-card">
+              <h3>👥 Assign Players to Teams</h3>
+              <p class="card-sub">Select a player from the pool below, then click a team to assign them. Unassigned players appear in the pool.</p>
+              <div class="assign-layout">
+                <!-- Left: unassigned pool -->
+                <div class="assign-column">
+                  <h4>🗂 Unassigned Players <span id="unassigned-count" style="font-family:'DM Mono',sans-serif;font-size:.85rem;color:var(--muted);font-weight:400;"></span></h4>
+                  <div class="unassigned-pool" id="unassigned-pool">
+                    <div class="drop-hint" id="unassigned-hint">No unassigned players yet — register players first.</div>
+                  </div>
+                </div>
+                <!-- Right: teams -->
+                <div class="assign-column">
+                  <h4>🏅 Teams</h4>
+                  <div id="team-assign-list">
+                    <div class="drop-hint" style="padding:1rem 0;color:var(--muted);">No teams yet — create one above.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /apanel-teams -->
+
+          <!-- MANAGE SCHEDULE -->
+          <div class="admin-panel" id="apanel-schedule-mgr">
+
+            <!-- Add a week -->
+            <div class="admin-card">
+              <h3>➕ Add Game Week</h3>
+              <p class="card-sub">Create a new week on the public schedule. You can add individual games to it after saving.</p>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Week Label <span style="color:var(--coral)">*</span></label>
+                  <input type="text" id="sw-label" placeholder="e.g. Week 18" maxlength="20">
+                </div>
+                <div class="form-group">
+                  <label>Date <span style="color:var(--coral)">*</span></label>
+                  <input type="date" id="sw-date">
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="addScheduleWeek()" style="margin-top:.25rem;">Add Week</button>
+            </div>
+
+            <!-- Week list with inline editing -->
+            <div class="admin-card">
+              <h3>📅 Schedule Weeks</h3>
+              <p class="card-sub">Click a week to expand it. Edit game times, teams, and courts — or add new games. Changes update the public Schedule page instantly.</p>
+              <div id="schedule-mgr-list"></div>
+            </div>
+
+          </div><!-- /apanel-schedule-mgr -->
+
+        </div><!-- /admin-main -->
+      </div><!-- /admin-grid -->
+    </div><!-- /admin-ui -->
+  </div>
+</section>
+
+<!-- EMAIL PREVIEW MODAL -->
+<div class="modal-overlay" id="email-preview-modal" onclick="if(event.target===this)closeEmailPreview()">
+  <div class="modal" style="max-width:560px;">
+    <button class="modal-close" onclick="closeEmailPreview()">✕</button>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;margin-bottom:1rem;color:var(--navy);">Email Preview</div>
+    <div style="background:var(--sand);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
+      <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:.3rem;">Subject</div>
+      <div id="preview-subject" style="font-weight:600;color:var(--navy);"></div>
+    </div>
+    <div style="background:var(--sand);border-radius:10px;padding:1.25rem;max-height:320px;overflow-y:auto;">
+      <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:.3rem;">Body (sample – first recipient)</div>
+      <div id="preview-body" style="font-size:.9rem;color:var(--navy);white-space:pre-wrap;line-height:1.7;"></div>
+    </div>
+    <div style="margin-top:1rem;font-size:.8rem;color:var(--muted);" id="preview-count"></div>
+    <div style="display:flex;gap:.75rem;margin-top:1.25rem;">
+      <button class="btn btn-outline" style="flex:1;" onclick="closeEmailPreview()">Edit</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="closeEmailPreview();sendEmail()">✉️ Send Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="login-modal" onclick="handleModalOverlayClick(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLoginModal()">✕</button>
+    <div class="modal-logo">SUNDAY<span>GVB</span></div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem;">Player Portal — Track standings, view your stats, submit scores.</p>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-login-btn"  onclick="switchModalTab('login')">Sign In</button>
+      <button class="modal-tab"        id="tab-signup-btn" onclick="switchModalTab('signup')">Create Account</button>
+    </div>
+
+    <!-- SIGN IN -->
+    <div class="modal-panel active" id="panel-login">
+      <div class="error-msg"   id="login-error"></div>
+      <div class="success-msg" id="login-success"></div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="jane@example.com" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn btn-primary form-submit" style="margin-top:1rem;" onclick="doLogin()">Sign In</button>
+      <p class="modal-footer-text">Demo: use any email + password "volleyball"</p>
+    </div>
+
+    <!-- SIGN UP -->
+    <div class="modal-panel" id="panel-signup">
+      <div class="error-msg"   id="signup-error"></div>
+      <div class="success-msg" id="signup-success"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="signup-first" placeholder="Jane">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="signup-last" placeholder="Smith">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="jane@example.com">
+      </div>
+      <div class="form-group">
+        <label>Team Name</label>
+        <select id="signup-team">
+          <option value="">— Select your team —</option>
+          <option>The Blockers</option>
+          <option>Spike Squad</option>
+          <option>Net Ninjas</option>
+          <option>Volley Llamas</option>
+          <option>Dig Dug FC</option>
+          <option>Block Party</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="Min 6 characters">
+      </div>
+      <button class="btn btn-primary form-submit" style="margin-top:1rem;" onclick="doSignup()">Create Account</button>
+    </div>
+  </div>
+</div>
 
 <!-- TOAST -->
 <div class="toast" id="toast">
@@ -1103,14 +2903,32 @@
 // Replace these with your actual Google Apps Script Web App URLs
 // Instructions: Tools > Script editor in Google Sheets → deploy as web app → paste URL below
 const SHEETS_ENDPOINTS = {
-  registration: 'https://script.google.com/macros/s/AKfycbwXToK5c0VUKV2r8JRhAwNOLXd1TFghl3RwNNP6yMGJa7GSn2ClZLK0AAUyir2FwunS/exec',
-  pickup:       'https://script.google.com/macros/s/AKfycbwXToK5c0VUKV2r8JRhAwNOLXd1TFghl3RwNNP6yMGJa7GSn2ClZLK0AAUyir2FwunS/exec',
-  scores:       'https://script.google.com/macros/s/AKfycbwXToK5c0VUKV2r8JRhAwNOLXd1TFghl3RwNNP6yMGJa7GSn2ClZLK0AAUyir2FwunS/exec',
-
+  registration: 'https://script.google.com/macros/s/YOUR_REGISTRATION_SCRIPT_ID/exec',
+  pickup:       'https://script.google.com/macros/s/YOUR_PICKUP_SCRIPT_ID/exec',
+  scores:       'https://script.google.com/macros/s/YOUR_SCORES_SCRIPT_ID/exec',
 };
 
+// ── MOBILE MENU ───────────────────────────────────────────────
+function toggleMobileMenu() {
+  const links  = document.getElementById('nav-links');
+  const burger = document.getElementById('hamburger');
+  const isOpen = links.classList.toggle('open');
+  burger.classList.toggle('open', isOpen);
+  burger.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+}
+
+function closeMobileMenu() {
+  document.getElementById('nav-links').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+
+document.addEventListener('click', e => {
+  const nav = document.querySelector('nav');
+  if (nav && !nav.contains(e.target)) closeMobileMenu();
+});
+
 // ── NAVIGATION ──────────────────────────────────────────────
-const sections = ['home','register','pickup','scores','schedule'];
+const sections = ['home','register','pickup','schedule','standings','teams','admin'];
 
 function showSection(id) {
   sections.forEach(s => {
@@ -1119,11 +2937,721 @@ function showSection(id) {
     if (el) el.classList.toggle('active', s === id);
     if (nav) nav.classList.toggle('active', s === id);
   });
-  // Show gallery only on home
   const gallery = document.getElementById('home-gallery');
   if (gallery) gallery.style.display = id === 'home' ? 'block' : 'none';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (id === 'standings') renderStandings();
+  if (id === 'admin')     renderAdminUI();
+  if (id === 'teams')     renderTeamsPage();
+  // Stamp load times for bot-time checks when forms become visible
+  if (id === 'register') resetFormStamp('reg');
+  if (id === 'pickup')   resetFormStamp('pu');
 }
+
+// ── AUTH STATE ────────────────────────────────────────────────
+let currentUser = null;
+let pendingSection = null;
+
+// Simple in-memory user store (in production, use a real backend / Google Sheets)
+const userStore = JSON.parse(localStorage.getItem('gvb_users') || '{}');
+
+function saveUsers() {
+  try { localStorage.setItem('gvb_users', JSON.stringify(userStore)); } catch(e) {}
+}
+
+function loadSession() {
+  try {
+    const s = localStorage.getItem('gvb_session');
+    if (s) { currentUser = JSON.parse(s); updateNavAuth(); }
+  } catch(e) {}
+}
+
+function saveSession(user) {
+  try { localStorage.setItem('gvb_session', JSON.stringify(user)); } catch(e) {}
+}
+
+function clearSession() {
+  try { localStorage.removeItem('gvb_session'); } catch(e) {}
+}
+
+function updateNavAuth() {
+  const loginBtn  = document.getElementById('nav-login-btn');
+  const userPill  = document.getElementById('nav-user-pill');
+  const avatar    = document.getElementById('nav-avatar');
+  const username  = document.getElementById('nav-username');
+  const adminBtn  = document.getElementById('nav-admin');
+  if (currentUser) {
+    loginBtn.style.display  = 'none';
+    userPill.style.display  = 'flex';
+    avatar.textContent      = (currentUser.firstName || currentUser.email)[0].toUpperCase();
+    username.textContent    = currentUser.firstName || currentUser.email.split('@')[0];
+    if (adminBtn) adminBtn.style.display = isAdmin() ? '' : 'none';
+  } else {
+    loginBtn.style.display  = '';
+    userPill.style.display  = 'none';
+    if (adminBtn) adminBtn.style.display = 'none';
+  }
+}
+
+function logout() {
+  currentUser = null;
+  clearSession();
+  updateNavAuth();
+  showSection('home');
+  showToast('You\'ve been signed out.');
+}
+
+// ── LOGIN MODAL ───────────────────────────────────────────────
+function openLoginModal() {
+  document.getElementById('login-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // reset errors
+  ['login-error','login-success','signup-error','signup-success'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+}
+
+function closeLoginModal() {
+  document.getElementById('login-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  pendingSection = null;
+}
+
+function handleModalOverlayClick(e) {
+  if (e.target === document.getElementById('login-modal')) closeLoginModal();
+}
+
+function switchModalTab(tab) {
+  ['login','signup'].forEach(t => {
+    document.getElementById('panel-' + t).classList.toggle('active', t === tab);
+    document.getElementById('tab-' + t + '-btn').classList.toggle('active', t === tab);
+  });
+}
+
+function showModalError(panelId, msg) {
+  const el = document.getElementById(panelId + '-error');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function showModalSuccess(panelId, msg) {
+  const el = document.getElementById(panelId + '-success');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  document.getElementById('login-error').classList.remove('show');
+
+  if (!email || !pass) { showModalError('login', 'Please enter your email and password.'); return; }
+
+  // Demo mode: any email + password "volleyball"
+  let user = userStore[email.toLowerCase()];
+  if (!user) {
+    if (pass === 'volleyball') {
+      // auto-create demo user
+      user = { email: email.toLowerCase(), firstName: email.split('@')[0], lastName: '', team: '', password: 'volleyball' };
+      userStore[email.toLowerCase()] = user;
+      saveUsers();
+    } else {
+      showModalError('login', 'No account found. Try password "volleyball" for demo access or create an account.');
+      return;
+    }
+  }
+
+  if (user.password !== pass) { showModalError('login', 'Incorrect password. Try "volleyball" for demo access.'); return; }
+
+  currentUser = user;
+  saveSession(user);
+  updateNavAuth();
+  closeLoginModal();
+  showToast(`Welcome back, ${user.firstName || user.email.split('@')[0]}! 🏐`);
+  if (pendingSection) { const s = pendingSection; pendingSection = null; showSection(s); }
+}
+
+function doSignup() {
+  const first = document.getElementById('signup-first').value.trim();
+  const last  = document.getElementById('signup-last').value.trim();
+  const email = document.getElementById('signup-email').value.trim().toLowerCase();
+  const team  = document.getElementById('signup-team').value;
+  const pass  = document.getElementById('signup-password').value;
+  document.getElementById('signup-error').classList.remove('show');
+
+  if (!first || !email || !pass) { showModalError('signup', 'Please fill in all required fields.'); return; }
+  if (pass.length < 6)           { showModalError('signup', 'Password must be at least 6 characters.'); return; }
+  if (userStore[email])          { showModalError('signup', 'An account with this email already exists. Sign in instead.'); return; }
+
+  const user = { email, firstName: first, lastName: last, team, password: pass };
+  userStore[email] = user;
+  saveUsers();
+
+  currentUser = user;
+  saveSession(user);
+  updateNavAuth();
+  showModalSuccess('signup', `Account created! Welcome, ${first}!`);
+  setTimeout(() => {
+    closeLoginModal();
+    showToast(`Account created! Welcome to Sunday GVB, ${first}! 🏐`);
+    if (pendingSection) { const s = pendingSection; pendingSection = null; showSection(s); }
+  }, 1200);
+}
+
+// ── STANDINGS ENGINE ──────────────────────────────────────────
+const TEAM_COLORS = {
+  'The Blockers':  '#4DB8D4',
+  'Spike Squad':   '#E8A820',
+  'Net Ninjas':    '#E8502A',
+  'Volley Llamas': '#7B68EE',
+  'Dig Dug FC':    '#3CB371',
+  'Block Party':   '#FF7F50',
+};
+
+function computeStandings(scores) {
+  const teams = {};
+
+  const ensure = name => {
+    if (!teams[name]) teams[name] = { name, gp:0, w:0, l:0, pf:0, pa:0, results:[], homeW:0, awayW:0, games:[] };
+  };
+
+  scores.forEach(s => {
+    const h = parseInt(s.homeScore), a = parseInt(s.awayScore);
+    if (isNaN(h) || isNaN(a)) return;
+    ensure(s.homeTeam); ensure(s.awayTeam);
+    const ht = teams[s.homeTeam], at = teams[s.awayTeam];
+    ht.gp++; at.gp++;
+    ht.pf += h; ht.pa += a;
+    at.pf += a; at.pa += h;
+    ht.games.push(s); at.games.push(s);
+    if (h > a) {
+      ht.w++; at.l++;
+      ht.results.push('W'); at.results.push('L');
+      ht.homeW++;
+    } else {
+      at.w++; ht.l++;
+      at.results.push('W'); ht.results.push('L');
+      at.awayW++;
+    }
+  });
+
+  return Object.values(teams).sort((a, b) => {
+    const pa = a.gp ? a.w/a.gp : 0;
+    const pb = b.gp ? b.w/b.gp : 0;
+    if (pb !== pa) return pb - pa;
+    return (b.pf - b.pa) - (a.pf - a.pa);
+  });
+}
+
+function getStreak(results) {
+  if (!results.length) return { type: '—', count: 0 };
+  const last = results[results.length - 1];
+  let count = 0;
+  for (let i = results.length - 1; i >= 0; i--) {
+    if (results[i] === last) count++; else break;
+  }
+  return { type: last, count };
+}
+
+function renderStandings() {
+  const allScores = [...localScores, ...sampleScores];
+  const standings = computeStandings(allScores);
+
+  // Mini stat cards
+  const totalGames = allScores.length;
+  const teams      = standings.length;
+  const topTeam    = standings[0]?.name || '—';
+  const totalPts   = allScores.reduce((s, g) => s + parseInt(g.homeScore||0) + parseInt(g.awayScore||0), 0);
+  document.getElementById('standings-mini-stats').innerHTML = [
+    { num: teams,      label: 'Teams'        },
+    { num: totalGames, label: 'Games Played' },
+    { num: totalPts,   label: 'Points Scored'},
+    { num: topTeam,    label: 'League Leader'},
+  ].map(s => `<div class="stat-card-mini"><div class="scm-num">${s.num}</div><div class="scm-label">${s.label}</div></div>`).join('');
+
+  // Standings table
+  document.getElementById('standings-body').innerHTML = standings.map((t, i) => {
+    const rank    = i + 1;
+    const pct     = t.gp ? (t.w / t.gp) : 0;
+    const diff    = t.pf - t.pa;
+    const streak  = getStreak(t.results);
+    const color   = TEAM_COLORS[t.name] || '#8A8070';
+    const rankCls = rank <= 3 ? `rank-${rank}` : 'rank-n';
+    const diffStr = diff > 0 ? `+${diff}` : `${diff}`;
+    const streakHtml = streak.count
+      ? `<span class="streak-badge streak-${streak.type.toLowerCase()}">${streak.type}${streak.count}</span>`
+      : '—';
+    return `<tr>
+      <td><span class="rank-badge ${rankCls}">${rank}</span></td>
+      <td><div class="team-name-cell"><span class="team-dot" style="background:${color}"></span>${t.name}</div></td>
+      <td>${t.gp}</td>
+      <td class="win-cell">${t.w}</td>
+      <td class="lose-cell">${t.l}</td>
+      <td>${t.pf}</td>
+      <td>${t.pa}</td>
+      <td style="font-weight:600;color:${diff>=0?'#1a7a3e':'var(--coral)'}">${diffStr}</td>
+      <td>
+        ${(pct*100).toFixed(0)}%
+        <div class="pct-bar-wrap"><div class="pct-bar" style="width:${pct*100}%;background:${color}"></div></div>
+      </td>
+      <td>${streakHtml}</td>
+    </tr>`;
+  }).join('');
+
+  // Team stats table
+  document.getElementById('teamstats-body').innerHTML = standings.map(t => {
+    const avgPF = t.gp ? (t.pf/t.gp).toFixed(1) : '—';
+    const avgPA = t.gp ? (t.pa/t.gp).toFixed(1) : '—';
+    const color = TEAM_COLORS[t.name] || '#8A8070';
+    // best win = largest margin where team won
+    let bestWin = '—', worstLoss = '—';
+    t.games.forEach(g => {
+      const h = parseInt(g.homeScore), a = parseInt(g.awayScore);
+      const isHome = g.homeTeam === t.name;
+      const myScore = isHome ? h : a, oppScore = isHome ? a : h;
+      if (myScore > oppScore) {
+        if (bestWin === '—' || (myScore - oppScore) > bestWin) bestWin = myScore - oppScore;
+      } else {
+        const margin = oppScore - myScore;
+        if (worstLoss === '—' || margin > worstLoss) worstLoss = margin;
+      }
+    });
+    return `<tr>
+      <td><div class="team-name-cell"><span class="team-dot" style="background:${color}"></span>${t.name}</div></td>
+      <td>${avgPF}</td>
+      <td>${avgPA}</td>
+      <td>${bestWin !== '—' ? '+' + bestWin : '—'}</td>
+      <td>${worstLoss !== '—' ? '-' + worstLoss : '—'}</td>
+      <td class="win-cell">${t.homeW}</td>
+      <td class="win-cell">${t.awayW}</td>
+    </tr>`;
+  }).join('');
+
+  // Populate H2H selects
+  const teamNames = standings.map(t => t.name);
+  ['h2h-a','h2h-b'].forEach((id, idx) => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = teamNames.map((n,i) => `<option ${i===idx?'selected':''}>${n}</option>`).join('');
+  });
+  renderH2H();
+}
+
+function renderH2H() {
+  const a = document.getElementById('h2h-a')?.value;
+  const b = document.getElementById('h2h-b')?.value;
+  const el = document.getElementById('h2h-result');
+  if (!el || !a || !b || a === b) {
+    if (el) el.innerHTML = '<p style="color:var(--muted)">Select two different teams.</p>';
+    return;
+  }
+  const allScores = [...localScores, ...sampleScores];
+  const matchups = allScores.filter(s =>
+    (s.homeTeam === a && s.awayTeam === b) || (s.homeTeam === b && s.awayTeam === a)
+  );
+  if (!matchups.length) {
+    el.innerHTML = `<p style="color:var(--muted)">No games played between <strong>${a}</strong> and <strong>${b}</strong> yet.</p>`;
+    return;
+  }
+  let aW = 0, bW = 0;
+  const rows = matchups.map(s => {
+    const h = parseInt(s.homeScore), av = parseInt(s.awayScore);
+    const aIsHome = s.homeTeam === a;
+    const aScore = aIsHome ? h : av, bScore = aIsHome ? av : h;
+    if (aScore > bScore) aW++; else bW++;
+    const d = s.gameDate ? new Date(s.gameDate + 'T12:00:00').toLocaleDateString('en-CA',{month:'short',day:'numeric'}) : '—';
+    return `<tr>
+      <td>${d}</td>
+      <td class="${aScore>bScore?'win-cell':'lose-cell'}">${a}</td>
+      <td><span class="score-pill">${aScore} – ${bScore}</span></td>
+      <td class="${bScore>aScore?'win-cell':'lose-cell'}">${b}</td>
+    </tr>`;
+  }).join('');
+  const colorA = TEAM_COLORS[a] || '#8A8070', colorB = TEAM_COLORS[b] || '#8A8070';
+  el.innerHTML = `
+    <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <div style="text-align:center;flex:1;min-width:120px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:${colorA};line-height:1">${aW}</div>
+        <div style="font-weight:600">${a}</div>
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--muted)">VS</div>
+      <div style="text-align:center;flex:1;min-width:120px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:${colorB};line-height:1">${bW}</div>
+        <div style="font-weight:600">${b}</div>
+      </div>
+    </div>
+    <table class="scores-table">
+      <thead><tr><th>Date</th><th>${a}</th><th>Score</th><th>${b}</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function switchStandingsTab(tab) {
+  ['table','teamstats','h2h'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
+    document.getElementById('pill-' + t).classList.toggle('active', t === tab);
+  });
+}
+
+// ── ADMIN ─────────────────────────────────────────────────────
+const ADMIN_EMAIL    = 'admin@sundayguelphvb.com';
+const ADMIN_PASSWORD = 'admin2026';
+
+// In-session lists (populated when players register/signup in this session)
+const sessionRegistered = []; // {firstName, lastName, email, position, skill, season, timestamp}
+const sessionPickup     = []; // {firstName, lastName, email, position, date, timestamp}
+const sentLog           = [];
+
+let selectedAudiences = new Set(['registered']);
+
+function isAdmin() {
+  return currentUser && currentUser.email === ADMIN_EMAIL;
+}
+
+function requireAdmin() {
+  if (isAdmin()) {
+    showSection('admin');
+  } else {
+    pendingSection = 'admin';
+    openLoginModal();
+  }
+}
+
+function renderAdminUI() {
+  const gate = document.getElementById('admin-gate');
+  const ui   = document.getElementById('admin-ui');
+  if (!gate || !ui) return;
+  if (isAdmin()) {
+    gate.style.display = 'none';
+    ui.style.display   = 'block';
+    document.getElementById('admin-greeting').textContent = `Welcome, ${currentUser.firstName || 'Admin'}`;
+    refreshAdminData();
+  } else {
+    gate.style.display = 'block';
+    ui.style.display   = 'none';
+  }
+}
+
+function refreshAdminData() {
+  // Badge counts — guard against elements not existing yet
+  const bp = document.getElementById('badge-players');
+  const bpu = document.getElementById('badge-pickup');
+  const arc = document.getElementById('aud-reg-count');
+  const apc = document.getElementById('aud-pu-count');
+  if (bp)  bp.textContent  = sessionRegistered.length;
+  if (bpu) bpu.textContent = sessionPickup.length;
+  if (arc) arc.textContent = sessionRegistered.length;
+  if (apc) apc.textContent = sessionPickup.length;
+
+  renderRecipientPreview();
+  renderPlayerTable();
+  renderPickupTable();
+}
+
+function switchAdminTab(tab) {
+  ['email','scores','teams','players','pickup','schedule-mgr'].forEach(t => {
+    document.getElementById('apanel-' + t)?.classList.toggle('active', t === tab);
+    document.getElementById('anav-'   + t)?.classList.toggle('active', t === tab);
+  });
+  if (tab === 'teams')        renderTeamAssignUI();
+  if (tab === 'schedule-mgr') renderScheduleMgr();
+  if (tab === 'pickup')       renderPickupAdminTab();
+}
+
+// ── AUDIENCE SELECTOR ────────────────────────────────────────
+function toggleAudience(type) {
+  if (type === 'all') {
+    selectedAudiences = new Set(['registered', 'pickup']);
+    ['registered','pickup','all'].forEach(t => {
+      document.getElementById('aud-' + t).classList.toggle('selected', true);
+    });
+  } else {
+    document.getElementById('aud-all').classList.remove('selected');
+    if (selectedAudiences.has(type)) {
+      selectedAudiences.delete(type);
+      document.getElementById('aud-' + type).classList.remove('selected');
+    } else {
+      selectedAudiences.add(type);
+      document.getElementById('aud-' + type).classList.add('selected');
+    }
+    // Sync "all" button state
+    const allSelected = selectedAudiences.has('registered') && selectedAudiences.has('pickup');
+    document.getElementById('aud-all').classList.toggle('selected', allSelected);
+  }
+  renderRecipientPreview();
+}
+
+function getRecipients() {
+  const list = [];
+  if (selectedAudiences.has('registered')) list.push(...sessionRegistered.map(r => ({ ...r, _type: 'registered' })));
+  if (selectedAudiences.has('pickup'))     list.push(...sessionPickup.map(r => ({ ...r, _type: 'pickup' })));
+  // Deduplicate by email
+  const seen = new Set();
+  return list.filter(r => { if (seen.has(r.email)) return false; seen.add(r.email); return true; });
+}
+
+function renderRecipientPreview() {
+  const recipients = getRecipients();
+  const preview    = document.getElementById('recipient-preview');
+  const meta       = document.getElementById('send-meta');
+  if (!preview || !meta) return;
+  if (!recipients.length) {
+    preview.innerHTML = `<span style="color:var(--muted);font-style:italic;">No recipients — register some players first, then select an audience above.</span>`;
+    meta.textContent  = '0 recipients selected';
+    return;
+  }
+  const MAX_SHOW = 8;
+  const shown    = recipients.slice(0, MAX_SHOW);
+  const extra    = recipients.length - MAX_SHOW;
+  preview.innerHTML = shown.map(r => {
+    const color = r._type === 'registered' ? '#0a7a9a' : '#8a6200';
+    const dot   = r._type === 'registered' ? '#4DB8D4' : '#E8A820';
+    return `<span class="recipient-tag"><span class="rt-dot" style="background:${dot}"></span>${r.firstName} ${r.lastName} &lt;${r.email}&gt;</span>`;
+  }).join('') + (extra > 0 ? `<span style="color:var(--muted);font-size:.78rem;margin-left:.3rem;">+${extra} more</span>` : '');
+  meta.textContent = `${recipients.length} recipient${recipients.length !== 1 ? 's' : ''} selected`;
+}
+
+// ── TEMPLATES ────────────────────────────────────────────────
+const EMAIL_TEMPLATES = {
+  reminder: {
+    subject: '🏐 Sunday Game Reminder – This Weekend!',
+    body: `Hi [First Name],
+
+Just a reminder that your Sunday Guelph Volleyball game is coming up this weekend!
+
+📅 Date: [Game Date]
+🕐 Time: [Time]
+📍 Location: [Location]
+
+Please arrive 10 minutes early to warm up. Make sure to bring your indoor shoes and water bottle.
+
+See you on the court!
+
+— The Sunday GVB Team
+www.sundayguelphvb.com`
+  },
+  cancel: {
+    subject: '⚠️ Sunday Game Cancellation Notice',
+    body: `Hi [First Name],
+
+Unfortunately we need to cancel this Sunday's game at [Location].
+
+📅 Cancelled Date: [Game Date]
+
+We apologize for the inconvenience. We'll be in touch with a makeup date as soon as possible.
+
+Thank you for your understanding.
+
+— The Sunday GVB Team`
+  },
+  standings: {
+    subject: '🏆 Updated League Standings – Winter 2026',
+    body: `Hi [First Name],
+
+The latest league standings have been updated for the Winter 2026 season!
+
+Head over to the website to check out where your team sits in the rankings, view head-to-head records, and track team stats.
+
+👉 Visit: www.sundayguelphvb.com → Standings
+
+Keep up the great play!
+
+— The Sunday GVB Team`
+  },
+  welcome: {
+    subject: '🎉 Welcome to Sunday Guelph Volleyball!',
+    body: `Hi [First Name],
+
+Welcome to Sunday Guelph Volleyball! We're thrilled to have you join us.
+
+Here's what to expect:
+• Games every Sunday, 1:00 PM – 6:00 PM
+• 6v6 competitive co-ed format
+• 3 games per session
+• Location: GCVI, Guelph
+
+Your schedule and team assignment will be sent out shortly. In the meantime, check out the website for standings, scores, and pick-up sessions.
+
+See you on the court!
+
+— The Sunday GVB Team`
+  },
+  clear: { subject: '', body: '' }
+};
+
+function applyTemplate(key) {
+  const t = EMAIL_TEMPLATES[key];
+  document.getElementById('email-subject').value = t.subject;
+  document.getElementById('email-body').value    = t.body;
+}
+
+function insertSnippet(snippet) {
+  const ta  = document.getElementById('email-body');
+  const pos = ta.selectionStart;
+  const val = ta.value;
+  ta.value  = val.slice(0, pos) + snippet + val.slice(ta.selectionEnd);
+  ta.selectionStart = ta.selectionEnd = pos + snippet.length;
+  ta.focus();
+}
+
+// ── PREVIEW ────────────────────────────────────────────────────
+function previewEmail() {
+  const subject    = document.getElementById('email-subject').value.trim();
+  const body       = document.getElementById('email-body').value.trim();
+  const recipients = getRecipients();
+  if (!subject || !body) { showToast('Please enter a subject and message first.', false); return; }
+  // Personalise with first recipient for preview
+  const sample = recipients[0] || { firstName: '[First Name]', lastName: '[Last Name]', email: 'player@example.com' };
+  const personalise = str => str.replace(/\[First Name\]/g, sample.firstName).replace(/\[Last Name\]/g, sample.lastName);
+  document.getElementById('preview-subject').textContent = personalise(subject);
+  document.getElementById('preview-body').textContent    = personalise(body);
+  document.getElementById('preview-count').textContent   = recipients.length
+    ? `This email will be sent to ${recipients.length} recipient${recipients.length !== 1 ? 's' : ''}.`
+    : 'No recipients selected.';
+  document.getElementById('email-preview-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEmailPreview() {
+  document.getElementById('email-preview-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── SEND ──────────────────────────────────────────────────────
+async function sendEmail() {
+  const subject    = document.getElementById('email-subject').value.trim();
+  const body       = document.getElementById('email-body').value.trim();
+  const recipients = getRecipients();
+
+  if (!subject)           { showToast('Please enter a subject line.', false); return; }
+  if (!body)              { showToast('Please write a message.', false); return; }
+  if (!recipients.length) { showToast('No recipients selected. Register some players first.', false); return; }
+
+  const btn = document.getElementById('send-btn');
+  btn.disabled    = true;
+  btn.innerHTML   = `<span class="spinner"></span> Sending…`;
+
+  // Simulate sending (in production, POST to your Google Apps Script or email API)
+  await new Promise(r => setTimeout(r, 1200));
+
+  // Log it
+  const entry = {
+    timestamp:  new Date().toLocaleString(),
+    subject,
+    count:      recipients.length,
+    audiences:  [...selectedAudiences].join(', '),
+    recipients: recipients.map(r => `${r.firstName} ${r.lastName} <${r.email}>`),
+  };
+  sentLog.unshift(entry);
+  renderSentLog();
+
+  showToast(`✉️ Email sent to ${recipients.length} recipient${recipients.length !== 1 ? 's' : ''}!`);
+
+  // Reset form
+  document.getElementById('email-subject').value = '';
+  document.getElementById('email-body').value    = '';
+  btn.disabled  = false;
+  btn.innerHTML = '✉️ Send Email';
+}
+
+function renderSentLog() {
+  const card = document.getElementById('sent-log-card');
+  const log  = document.getElementById('sent-log');
+  if (!sentLog.length) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  log.innerHTML = sentLog.map(e => `
+    <div style="padding:.9rem 0;border-bottom:1px solid var(--border);display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
+      <div style="flex:1;min-width:180px;">
+        <div style="font-weight:600;font-size:.9rem;">${e.subject}</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.2rem;">${e.timestamp} · ${e.audiences}</div>
+      </div>
+      <span style="background:rgba(26,122,62,.1);color:#1a7a3e;font-size:.75rem;font-weight:700;padding:.2rem .6rem;border-radius:10px;white-space:nowrap;">✓ ${e.count} sent</span>
+    </div>
+  `).join('');
+}
+
+// ── PLAYER TABLES ─────────────────────────────────────────────
+function renderPlayerTable() {
+  const tbody = document.getElementById('reg-player-body');
+  if (!tbody) return;
+  if (!sessionRegistered.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);font-style:italic;padding:1.5rem;">No registrations yet this session.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = sessionRegistered.map(p => `<tr>
+    <td><strong>${p.firstName} ${p.lastName}</strong></td>
+    <td>${p.email}</td>
+    <td>${p.position || '—'}</td>
+    <td>${p.skill || '—'}</td>
+    <td>${p.season || '—'}</td>
+    <td style="font-size:.78rem;color:var(--muted);">${new Date(p.timestamp).toLocaleDateString()}</td>
+  </tr>`).join('');
+}
+
+function renderPickupTable() {
+  const tbody = document.getElementById('pickup-player-body');
+  if (!tbody) return;
+  if (!sessionPickup.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:1.5rem;">No pick-up signups yet this session.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = sessionPickup.map(p => `<tr>
+    <td><strong>${p.firstName} ${p.lastName}</strong></td>
+    <td>${p.email}</td>
+    <td>${p.position || '—'}</td>
+    <td>${p.date || '—'}</td>
+    <td style="font-size:.78rem;color:var(--muted);">${new Date(p.timestamp).toLocaleDateString()}</td>
+  </tr>`).join('');
+}
+
+// Hook into registration + pickup submit to capture session data for admin lists
+
+// Patch submitRegistration to also save to admin session list
+const _baseSubmitRegistration = submitRegistration;
+submitRegistration = async function() {
+  const snapshot = {
+    firstName: val('reg-first'), lastName: val('reg-last'),
+    email: val('reg-email'),     position: val('reg-position'),
+    skill: val('reg-skill'),     season: val('reg-season'),
+    timestamp: new Date().toISOString()
+  };
+  await _baseSubmitRegistration.apply(this, arguments);
+  // Only save if all required fields were filled (form didn't bail early)
+  if (snapshot.firstName && snapshot.lastName && snapshot.email && snapshot.position && snapshot.skill) {
+    // Avoid duplicates within same session
+    if (!sessionRegistered.find(p => p.email === snapshot.email)) {
+      sessionRegistered.push(snapshot);
+    }
+    if (isAdmin()) refreshAdminData();
+  }
+};
+
+// Patch submitPickup to also save to admin session list
+const _baseSubmitPickup = submitPickup;
+submitPickup = async function() {
+  const snapshot = {
+    firstName: val('pu-first'), lastName: val('pu-last'),
+    email: val('pu-email'),     date: val('pu-date'),
+    position: val('pu-position'), timestamp: new Date().toISOString()
+  };
+  await _baseSubmitPickup.apply(this, arguments);
+  if (snapshot.firstName && snapshot.lastName && snapshot.email && snapshot.date && snapshot.position) {
+    sessionPickup.push(snapshot);
+    // Auto-increment the matching session's spots count
+    const sessionLabel = snapshot.date; // e.g. "May 18, 2026 – 1:00–3:00 PM"
+    const match = pickupData.find(p => sessionLabel.startsWith(p.date));
+    if (match && match.spots < match.max) {
+      match.spots++;
+      savePickupSessions();
+      renderPickup();
+      renderPickupSessionAdmin();
+      syncPickupDateDropdown();
+    }
+    if (isAdmin()) refreshAdminData();
+  }
+};
+
+
 
 // ── HERO SLIDESHOW ───────────────────────────────────────────
 let currentSlide = 0;
@@ -1162,6 +3690,107 @@ function showToast(msg, success = true) {
   setTimeout(() => t.classList.remove('show'), 4000);
 }
 
+// ── BOT PROTECTION ───────────────────────────────────────────
+// Three layers: honeypot, time-based check, and per-email rate limiting
+
+const BOT_MIN_SECONDS   = 3;     // form must be open at least this long
+const BOT_RATE_WINDOW   = 10 * 60 * 1000; // 10-minute window
+const BOT_MAX_SUBMITS   = 2;     // max submissions per email per window
+const BOT_GLOBAL_LIMIT  = 10;    // max total submissions per window from this browser
+
+function stampFormLoad() {
+  // Record the moment each form section was shown
+  const now = Date.now();
+  const regEl = document.getElementById('reg-load-time');
+  const puEl  = document.getElementById('pu-load-time');
+  if (regEl && !regEl.value) regEl.value = now;
+  if (puEl  && !puEl.value)  puEl.value  = now;
+}
+
+function resetFormStamp(formId) {
+  const el = document.getElementById(formId + '-load-time');
+  if (el) el.value = Date.now();
+}
+
+function showBotWarning(formPrefix, msg) {
+  const el = document.getElementById(formPrefix + '-bot-warning');
+  const msgEl = document.getElementById(formPrefix + '-bot-msg');
+  if (el)    el.classList.add('show');
+  if (msgEl) msgEl.textContent = msg;
+}
+
+function hideBotWarning(formPrefix) {
+  const el = document.getElementById(formPrefix + '-bot-warning');
+  if (el) el.classList.remove('show');
+}
+
+function getSubmitLog() {
+  try { return JSON.parse(sessionStorage.getItem('gvb_submit_log') || '[]'); } catch(e) { return []; }
+}
+
+function saveSubmitLog(log) {
+  try { sessionStorage.setItem('gvb_submit_log', JSON.stringify(log)); } catch(e) {}
+}
+
+function pruneOldSubmits(log) {
+  const cutoff = Date.now() - BOT_RATE_WINDOW;
+  return log.filter(e => e.ts > cutoff);
+}
+
+/**
+ * Run all bot checks for a form submission.
+ * @param {string} formPrefix  - 'reg' or 'pu'
+ * @param {string} email       - submitted email address
+ * @returns {boolean} true if clean, false if bot-like
+ */
+function botCheck(formPrefix, email) {
+  hideBotWarning(formPrefix);
+
+  // 1. Honeypot check
+  const hp = document.getElementById(formPrefix + '-hp');
+  if (hp && hp.value.trim() !== '') {
+    // Bot filled in the hidden field — silently succeed (don't tell bots they failed)
+    console.warn('[BotProtection] Honeypot triggered on', formPrefix);
+    return false;
+  }
+
+  // 2. Time-based check — form must have been open at least BOT_MIN_SECONDS
+  const loadEl = document.getElementById(formPrefix + '-load-time');
+  const loadTime = loadEl ? parseInt(loadEl.value) : 0;
+  const elapsed = (Date.now() - loadTime) / 1000;
+  if (loadTime && elapsed < BOT_MIN_SECONDS) {
+    showBotWarning(formPrefix, `Please take a moment to review your details before submitting. (Too fast! 🤖)`);
+    return false;
+  }
+
+  // 3. Per-email rate limit
+  let log = pruneOldSubmits(getSubmitLog());
+  const emailSubmits = log.filter(e => e.email === email.toLowerCase()).length;
+  if (emailSubmits >= BOT_MAX_SUBMITS) {
+    const waitMins = Math.ceil(BOT_RATE_WINDOW / 60000);
+    showBotWarning(formPrefix, `This email has been used ${emailSubmits} times recently. Please wait ${waitMins} minutes before submitting again.`);
+    return false;
+  }
+
+  // 4. Global browser submission rate limit
+  const totalSubmits = log.length;
+  if (totalSubmits >= BOT_GLOBAL_LIMIT) {
+    showBotWarning(formPrefix, `Too many form submissions from this browser. Please wait a few minutes and try again.`);
+    return false;
+  }
+
+  // All checks passed — record this submission
+  log.push({ ts: Date.now(), email: email.toLowerCase(), form: formPrefix });
+  saveSubmitLog(log);
+
+  // Reset the load-time stamp so the same person can't immediately submit again
+  resetFormStamp(formPrefix);
+  return true;
+}
+
+// Stamp form load times when sections become visible
+const _origShowSection = showSection;
+
 // ── POST TO GOOGLE SHEETS (via Apps Script) ──────────────────
 async function postToSheets(endpoint, data) {
   // Check if the user has set up their Google Sheets endpoint
@@ -1189,8 +3818,40 @@ function val(id) { return document.getElementById(id)?.value?.trim() || ''; }
 
 // ── REGISTRATION ─────────────────────────────────────────────
 async function submitRegistration() {
-  const first = val('reg-first'), last = val('reg-last'), email = val('reg-email');
-  if (!first || !last || !email) { showToast('Please fill in required fields.', false); return; }
+  const first    = val('reg-first');
+  const last     = val('reg-last');
+  const email    = val('reg-email');
+  const position = val('reg-position');
+  const skill    = val('reg-skill');
+
+  // Highlight missing required fields
+  const required = { 'reg-first': first, 'reg-last': last, 'reg-email': email, 'reg-position': position, 'reg-skill': skill };
+  let hasError = false;
+  Object.entries(required).forEach(([id, v]) => {
+    const el = document.getElementById(id);
+    if (!v) {
+      el.style.borderColor = 'var(--coral)';
+      el.style.boxShadow   = '0 0 0 3px rgba(232,80,42,.15)';
+      hasError = true;
+    } else {
+      el.style.borderColor = '';
+      el.style.boxShadow   = '';
+    }
+  });
+  if (hasError) { showToast('Please complete all required fields.', false); return; }
+
+  // Consent validation
+  const liabilityChecked = document.getElementById('reg-consent-liability')?.checked;
+  const contactChecked   = document.getElementById('reg-consent-contact')?.checked;
+  const liabilityErr     = document.getElementById('reg-consent-liability-err');
+  const contactErr       = document.getElementById('reg-consent-contact-err');
+  let consentError = false;
+  if (!liabilityChecked) { if (liabilityErr) liabilityErr.classList.add('show'); consentError = true; } else { if (liabilityErr) liabilityErr.classList.remove('show'); }
+  if (!contactChecked)   { if (contactErr)   contactErr.classList.add('show');   consentError = true; } else { if (contactErr)   contactErr.classList.remove('show'); }
+  if (consentError) { showToast('Please accept the required consent agreements to continue.', false); return; }
+
+  // Bot protection
+  if (!botCheck('reg', email)) return;
 
   setLoading('reg-btn', true);
   const data = {
@@ -1199,8 +3860,8 @@ async function submitRegistration() {
     lastName:   last,
     email:      email,
     phone:      val('reg-phone'),
-    position:   val('reg-position'),
-    skill:      val('reg-skill'),
+    position:   position,
+    skill:      skill,
     season:     val('reg-season'),
     referral:   val('reg-referral'),
     notes:      val('reg-notes'),
@@ -1211,6 +3872,15 @@ async function submitRegistration() {
     await postToSheets(SHEETS_ENDPOINTS.registration, data);
     showToast(`Welcome, ${first}! Your registration has been received.`);
     ['reg-first','reg-last','reg-email','reg-phone','reg-notes'].forEach(id => { document.getElementById(id).value = ''; });
+    ['reg-position','reg-skill'].forEach(id => { document.getElementById(id).selectedIndex = 0; });
+    ['reg-consent-liability','reg-consent-contact','reg-consent-photo'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.checked = false;
+    });
+    // Clear any red highlights
+    ['reg-first','reg-last','reg-email','reg-position','reg-skill'].forEach(id => {
+      const el = document.getElementById(id);
+      el.style.borderColor = ''; el.style.boxShadow = '';
+    });
   } catch(e) {
     showToast('Something went wrong. Please try again.', false);
   }
@@ -1221,8 +3891,40 @@ async function submitRegistration() {
 
 // ── PICKUP ────────────────────────────────────────────────────
 async function submitPickup() {
-  const first = val('pu-first'), last = val('pu-last'), email = val('pu-email');
-  if (!first || !last || !email) { showToast('Please fill in all fields.', false); return; }
+  const first    = val('pu-first');
+  const last     = val('pu-last');
+  const email    = val('pu-email');
+  const date     = val('pu-date');
+  const position = val('pu-position');
+
+  // Highlight missing required fields
+  const required = { 'pu-first': first, 'pu-last': last, 'pu-email': email, 'pu-date': date, 'pu-position': position };
+  let hasError = false;
+  Object.entries(required).forEach(([id, v]) => {
+    const el = document.getElementById(id);
+    if (!v) {
+      el.style.borderColor = 'var(--coral)';
+      el.style.boxShadow   = '0 0 0 3px rgba(232,80,42,.15)';
+      hasError = true;
+    } else {
+      el.style.borderColor = '';
+      el.style.boxShadow   = '';
+    }
+  });
+  if (hasError) { showToast('Please complete all required fields.', false); return; }
+
+  // Consent validation
+  const puLiabilityChecked = document.getElementById('pu-consent-liability')?.checked;
+  const puContactChecked   = document.getElementById('pu-consent-contact')?.checked;
+  const puLiabilityErr     = document.getElementById('pu-consent-liability-err');
+  const puContactErr       = document.getElementById('pu-consent-contact-err');
+  let puConsentError = false;
+  if (!puLiabilityChecked) { if (puLiabilityErr) puLiabilityErr.classList.add('show'); puConsentError = true; } else { if (puLiabilityErr) puLiabilityErr.classList.remove('show'); }
+  if (!puContactChecked)   { if (puContactErr)   puContactErr.classList.add('show');   puConsentError = true; } else { if (puContactErr)   puContactErr.classList.remove('show'); }
+  if (puConsentError) { showToast('Please accept the required consent agreements to continue.', false); return; }
+
+  // Bot protection
+  if (!botCheck('pu', email)) return;
 
   setLoading('pu-btn', true);
   const data = {
@@ -1230,8 +3932,8 @@ async function submitPickup() {
     firstName: first,
     lastName:  last,
     email:     email,
-    date:      val('pu-date'),
-    level:     val('pu-level'),
+    date:      date,
+    position:  position,
     type:      'pickup'
   };
 
@@ -1239,6 +3941,14 @@ async function submitPickup() {
     await postToSheets(SHEETS_ENDPOINTS.pickup, data);
     showToast(`You're in, ${first}! See you on the court.`);
     ['pu-first','pu-last','pu-email'].forEach(id => { document.getElementById(id).value = ''; });
+    ['pu-date','pu-position'].forEach(id => { document.getElementById(id).selectedIndex = 0; });
+    ['pu-consent-liability','pu-consent-contact'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.checked = false;
+    });
+    ['pu-first','pu-last','pu-email','pu-date','pu-position'].forEach(id => {
+      const el = document.getElementById(id);
+      el.style.borderColor = ''; el.style.boxShadow = '';
+    });
   } catch(e) {
     showToast('Something went wrong. Please try again.', false);
   }
@@ -1309,49 +4019,457 @@ const sampleScores = [
   { gameDate:'2026-04-20', homeTeam:'Volley Llamas',  homeScore:'22', awayTeam:'The Blockers',    awayScore:'25', court:'Court A – GCVI' },
 ];
 
-const pickupData = [
-  { date:'May 18, 2026', time:'1:00–3:00 PM', spots:8,  max:12 },
-  { date:'May 25, 2026', time:'1:00–3:00 PM', spots:11, max:12 },
-  { date:'June 1, 2026', time:'1:00–3:00 PM', spots:5,  max:12 },
-  { date:'June 8, 2026', time:'1:00–3:00 PM', spots:0,  max:12 },
+const DEFAULT_PICKUP = [
+  { id:'pu1', date:'May 18, 2026', dateISO:'2026-05-18', time:'1:00–3:00 PM', location:'GCVI Gym', spots:8,  max:12 },
+  { id:'pu2', date:'May 25, 2026', dateISO:'2026-05-25', time:'1:00–3:00 PM', location:'GCVI Gym', spots:11, max:12 },
+  { id:'pu3', date:'June 1, 2026', dateISO:'2026-06-01', time:'1:00–3:00 PM', location:'GCVI Gym', spots:5,  max:12 },
+  { id:'pu4', date:'June 8, 2026', dateISO:'2026-06-08', time:'1:00–3:00 PM', location:'GCVI Gym', spots:0,  max:12 },
 ];
 
-const scheduleData = [
+let pickupData = JSON.parse(localStorage.getItem('gvb_pickup_sessions') || 'null') || DEFAULT_PICKUP;
+
+function savePickupSessions() {
+  try { localStorage.setItem('gvb_pickup_sessions', JSON.stringify(pickupData)); } catch(e) {}
+}
+
+// ── SCHEDULE DATA (localStorage-backed) ──────────────────────
+const DEFAULT_SCHEDULE = [
   {
-    week: 'Week 17', date: 'May 18, 2026',
+    id: 'w17', week: 'Week 17', date: 'May 18, 2026', dateISO: '2026-05-18',
     games: [
-      { time:'1:00 PM', h:'The Blockers', a:'Net Ninjas',     court:'A' },
-      { time:'2:00 PM', h:'Spike Squad',  a:'Volley Llamas',  court:'B' },
-      { time:'3:00 PM', h:'Dig Dug FC',   a:'Block Party',    court:'A' },
-      { time:'4:00 PM', h:'Net Ninjas',   a:'Dig Dug FC',     court:'B' },
+      { id:'g1', time:'1:00 PM', h:'The Blockers', a:'Net Ninjas',    court:'A' },
+      { id:'g2', time:'2:00 PM', h:'Spike Squad',  a:'Volley Llamas', court:'B' },
+      { id:'g3', time:'3:00 PM', h:'Dig Dug FC',   a:'Block Party',   court:'A' },
+      { id:'g4', time:'4:00 PM', h:'Net Ninjas',   a:'Dig Dug FC',    court:'B' },
     ]
   },
   {
-    week: 'Week 16', date: 'May 11, 2026',
+    id: 'w16', week: 'Week 16', date: 'May 11, 2026', dateISO: '2026-05-11',
     games: [
-      { time:'1:00 PM', h:'Block Party',   a:'The Blockers', court:'A' },
-      { time:'2:00 PM', h:'Volley Llamas', a:'Net Ninjas',   court:'B' },
-      { time:'3:00 PM', h:'Dig Dug FC',    a:'Spike Squad',  court:'A' },
-      { time:'4:00 PM', h:'The Blockers',  a:'Volley Llamas',court:'B' },
+      { id:'g5', time:'1:00 PM', h:'Block Party',   a:'The Blockers',  court:'A' },
+      { id:'g6', time:'2:00 PM', h:'Volley Llamas', a:'Net Ninjas',    court:'B' },
+      { id:'g7', time:'3:00 PM', h:'Dig Dug FC',    a:'Spike Squad',   court:'A' },
+      { id:'g8', time:'4:00 PM', h:'The Blockers',  a:'Volley Llamas', court:'B' },
     ]
   },
 ];
+
+let scheduleData = JSON.parse(localStorage.getItem('gvb_schedule') || 'null') || DEFAULT_SCHEDULE;
+
+function saveSchedule() {
+  try { localStorage.setItem('gvb_schedule', JSON.stringify(scheduleData)); } catch(e) {}
+}
+
+function uid() { return 'id' + Date.now() + Math.random().toString(36).slice(2,6); }
+
+// Formats ISO date string to "Month D, YYYY"
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T12:00:00');
+  return d.toLocaleDateString('en-CA', { month:'long', day:'numeric', year:'numeric' });
+}
+
+// ── ADD / REMOVE WEEK ─────────────────────────────────────────
+function addScheduleWeek() {
+  const label = document.getElementById('sw-label')?.value.trim();
+  const dateV = document.getElementById('sw-date')?.value;
+  const labelEl = document.getElementById('sw-label');
+  const dateEl  = document.getElementById('sw-date');
+  let err = false;
+  if (!label) { if(labelEl){labelEl.style.borderColor='var(--coral)';} err=true; }
+  else { if(labelEl) labelEl.style.borderColor=''; }
+  if (!dateV) { if(dateEl){dateEl.style.borderColor='var(--coral)';} err=true; }
+  else { if(dateEl) dateEl.style.borderColor=''; }
+  if (err) { showToast('Please enter a week label and date.', false); return; }
+
+  scheduleData.unshift({ id: uid(), week: label, date: fmtDate(dateV), dateISO: dateV, games: [] });
+  saveSchedule();
+  if(labelEl) labelEl.value = '';
+  if(dateEl)  dateEl.value  = '';
+  showToast(`"${label}" added to the schedule!`);
+  renderSchedule();
+  renderScheduleMgr();
+}
+
+function deleteScheduleWeek(weekId) {
+  const w = scheduleData.find(w => w.id === weekId);
+  if (!w || !confirm(`Delete "${w.week} – ${w.date}"? All games in this week will be removed.`)) return;
+  scheduleData = scheduleData.filter(w => w.id !== weekId);
+  saveSchedule();
+  showToast(`Week deleted.`);
+  renderSchedule();
+  renderScheduleMgr();
+}
+
+// ── SCHEDULE MANAGER RENDER ───────────────────────────────────
+const openWeeks = new Set(); // track which week accordions are open
+
+function renderScheduleMgr() {
+  const list = document.getElementById('schedule-mgr-list');
+  if (!list) return;
+
+  if (!scheduleData.length) {
+    list.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted);font-style:italic;">No weeks yet — add one above.</div>`;
+    return;
+  }
+
+  list.innerHTML = scheduleData.map(w => {
+    const isOpen = openWeeks.has(w.id);
+    const teamOptions = teamsData.map(t => t.name);
+
+    const gameRows = w.games.map(g => buildGameRow(w.id, g, teamOptions)).join('');
+
+    return `
+      <div class="schedule-week-mgr" id="swm-${w.id}">
+        <div class="swm-header" onclick="toggleWeekAccordion('${w.id}')">
+          <div class="swm-header-text">
+            <div class="swm-week">${w.week}</div>
+            <div class="swm-date">${w.date} · ${w.games.length} game${w.games.length!==1?'s':''}</div>
+          </div>
+          <div class="swm-actions" onclick="event.stopPropagation()">
+            <button class="swm-icon-btn" onclick="startEditWeekHeader('${w.id}')" title="Edit week name & date">✏️</button>
+            <button class="swm-icon-btn del" onclick="deleteScheduleWeek('${w.id}')" title="Delete week">🗑️</button>
+          </div>
+          <span class="swm-chevron ${isOpen?'open':''}">▼</span>
+        </div>
+        <div class="swm-body ${isOpen?'open':''}" id="swmbody-${w.id}">
+          <div id="swm-week-edit-${w.id}"></div>
+          <div id="swm-games-${w.id}">
+            ${gameRows}
+          </div>
+          ${buildAddGameRow(w.id, teamOptions)}
+          <div class="swm-save-bar">
+            <button class="btn btn-primary" style="font-size:.85rem;padding:.5rem 1.2rem;" onclick="saveWeekEdits('${w.id}')">💾 Save Week</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function buildGameRow(weekId, g, teamOptions) {
+  const opts = teamOptions.length
+    ? teamOptions.map(n => `<option${n===g.h?' selected':''}>${n}</option>`).join('')
+    : `<option>${g.h}</option>`;
+  const optsA = teamOptions.length
+    ? teamOptions.map(n => `<option${n===g.a?' selected':''}>${n}</option>`).join('')
+    : `<option>${g.a}</option>`;
+  return `
+    <div class="game-row-mgr" id="grow-${g.id}" data-gid="${g.id}">
+      <input class="time-input" type="text" value="${g.time}" placeholder="1:00 PM" data-field="time" style="font-family:'DM Mono',monospace;font-size:.78rem;">
+      <div class="teams-vs-wrap">
+        <select data-field="h">${opts}</select>
+        <div class="game-vs-label">vs</div>
+        <select data-field="a">${optsA}</select>
+      </div>
+      <select class="court-input" data-field="court" style="width:70px;">
+        <option${g.court==='A'?' selected':''}>A</option>
+        <option${g.court==='B'?' selected':''}>B</option>
+        <option${g.court==='C'?' selected':''}>C</option>
+        <option${g.court==='D'?' selected':''}>D</option>
+      </select>
+      <button class="btn-del-game del-btn-col" onclick="deleteGame('${weekId}','${g.id}')" title="Remove game">✕</button>
+    </div>`;
+}
+
+function buildAddGameRow(weekId, teamOptions) {
+  const firstTeam  = teamOptions[0] || '';
+  const secondTeam = teamOptions[1] || '';
+  const opts  = teamOptions.map((n,i) => `<option${i===0?' selected':''}>${n}</option>`).join('');
+  const optsA = teamOptions.map((n,i) => `<option${i===1?' selected':''}>${n}</option>`).join('');
+  return `
+    <div class="add-game-row">
+      <div class="form-group" style="flex:0 0 90px;">
+        <label>Time</label>
+        <input type="text" id="ng-time-${weekId}" placeholder="5:00 PM" value="" style="padding:.4rem .6rem;border:1.5px solid var(--border);border-radius:7px;font-family:'DM Mono',monospace;font-size:.8rem;background:var(--sand);width:100%;outline:none;">
+      </div>
+      <div class="form-group" style="flex:1;min-width:120px;">
+        <label>Home Team</label>
+        <select id="ng-h-${weekId}" style="padding:.4rem .6rem;border:1.5px solid var(--border);border-radius:7px;font-size:.82rem;background:var(--sand);width:100%;outline:none;">${opts||`<option value="">Enter team name</option>`}</select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:120px;">
+        <label>Away Team</label>
+        <select id="ng-a-${weekId}" style="padding:.4rem .6rem;border:1.5px solid var(--border);border-radius:7px;font-size:.82rem;background:var(--sand);width:100%;outline:none;">${optsA||`<option value="">Enter team name</option>`}</select>
+      </div>
+      <div class="form-group" style="flex:0 0 70px;">
+        <label>Court</label>
+        <select id="ng-court-${weekId}" style="padding:.4rem .6rem;border:1.5px solid var(--border);border-radius:7px;font-size:.82rem;background:var(--sand);width:100%;outline:none;">
+          <option>A</option><option>B</option><option>C</option><option>D</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:0 0 auto;padding-top:1.4rem;">
+        <button class="btn btn-sky" style="font-size:.82rem;padding:.45rem .9rem;" onclick="addGameToWeek('${weekId}')">+ Add Game</button>
+      </div>
+    </div>`;
+}
+
+function toggleWeekAccordion(weekId) {
+  if (openWeeks.has(weekId)) openWeeks.delete(weekId);
+  else openWeeks.add(weekId);
+  renderScheduleMgr();
+}
+
+function startEditWeekHeader(weekId) {
+  const w   = scheduleData.find(w => w.id === weekId);
+  if (!w) return;
+  openWeeks.add(weekId);
+  const editDiv = document.getElementById('swm-week-edit-' + weekId);
+  if (!editDiv) { renderScheduleMgr(); return; }
+  editDiv.innerHTML = `
+    <div class="swm-edit-header">
+      <input id="ewhLabel-${weekId}" type="text" value="${w.week}" placeholder="Week label" maxlength="20"
+        onkeydown="if(event.key==='Enter')saveWeekHeader('${weekId}')">
+      <input id="ewhDate-${weekId}"  type="date"  value="${w.dateISO||''}"
+        onkeydown="if(event.key==='Enter')saveWeekHeader('${weekId}')">
+      <button class="btn btn-primary" style="font-size:.82rem;padding:.45rem .9rem;" onclick="saveWeekHeader('${weekId}')">Save</button>
+      <button class="btn btn-outline"  style="font-size:.82rem;padding:.45rem .8rem;" onclick="cancelWeekHeader('${weekId}')">Cancel</button>
+    </div>`;
+  document.getElementById('ewhLabel-' + weekId)?.focus();
+}
+
+function saveWeekHeader(weekId) {
+  const w     = scheduleData.find(w => w.id === weekId);
+  const label = document.getElementById('ewhLabel-' + weekId)?.value.trim();
+  const dateV = document.getElementById('ewhDate-'  + weekId)?.value;
+  if (!w) return;
+  if (label) w.week = label;
+  if (dateV) { w.dateISO = dateV; w.date = fmtDate(dateV); }
+  saveSchedule();
+  showToast('Week updated.');
+  renderSchedule();
+  renderScheduleMgr();
+}
+
+function cancelWeekHeader(weekId) {
+  const editDiv = document.getElementById('swm-week-edit-' + weekId);
+  if (editDiv) editDiv.innerHTML = '';
+}
+
+function addGameToWeek(weekId) {
+  const w = scheduleData.find(w => w.id === weekId);
+  if (!w) return;
+  const time  = document.getElementById('ng-time-'  + weekId)?.value.trim() || '—';
+  const h     = document.getElementById('ng-h-'     + weekId)?.value.trim() || 'TBD';
+  const a     = document.getElementById('ng-a-'     + weekId)?.value.trim() || 'TBD';
+  const court = document.getElementById('ng-court-' + weekId)?.value || 'A';
+  w.games.push({ id: uid(), time, h, a, court });
+  saveSchedule();
+  showToast('Game added!');
+  renderSchedule();
+  renderScheduleMgr();
+}
+
+function deleteGame(weekId, gameId) {
+  const w = scheduleData.find(w => w.id === weekId);
+  if (!w) return;
+  w.games = w.games.filter(g => g.id !== gameId);
+  saveSchedule();
+  renderSchedule();
+  renderScheduleMgr();
+}
+
+function saveWeekEdits(weekId) {
+  const w = scheduleData.find(w => w.id === weekId);
+  if (!w) return;
+  // Read all game row inputs
+  w.games.forEach(g => {
+    const row = document.getElementById('grow-' + g.id);
+    if (!row) return;
+    const time  = row.querySelector('[data-field="time"]');
+    const h     = row.querySelector('[data-field="h"]');
+    const a     = row.querySelector('[data-field="a"]');
+    const court = row.querySelector('[data-field="court"]');
+    if (time)  g.time  = time.value.trim() || g.time;
+    if (h)     g.h     = h.value;
+    if (a)     g.a     = a.value;
+    if (court) g.court = court.value;
+  });
+  saveSchedule();
+  showToast(`Week saved and schedule updated!`);
+  renderSchedule();
+  renderScheduleMgr();
+}
 
 // ── RENDER PICKUP SLOTS ────────────────────────────────────────
+// ── PICKUP SESSION MANAGEMENT ─────────────────────────────────
+const openPickupSessions = new Set();
+
+function addPickupSession() {
+  const dateV = document.getElementById('np-date')?.value;
+  const timeV = document.getElementById('np-time')?.value.trim();
+  const locV  = document.getElementById('np-location')?.value.trim() || 'GCVI Gym';
+  const maxV  = parseInt(document.getElementById('np-max')?.value) || 12;
+
+  const dateEl = document.getElementById('np-date');
+  const timeEl = document.getElementById('np-time');
+  let err = false;
+  if (!dateV) { if(dateEl) dateEl.style.borderColor='var(--coral)'; err=true; }
+  else { if(dateEl) dateEl.style.borderColor=''; }
+  if (!timeV) { if(timeEl) timeEl.style.borderColor='var(--coral)'; err=true; }
+  else { if(timeEl) timeEl.style.borderColor=''; }
+  if (err) { showToast('Please enter a date and time.', false); return; }
+
+  const newSession = {
+    id: uid(),
+    date: fmtDate(dateV),
+    dateISO: dateV,
+    time: timeV,
+    location: locV,
+    spots: 0,
+    max: maxV,
+  };
+  pickupData.unshift(newSession);
+  savePickupSessions();
+  if(dateEl) dateEl.value='';
+  if(timeEl) timeEl.value='';
+  showToast(`Pick-up session on ${newSession.date} added!`);
+  renderPickup();
+  renderPickupSessionAdmin();
+  // Update the sign-up form dropdown too
+  syncPickupDateDropdown();
+}
+
+function deletePickupSession(id) {
+  const s = pickupData.find(p => p.id === id);
+  if (!s || !confirm(`Delete the session on ${s.date}? This cannot be undone.`)) return;
+  pickupData = pickupData.filter(p => p.id !== id);
+  savePickupSessions();
+  showToast('Session deleted.');
+  renderPickup();
+  renderPickupSessionAdmin();
+  syncPickupDateDropdown();
+}
+
+function togglePickupAccordion(id) {
+  if (openPickupSessions.has(id)) openPickupSessions.delete(id);
+  else openPickupSessions.add(id);
+  renderPickupSessionAdmin();
+}
+
+function renderPickupSessionAdmin() {
+  const list = document.getElementById('pickup-session-list');
+  if (!list) return;
+
+  if (!pickupData.length) {
+    list.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted);font-style:italic;">No sessions yet — add one above.</div>`;
+    return;
+  }
+
+  list.innerHTML = pickupData.map(p => {
+    const open     = p.max - p.spots;
+    const pct      = p.max > 0 ? Math.round((p.spots / p.max) * 100) : 0;
+    const isOpen   = openPickupSessions.has(p.id);
+    const dotColor = open === 0 ? 'var(--coral)' : open <= 3 ? 'var(--gold)' : 'var(--sky)';
+    const statusTxt = open === 0 ? 'FULL' : `${open} spots open`;
+
+    return `<div class="pu-session-row" id="purow-${p.id}">
+      <div class="pu-session-header" onclick="togglePickupAccordion('${p.id}')">
+        <div class="pu-status-dot" style="background:${dotColor}"></div>
+        <div class="pu-session-info">
+          <div class="pu-session-date">${p.date}</div>
+          <div class="pu-session-meta">${p.time} · ${p.location||'GCVI Gym'} · ${p.spots}/${p.max} · ${statusTxt}</div>
+        </div>
+        <div class="pu-session-actions" onclick="event.stopPropagation()">
+          <button onclick="togglePickupAccordion('${p.id}')" title="${isOpen?'Collapse':'Edit'}">✏️</button>
+          <button class="del" onclick="deletePickupSession('${p.id}')" title="Delete session">🗑️</button>
+        </div>
+        <span style="color:var(--muted);font-size:.8rem;margin-left:.25rem;">${isOpen?'▲':'▼'}</span>
+      </div>
+      <div class="pu-session-body ${isOpen?'open':''}">
+        <!-- Spot bar -->
+        <div class="pu-spot-bar">
+          <div class="pu-spot-bar-fill">
+            <div class="pu-spot-bar-inner" style="width:${pct}%;background:${dotColor};"></div>
+          </div>
+          <div class="pu-spot-bar-label" style="color:${dotColor}">${p.spots}/${p.max} filled</div>
+        </div>
+        <!-- Edit fields -->
+        <div class="pu-edit-grid">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="pue-date-${p.id}" value="${p.dateISO||''}">
+          </div>
+          <div class="form-group">
+            <label>Time</label>
+            <input type="text" id="pue-time-${p.id}" value="${p.time}" placeholder="1:00–3:00 PM">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="pue-loc-${p.id}" value="${p.location||'GCVI Gym'}" placeholder="GCVI Gym">
+          </div>
+          <div class="form-group">
+            <label>Max Spots</label>
+            <input type="number" id="pue-max-${p.id}" value="${p.max}" min="1" max="100">
+          </div>
+          <div class="form-group">
+            <label>Spots Filled (signed up)</label>
+            <input type="number" id="pue-spots-${p.id}" value="${p.spots}" min="0">
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <button class="btn btn-primary" style="font-size:.85rem;padding:.5rem 1.2rem;" onclick="savePickupSession('${p.id}')">💾 Save Changes</button>
+          <button class="btn btn-outline" style="font-size:.85rem;padding:.5rem 1rem;" onclick="togglePickupAccordion('${p.id}')">Cancel</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function savePickupSession(id) {
+  const s = pickupData.find(p => p.id === id);
+  if (!s) return;
+  const dateV  = document.getElementById(`pue-date-${id}`)?.value;
+  const timeV  = document.getElementById(`pue-time-${id}`)?.value.trim();
+  const locV   = document.getElementById(`pue-loc-${id}`)?.value.trim();
+  const maxV   = parseInt(document.getElementById(`pue-max-${id}`)?.value);
+  const spotsV = parseInt(document.getElementById(`pue-spots-${id}`)?.value);
+  if (dateV)            { s.dateISO = dateV; s.date = fmtDate(dateV); }
+  if (timeV)              s.time     = timeV;
+  if (locV)               s.location = locV;
+  if (!isNaN(maxV))       s.max      = Math.max(1, maxV);
+  if (!isNaN(spotsV))     s.spots    = Math.max(0, Math.min(spotsV, s.max));
+  savePickupSessions();
+  openPickupSessions.delete(id);
+  showToast('Session updated!');
+  renderPickup();
+  renderPickupSessionAdmin();
+  syncPickupDateDropdown();
+}
+
+// Keep the sign-up form's date dropdown in sync with pickupData
+function syncPickupDateDropdown() {
+  const sel = document.getElementById('pu-date');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = `<option value="">— Select a session —</option>` +
+    pickupData
+      .filter(p => p.max - p.spots > 0)
+      .map(p => `<option value="${p.date} – ${p.time}"${current===`${p.date} – ${p.time}`?' selected':''}>${p.date} – ${p.time}</option>`)
+      .join('');
+}
+
+// Call syncPickupDateDropdown when admin renders pickup tab so it refreshes
+function renderPickupAdminTab() {
+  renderPickupSessionAdmin();
+  renderPickupTable();
+}
+
 function renderPickup() {
   document.getElementById('pickup-slots').innerHTML = pickupData.map(p => {
     const open = p.max - p.spots;
     let cls = 'open', badge = 'badge-open', label = `${open} spots left`;
-    if (open === 0)  { cls = 'full';    badge = 'badge-full';    label = 'FULL'; }
+    if (open === 0)     { cls = 'full';    badge = 'badge-full';    label = 'FULL'; }
     else if (open <= 3) { cls = 'filling'; badge = 'badge-filling'; }
+    const loc = p.location || 'GCVI Gym';
     return `<div class="pickup-slot ${cls}">
       <div class="slot-date">${p.date}</div>
-      <div class="slot-time">🕐 ${p.time} · GCVI Gym</div>
+      <div class="slot-time">🕐 ${p.time} · ${loc}</div>
       <div class="slot-spots">
         <span class="spots-badge ${badge}">${label}</span>
         <span style="color:var(--muted);font-size:.8rem;">${p.spots}/${p.max} signed up</span>
       </div>
-      ${open > 0 ? `<button class="btn btn-sky" style="width:100%;padding:.6rem;" onclick="document.getElementById('pu-date').value='${p.date} – ${p.time}';showSection('pickup');document.getElementById('pu-date').scrollIntoView();">Sign Up →</button>` : `<button class="btn" style="width:100%;padding:.6rem;opacity:.4;cursor:not-allowed;" disabled>Session Full</button>`}
+      ${open > 0
+        ? `<button class="btn btn-sky" style="width:100%;padding:.6rem;" onclick="document.getElementById('pu-date').value='${p.date} – ${p.time}';showSection('pickup');document.getElementById('pu-date').scrollIntoView();">Sign Up →</button>`
+        : `<button class="btn" style="width:100%;padding:.6rem;opacity:.4;cursor:not-allowed;" disabled>Session Full</button>`}
     </div>`;
   }).join('');
 }
@@ -1375,14 +4493,336 @@ function renderSchedule() {
   `).join('');
 }
 
+// ── TEAMS DATA ────────────────────────────────────────────────
+const TEAM_PALETTE = [
+  '#4DB8D4','#E8A820','#E8502A','#7B68EE',
+  '#3CB371','#FF7F50','#E91E8C','#00BCD4',
+  '#8BC34A','#FF5722'
+];
+
+// Teams store: [{ id, name, color, players: [{firstName,lastName,email,position,skill}] }]
+let teamsData = JSON.parse(localStorage.getItem('gvb_teams') || '[]');
+let selectedTeamColor = TEAM_PALETTE[0];
+let selectedAssignPlayer = null; // email of player selected in the pool
+
+// Load demo teams if none exist
+if (!teamsData.length) {
+  teamsData = [
+    { id: 't1', name: 'The Blockers',  color: '#4DB8D4', players: [] },
+    { id: 't2', name: 'Spike Squad',   color: '#E8A820', players: [] },
+    { id: 't3', name: 'Net Ninjas',    color: '#E8502A', players: [] },
+    { id: 't4', name: 'Volley Llamas', color: '#7B68EE', players: [] },
+    { id: 't5', name: 'Dig Dug FC',    color: '#3CB371', players: [] },
+    { id: 't6', name: 'Block Party',   color: '#FF7F50', players: [] },
+  ];
+  saveTeams();
+}
+
+function saveTeams() {
+  try { localStorage.setItem('gvb_teams', JSON.stringify(teamsData)); } catch(e) {}
+}
+
+function getAllAssignedEmails() {
+  const emails = new Set();
+  teamsData.forEach(t => t.players.forEach(p => emails.add(p.email)));
+  return emails;
+}
+
+function getUnassignedPlayers() {
+  const assigned = getAllAssignedEmails();
+  return sessionRegistered.filter(p => !assigned.has(p.email));
+}
+
+// ── PUBLIC TEAMS PAGE ─────────────────────────────────────────
+function posChipStyle(pos) {
+  const map = {
+    'Setter':                  { bg:'rgba(77,184,212,.15)',  color:'#0a7a9a' },
+    'Outside Hitter / Power':  { bg:'rgba(232,168,32,.18)', color:'#8a6200' },
+    'Middle Blocker':          { bg:'rgba(232,80,42,.12)',   color:'#b03010' },
+    'Right Side / Opposite':   { bg:'rgba(123,104,238,.15)',color:'#5040b0' },
+    'Libero / Defensive Specialist': { bg:'rgba(60,179,113,.15)', color:'#1a6b3a' },
+    'No Preference':           { bg:'rgba(138,128,112,.12)',color:'#5a5040' },
+  };
+  const s = map[pos] || { bg:'rgba(13,27,42,.07)', color:'var(--muted)' };
+  return `background:${s.bg};color:${s.color};`;
+}
+
+function renderTeamsPage() {
+  const el = document.getElementById('teams-public-content');
+  if (!el) return;
+
+  const teamsWithPlayers = teamsData.filter(t => t.players.length > 0);
+  const teamsEmpty       = teamsData.filter(t => t.players.length === 0);
+  const allTeams         = [...teamsWithPlayers, ...teamsEmpty];
+
+  if (!allTeams.length) {
+    el.innerHTML = `<div class="teams-empty-state">
+      <div class="empty-icon">🏐</div>
+      <p>No teams have been set up yet. Check back after the season draw!</p>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="stat-cards-mini" style="margin-bottom:2rem;">
+      <div class="stat-card-mini"><div class="scm-num">${teamsData.length}</div><div class="scm-label">Teams</div></div>
+      <div class="stat-card-mini"><div class="scm-num">${teamsData.reduce((s,t)=>s+t.players.length,0)}</div><div class="scm-label">Players Assigned</div></div>
+      <div class="stat-card-mini"><div class="scm-num">${teamsWithPlayers.length}</div><div class="scm-label">Rosters Set</div></div>
+      <div class="stat-card-mini"><div class="scm-num">6v6</div><div class="scm-label">Format</div></div>
+    </div>
+    <div class="teams-grid">
+      ${allTeams.map(team => {
+        const initials = team.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+        const playerRows = team.players.length
+          ? team.players.map(p => {
+              const ini = ((p.firstName||'?')[0]+(p.lastName||'?')[0]).toUpperCase();
+              const shortPos = (p.position||'').replace('Outside Hitter / ','').replace('Libero / Defensive Specialist','Libero').replace(' / Opposite','').replace('No Preference','—');
+              return `<li class="team-player-row">
+                <div class="player-initials" style="background:${team.color}">${ini}</div>
+                <div class="player-info">
+                  <div class="pname">${p.firstName} ${p.lastName}</div>
+                  <div class="ppos">${p.position || '—'}</div>
+                </div>
+                <span class="pos-chip" style="${posChipStyle(p.position)}">${shortPos||'—'}</span>
+              </li>`;
+            }).join('')
+          : '';
+        return `<div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar" style="background:${team.color}">${initials}</div>
+            <div>
+              <h3>${team.name}</h3>
+              <div class="team-meta">${team.players.length} player${team.players.length!==1?'s':''}</div>
+            </div>
+          </div>
+          ${team.players.length
+            ? `<ul class="team-players-list">${playerRows}</ul>`
+            : `<div class="team-empty">Roster not yet set — check back soon!</div>`
+          }
+          <div class="team-card-footer">
+            <span>Winter 2026</span>
+            <span style="color:${team.color};font-weight:700;">●</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// ── ADMIN TEAM ASSIGNMENT UI ──────────────────────────────────
+function renderColorPicker() {
+  const row = document.getElementById('color-picker-row');
+  if (!row) return;
+  row.innerHTML = TEAM_PALETTE.map(c =>
+    `<div class="color-swatch${c===selectedTeamColor?' chosen':''}" style="background:${c}" onclick="pickColor('${c}')" title="${c}"></div>`
+  ).join('');
+}
+
+function pickColor(c) {
+  selectedTeamColor = c;
+  renderColorPicker();
+}
+
+function createTeam() {
+  const inp  = document.getElementById('new-team-name');
+  const name = inp.value.trim();
+  if (!name) { inp.style.borderColor='var(--coral)'; inp.focus(); return; }
+  inp.style.borderColor = '';
+
+  const id = 't' + Date.now();
+  teamsData.push({ id, name, color: selectedTeamColor, players: [] });
+  saveTeams();
+  inp.value = '';
+  showToast(`Team "${name}" created!`);
+  renderTeamAssignUI();
+  renderTeamsPage();
+}
+
+function renderTeamAssignUI() {
+  renderColorPicker();
+  const unassigned   = getUnassignedPlayers();
+  const pool         = document.getElementById('unassigned-pool');
+  const countEl      = document.getElementById('unassigned-count');
+  const teamList     = document.getElementById('team-assign-list');
+  if (!pool || !teamList) return;
+
+  // Unassigned pool
+  countEl.textContent = `(${unassigned.length})`;
+  if (!unassigned.length) {
+    pool.innerHTML = `<div class="drop-hint">All registered players have been assigned, or no registrations yet.</div>`;
+  } else {
+    pool.innerHTML = unassigned.map(p => {
+      const isSelected = selectedAssignPlayer === p.email;
+      const ini = ((p.firstName||'?')[0]+(p.lastName||'?')[0]).toUpperCase();
+      return `<div class="assign-player-chip${isSelected?' selected':''}" onclick="selectAssignPlayer('${p.email}')" data-email="${p.email}">
+        <div class="player-initials" style="background:var(--sky);width:26px;height:26px;font-size:.65rem;">${ini}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.firstName} ${p.lastName}</div>
+          <div style="font-size:.72rem;color:var(--muted);">${(p.position||'').replace('Outside Hitter / ','OH/').replace('Libero / Defensive Specialist','Libero')}</div>
+        </div>
+        ${isSelected ? '<span style="color:var(--sky);font-size:.8rem;">← assign</span>' : ''}
+      </div>`;
+    }).join('');
+  }
+
+  // Teams list
+  if (!teamsData.length) {
+    teamList.innerHTML = `<div class="drop-hint" style="padding:1rem 0;color:var(--muted);">No teams yet — create one above.</div>`;
+  } else {
+    teamList.innerHTML = teamsData.map(team => {
+      const playerRows = team.players.map(p => {
+        const ini = ((p.firstName||'?')[0]+(p.lastName||'?')[0]).toUpperCase();
+        return `<div class="assigned-chip">
+          <div class="player-initials" style="background:${team.color};width:24px;height:24px;font-size:.62rem;">${ini}</div>
+          <span style="font-weight:600;">${p.firstName} ${p.lastName}</span>
+          <span style="font-size:.72rem;color:var(--muted);margin-left:.2rem;">${(p.position||'').split('/')[0].trim()}</span>
+          <button class="btn-remove-assign" onclick="removeFromTeam('${team.id}','${p.email}')" title="Remove from team">✕</button>
+        </div>`;
+      }).join('');
+      const canAssign = selectedAssignPlayer !== null;
+      return `<div class="team-assign-block" id="tblock-${team.id}">
+        <div class="team-assign-header">
+          <div class="tah-left" style="flex:1;cursor:${canAssign?'pointer':'default'}" onclick="${canAssign?`assignToTeam('${team.id}')`:''}" title="${canAssign?'Click to assign selected player':'Select a player first'}">
+            <div class="team-color-dot" style="background:${team.color}"></div>
+            <h5>${team.name}</h5>
+            <span style="font-size:.75rem;color:var(--muted);margin-left:.25rem;">(${team.players.length})</span>
+          </div>
+          <div style="display:flex;gap:.3rem;align-items:center;">
+            ${canAssign?`<span style="font-size:.78rem;color:var(--sky);font-weight:600;margin-right:.4rem;cursor:pointer;" onclick="assignToTeam('${team.id}')">+ Add</span>`:''}
+            <button onclick="startRenameTeam('${team.id}')" title="Rename team" style="background:none;border:none;cursor:pointer;font-size:.9rem;color:var(--muted);padding:.2rem .35rem;border-radius:5px;transition:color .2s;" onmouseover="this.style.color='var(--navy)'" onmouseout="this.style.color='var(--muted)'">✏️</button>
+            <button onclick="deleteTeam('${team.id}')" title="Delete team" style="background:none;border:none;cursor:pointer;font-size:.9rem;color:var(--muted);padding:.2rem .35rem;border-radius:5px;transition:color .2s;" onmouseover="this.style.color='var(--coral)'" onmouseout="this.style.color='var(--muted)'">🗑️</button>
+          </div>
+        </div>
+        <div class="team-assign-body">
+          ${playerRows || '<div class="drop-hint">No players yet</div>'}
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function selectAssignPlayer(email) {
+  selectedAssignPlayer = selectedAssignPlayer === email ? null : email;
+  renderTeamAssignUI();
+}
+
+function assignToTeam(teamId) {
+  if (!selectedAssignPlayer) return;
+  const team   = teamsData.find(t => t.id === teamId);
+  const player = sessionRegistered.find(p => p.email === selectedAssignPlayer);
+  if (!team || !player) return;
+  if (team.players.find(p => p.email === player.email)) {
+    showToast('Player is already on this team.', false); return;
+  }
+  team.players.push(player);
+  saveTeams();
+  selectedAssignPlayer = null;
+  showToast(`${player.firstName} ${player.lastName} added to ${team.name}!`);
+  renderTeamAssignUI();
+  renderTeamsPage();
+}
+
+function removeFromTeam(teamId, email) {
+  const team = teamsData.find(t => t.id === teamId);
+  if (!team) return;
+  const player = team.players.find(p => p.email === email);
+  team.players = team.players.filter(p => p.email !== email);
+  saveTeams();
+  if (player) showToast(`${player.firstName} ${player.lastName} removed from ${team.name}.`);
+  renderTeamAssignUI();
+  renderTeamsPage();
+}
+
+function deleteTeam(teamId) {
+  const team = teamsData.find(t => t.id === teamId);
+  if (!team) return;
+  if (!confirm(`Delete "${team.name}"? Players will be moved back to the unassigned pool.`)) return;
+  teamsData = teamsData.filter(t => t.id !== teamId);
+  saveTeams();
+  showToast(`"${team.name}" deleted.`);
+  renderTeamAssignUI();
+  renderTeamsPage();
+}
+
+function startRenameTeam(teamId) {
+  const team  = teamsData.find(t => t.id === teamId);
+  if (!team) return;
+  const block = document.getElementById('tblock-' + teamId);
+  if (!block) return;
+
+  // Replace the block's contents with an inline rename form
+  block.innerHTML = `
+    <div style="padding:.85rem 1rem;border-bottom:1px solid var(--border);">
+      <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.6rem;">Rename Team</div>
+      <div style="display:flex;gap:.5rem;margin-bottom:.65rem;flex-wrap:wrap;">
+        <input id="rename-input-${teamId}" type="text" value="${team.name}" maxlength="30"
+          style="flex:1;min-width:120px;padding:.55rem .8rem;border:1.5px solid var(--sky);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;background:var(--white);"
+          onkeydown="if(event.key==='Enter')confirmRenameTeam('${teamId}');if(event.key==='Escape')renderTeamAssignUI();">
+        <button class="btn btn-primary" style="padding:.55rem 1.1rem;font-size:.85rem;" onclick="confirmRenameTeam('${teamId}')">Save</button>
+        <button class="btn btn-outline" style="padding:.55rem 1rem;font-size:.85rem;" onclick="renderTeamAssignUI()">Cancel</button>
+      </div>
+      <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.45rem;">Colour</div>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;" id="rename-color-${teamId}">
+        ${TEAM_PALETTE.map(c=>`<div class="color-swatch${c===team.color?' chosen':''}" style="background:${c}" onclick="pickRenameColor('${teamId}','${c}')"></div>`).join('')}
+      </div>
+    </div>
+    <div class="team-assign-body">
+      ${team.players.map(p => {
+        const ini = ((p.firstName||'?')[0]+(p.lastName||'?')[0]).toUpperCase();
+        return `<div class="assigned-chip">
+          <div class="player-initials" style="background:${team.color};width:24px;height:24px;font-size:.62rem;">${ini}</div>
+          <span style="font-weight:600;">${p.firstName} ${p.lastName}</span>
+        </div>`;
+      }).join('') || '<div class="drop-hint">No players yet</div>'}
+    </div>`;
+  document.getElementById('rename-input-' + teamId)?.focus();
+  // stash pending color
+  block._pendingColor = team.color;
+}
+
+function pickRenameColor(teamId, color) {
+  const block = document.getElementById('tblock-' + teamId);
+  if (block) block._pendingColor = color;
+  const row = document.getElementById('rename-color-' + teamId);
+  if (row) row.querySelectorAll('.color-swatch').forEach(s => {
+    s.classList.toggle('chosen', s.style.background === color || s.style.backgroundColor === color);
+  });
+}
+
+function confirmRenameTeam(teamId) {
+  const team  = teamsData.find(t => t.id === teamId);
+  const block = document.getElementById('tblock-' + teamId);
+  if (!team || !block) return;
+  const inp  = document.getElementById('rename-input-' + teamId);
+  const name = inp ? inp.value.trim() : '';
+  if (!name) { if (inp) { inp.style.borderColor='var(--coral)'; inp.focus(); } return; }
+  const oldName  = team.name;
+  team.name  = name;
+  if (block._pendingColor) team.color = block._pendingColor;
+  saveTeams();
+  showToast(`"${oldName}" renamed to "${name}".`);
+  renderTeamAssignUI();
+  renderTeamsPage();
+}
+
 // ── INIT ──────────────────────────────────────────────────────
 renderPickup();
 renderSchedule();
 renderScoresTable();
+renderTeamsPage();
+syncPickupDateDropdown();
 document.getElementById('home-gallery').style.display = 'block';
-
-// Set today's date as default for score form
 document.getElementById('sc-date').value = new Date().toISOString().slice(0,10);
+loadSession();
+// Stamp initial form load times
+stampFormLoad();
+
+// Patch submitScore to also refresh standings when on that tab
+// Patch submitScore to also refresh standings when on that tab
+const _patchedSubmitScore = submitScore;
+submitScore = async function() {
+  await _patchedSubmitScore.apply(this, arguments);
+  if (document.getElementById('standings')?.classList.contains('active')) renderStandings();
+};
 </script>
 </body>
 </html>
