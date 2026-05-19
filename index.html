@@ -2900,13 +2900,120 @@
 
 <script>
 // ── GOOGLE SHEETS INTEGRATION ──────────────────────────────
-// Replace these with your actual Google Apps Script Web App URLs
-// Instructions: Tools > Script editor in Google Sheets → deploy as web app → paste URL below
+// Replace with your actual Google Apps Script Web App URL
+// One URL handles all types: registration, pickup, score, getData, checkDuplicate
 const SHEETS_ENDPOINTS = {
-  registration: 'https://script.google.com/macros/s/AKfycbwXToK5c0VUKV2r8JRhAwNOLXd1TFghl3RwNNP6yMGJa7GSn2ClZLK0AAUyir2FwunS/exec',
-  pickup:       'https://script.google.com/macros/s/AKfycbwXToK5c0VUKV2r8JRhAwNOLXd1TFghl3RwNNP6yMGJa7GSn2ClZLK0AAUyir2FwunS/exec',
-  scores:       'https://script.google.com/macros/s/AKfycbwXToK5c0VUKV2r8JRhAwNOLXd1TFghl3RwNNP6yMGJa7GSn2ClZLK0AAUyir2FwunS/exec',
+  registration: 'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec',
+  pickup:       'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec',
+  scores:       'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec',
+  getData:      'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec',
 };
+
+const DEMO_MODE = SHEETS_ENDPOINTS.registration.includes('YOUR_');
+
+// In-memory cache populated from Google Sheets on startup
+let sheetRegistered = []; // rows loaded from Registrations sheet
+let sheetPickup     = []; // rows loaded from Pickup Signups sheet
+
+// ── POST TO SHEETS ──────────────────────────────────────────
+async function postToSheets(endpoint, data) {
+  if (DEMO_MODE) return { ok: true, demo: true };
+  try {
+    const params = new URLSearchParams(data);
+    // Use no-cors for write operations (can't read response, but Apps Script records it)
+    await fetch(endpoint + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+    return { ok: true };
+  } catch(e) {
+    console.error('postToSheets error:', e);
+    return { ok: false, error: e.message };
+  }
+}
+
+// ── FETCH FROM SHEETS (readable JSON via CORS) ──────────────
+// Apps Script deployed with "Anyone" access returns JSON we can read.
+async function fetchFromSheets(endpoint, params) {
+  if (DEMO_MODE) return { ok: true, rows: [], demo: true };
+  try {
+    const url = endpoint + '?' + new URLSearchParams(params).toString();
+    const res = await fetch(url, { method: 'GET' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return await res.json();
+  } catch(e) {
+    console.error('fetchFromSheets error:', e);
+    return { ok: false, rows: [], error: e.message };
+  }
+}
+
+// ── LOAD SHEET DATA ON STARTUP ──────────────────────────────
+async function loadSheetData() {
+  if (DEMO_MODE) return; // skip in demo mode
+
+  try {
+    const [regResult, puResult] = await Promise.all([
+      fetchFromSheets(SHEETS_ENDPOINTS.getData, { type: 'getData', sheet: 'Registrations' }),
+      fetchFromSheets(SHEETS_ENDPOINTS.getData, { type: 'getData', sheet: 'Pickup Signups' }),
+    ]);
+
+    if (regResult.ok && regResult.rows) {
+      sheetRegistered = regResult.rows;
+      // Seed sessionRegistered so admin panel shows existing players
+      regResult.rows.forEach(r => {
+        const email = (r['Email'] || '').toLowerCase();
+        if (!sessionRegistered.find(p => p.email === email)) {
+          sessionRegistered.push({
+            firstName: r['First Name'] || '',
+            lastName:  r['Last Name']  || '',
+            email,
+            position:  r['Position']   || '',
+            skill:     r['Skill Level']|| '',
+            season:    r['Season']     || '',
+            timestamp: r['Timestamp']  || new Date().toISOString(),
+          });
+        }
+      });
+      refreshAdminData();
+    }
+
+    if (puResult.ok && puResult.rows) {
+      sheetPickup = puResult.rows;
+      puResult.rows.forEach(r => {
+        const email = (r['Email'] || '').toLowerCase();
+        if (!sessionPickup.find(p => p.email === email)) {
+          sessionPickup.push({
+            firstName: r['First Name']   || '',
+            lastName:  r['Last Name']    || '',
+            email,
+            position:  r['Position']     || '',
+            date:      r['Session Date'] || '',
+            timestamp: r['Timestamp']    || new Date().toISOString(),
+          });
+        }
+      });
+      refreshAdminData();
+    }
+  } catch(e) {
+    console.warn('Could not load sheet data:', e.message);
+  }
+}
+
+// ── CLIENT-SIDE DUPLICATE CHECK ─────────────────────────────
+function isDuplicateRegistration(email, season) {
+  const e = email.toLowerCase();
+  const s = (season || '').toLowerCase();
+  // Check in-session list
+  if (sessionRegistered.find(p => p.email === e && (p.season || '').toLowerCase() === s)) return true;
+  // Check sheet cache
+  if (sheetRegistered.find(r => (r['Email'] || '').toLowerCase() === e && (r['Season'] || '').toLowerCase() === s)) return true;
+  return false;
+}
+
+function isDuplicatePickup(email, date) {
+  const e = email.toLowerCase();
+  const d = (date || '').toLowerCase();
+  if (sessionPickup.find(p => p.email === e && (p.date || '').toLowerCase() === d)) return true;
+  if (sheetPickup.find(r => (r['Email'] || '').toLowerCase() === e && (r['Session Date'] || '').toLowerCase() === d)) return true;
+  return false;
+}
 
 // ── MOBILE MENU ───────────────────────────────────────────────
 function toggleMobileMenu() {
@@ -3791,18 +3898,6 @@ function botCheck(formPrefix, email) {
 // Stamp form load times when sections become visible
 const _origShowSection = showSection;
 
-// ── POST TO GOOGLE SHEETS (via Apps Script) ──────────────────
-async function postToSheets(endpoint, data) {
-  // Check if the user has set up their Google Sheets endpoint
-  if (endpoint.includes('YOUR_')) {
-    // Simulate success for demo mode
-    return { result: 'demo' };
-  }
-  const params = new URLSearchParams(data);
-  const res = await fetch(endpoint + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
-  return { result: 'ok' };
-}
-
 // ── FORM HELPERS ─────────────────────────────────────────────
 function setLoading(btnId, loading) {
   const btn = document.getElementById(btnId);
@@ -3853,34 +3948,50 @@ async function submitRegistration() {
   // Bot protection
   if (!botCheck('reg', email)) return;
 
+  // Client-side duplicate check
+  const season = val('reg-season');
+  if (isDuplicateRegistration(email, season)) {
+    showToast(`${email} is already registered for ${season}. Contact us if you need to make changes.`, false);
+    document.getElementById('reg-btn').disabled = false;
+    document.getElementById('reg-btn').textContent = 'Register Now';
+    return;
+  }
+
   setLoading('reg-btn', true);
   const data = {
-    timestamp:  new Date().toISOString(),
-    firstName:  first,
-    lastName:   last,
-    email:      email,
-    phone:      val('reg-phone'),
-    position:   position,
-    skill:      skill,
-    season:     val('reg-season'),
-    referral:   val('reg-referral'),
-    notes:      val('reg-notes'),
-    type:       'registration'
+    timestamp:      new Date().toISOString(),
+    firstName:      first,
+    lastName:       last,
+    email:          email,
+    phone:          val('reg-phone'),
+    position:       position,
+    skill:          skill,
+    season:         season,
+    referral:       val('reg-referral'),
+    notes:          val('reg-notes'),
+    waiverAccepted: String(document.getElementById('reg-consent-liability')?.checked === true),
+    contactConsent: String(document.getElementById('reg-consent-contact')?.checked   === true),
+    photoConsent:   String(document.getElementById('reg-consent-photo')?.checked     === true),
+    userAgent:      navigator.userAgent.slice(0, 120),
+    type:           'registration'
   };
 
   try {
-    await postToSheets(SHEETS_ENDPOINTS.registration, data);
-    showToast(`Welcome, ${first}! Your registration has been received.`);
-    ['reg-first','reg-last','reg-email','reg-phone','reg-notes'].forEach(id => { document.getElementById(id).value = ''; });
-    ['reg-position','reg-skill'].forEach(id => { document.getElementById(id).selectedIndex = 0; });
-    ['reg-consent-liability','reg-consent-contact','reg-consent-photo'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.checked = false;
-    });
-    // Clear any red highlights
-    ['reg-first','reg-last','reg-email','reg-position','reg-skill'].forEach(id => {
-      const el = document.getElementById(id);
-      el.style.borderColor = ''; el.style.boxShadow = '';
-    });
+    const result = await postToSheets(SHEETS_ENDPOINTS.registration, data);
+    if (result && result.duplicate) {
+      showToast(result.message || 'You are already registered for this season.', false);
+    } else {
+      showToast(`Welcome, ${first}! Your registration has been received.`);
+      ['reg-first','reg-last','reg-email','reg-phone','reg-notes'].forEach(id => { document.getElementById(id).value = ''; });
+      ['reg-position','reg-skill'].forEach(id => { document.getElementById(id).selectedIndex = 0; });
+      ['reg-consent-liability','reg-consent-contact','reg-consent-photo'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.checked = false;
+      });
+      ['reg-first','reg-last','reg-email','reg-position','reg-skill'].forEach(id => {
+        const el = document.getElementById(id);
+        el.style.borderColor = ''; el.style.boxShadow = '';
+      });
+    }
   } catch(e) {
     showToast('Something went wrong. Please try again.', false);
   }
@@ -3926,29 +4037,44 @@ async function submitPickup() {
   // Bot protection
   if (!botCheck('pu', email)) return;
 
+  // Client-side duplicate check
+  if (isDuplicatePickup(email, date)) {
+    showToast(`${email} is already signed up for this session. Contact us if you need to make changes.`, false);
+    document.getElementById('pu-btn').disabled = false;
+    document.getElementById('pu-btn').textContent = 'Claim My Spot';
+    return;
+  }
+
   setLoading('pu-btn', true);
   const data = {
-    timestamp: new Date().toISOString(),
-    firstName: first,
-    lastName:  last,
-    email:     email,
-    date:      date,
-    position:  position,
-    type:      'pickup'
+    timestamp:      new Date().toISOString(),
+    firstName:      first,
+    lastName:       last,
+    email:          email,
+    date:           date,
+    position:       position,
+    waiverAccepted: String(document.getElementById('pu-consent-liability')?.checked === true),
+    contactConsent: String(document.getElementById('pu-consent-contact')?.checked   === true),
+    userAgent:      navigator.userAgent.slice(0, 120),
+    type:           'pickup'
   };
 
   try {
-    await postToSheets(SHEETS_ENDPOINTS.pickup, data);
-    showToast(`You're in, ${first}! See you on the court.`);
-    ['pu-first','pu-last','pu-email'].forEach(id => { document.getElementById(id).value = ''; });
-    ['pu-date','pu-position'].forEach(id => { document.getElementById(id).selectedIndex = 0; });
-    ['pu-consent-liability','pu-consent-contact'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.checked = false;
-    });
-    ['pu-first','pu-last','pu-email','pu-date','pu-position'].forEach(id => {
-      const el = document.getElementById(id);
-      el.style.borderColor = ''; el.style.boxShadow = '';
-    });
+    const result = await postToSheets(SHEETS_ENDPOINTS.pickup, data);
+    if (result && result.duplicate) {
+      showToast(result.message || 'You are already signed up for this session.', false);
+    } else {
+      showToast(`You're in, ${first}! See you on the court.`);
+      ['pu-first','pu-last','pu-email'].forEach(id => { document.getElementById(id).value = ''; });
+      ['pu-date','pu-position'].forEach(id => { document.getElementById(id).selectedIndex = 0; });
+      ['pu-consent-liability','pu-consent-contact'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.checked = false;
+      });
+      ['pu-first','pu-last','pu-email','pu-date','pu-position'].forEach(id => {
+        const el = document.getElementById(id);
+        el.style.borderColor = ''; el.style.boxShadow = '';
+      });
+    }
   } catch(e) {
     showToast('Something went wrong. Please try again.', false);
   }
@@ -4813,8 +4939,9 @@ syncPickupDateDropdown();
 document.getElementById('home-gallery').style.display = 'block';
 document.getElementById('sc-date').value = new Date().toISOString().slice(0,10);
 loadSession();
-// Stamp initial form load times
 stampFormLoad();
+// Load existing players from Google Sheets (no-op in demo mode)
+loadSheetData();
 
 // Patch submitScore to also refresh standings when on that tab
 // Patch submitScore to also refresh standings when on that tab
