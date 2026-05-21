@@ -2162,7 +2162,6 @@
             <option>Outside Hitter / Power</option>
             <option>Middle Blocker</option>
             <option>Right Side / Opposite</option>
-            <option>Libero / Defensive Specialist</option>
             <option>No Preference</option>
           </select>
         </div>
@@ -2180,8 +2179,8 @@
       <div class="form-group">
         <label>Season</label>
         <select id="reg-season">
-          <option>Winter 2026 (Jan–Apr)</option>
           <option>Fall 2026 (Sep–Dec)</option>
+          <option>Winter 2026 (Jan–Apr)</option>
         </select>
       </div>
       <div class="form-group">
@@ -2312,7 +2311,6 @@
           <option>Outside Hitter / Power</option>
           <option>Middle Blocker</option>
           <option>Right Side / Opposite</option>
-          <option>Libero / Defensive Specialist</option>
           <option>No Preference</option>
         </select>
       </div>
@@ -2905,14 +2903,16 @@
 // ── GOOGLE SHEETS INTEGRATION ──────────────────────────────
 // Replace with your actual Google Apps Script Web App URL
 // One URL handles all types: registration, pickup, score, getData, checkDuplicate
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec';
+
 const SHEETS_ENDPOINTS = {
-   registration: 'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec',
-  pickup:       'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec',
-  scores:       'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec',
-  getData:      'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec',
+  registration: SCRIPT_URL,
+  pickup:       SCRIPT_URL,
+  scores:       SCRIPT_URL,
+  getData:      SCRIPT_URL,
 };
 
-const DEMO_MODE = SHEETS_ENDPOINTS.registration.includes('YOUR_');
+const DEMO_MODE = false;
 
 // In-memory cache populated from Google Sheets on startup
 let sheetRegistered = []; // rows loaded from Registrations sheet
@@ -3689,13 +3689,13 @@ function renderPlayerTable() {
     return;
   }
   tbody.innerHTML = sessionRegistered.map(p => {
-    // Find which team this player is on
     const team = teamsData.find(t => t.players.find(tp => tp.email === p.email));
     const teamCell = team
       ? `<div style="display:flex;align-items:center;gap:.4rem;"><span style="width:9px;height:9px;border-radius:50%;background:${team.color};display:inline-block;flex-shrink:0;"></span><span>${team.name}</span></div>`
       : `<span style="color:var(--muted);font-style:italic;">Unassigned</span>`;
+    const displayName = `${p.firstName || '?'} ${(p.lastName||'?')[0].toUpperCase()}.`;
     return `<tr>
-      <td><strong>${p.firstName} ${p.lastName}</strong></td>
+      <td><strong>${displayName}</strong></td>
       <td>${p.email}</td>
       <td>${p.position || '—'}</td>
       <td>${p.skill || '—'}</td>
@@ -3709,17 +3709,27 @@ function renderPlayerTable() {
 function renderPickupTable() {
   const tbody = document.getElementById('pickup-player-body');
   if (!tbody) return;
-  if (!sessionPickup.length) {
-    tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:1.5rem;">No pick-up signups yet this session.</td></tr>`;
+  // Merge session signups with any sheet-loaded rows (dedupe by email+date)
+  const seen = new Set();
+  const allPickup = [...sessionPickup].filter(p => {
+    const key = (p.email + '|' + p.date).toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+  if (!allPickup.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:1.5rem;">No pick-up signups yet.</td></tr>`;
     return;
   }
-  tbody.innerHTML = sessionPickup.map(p => `<tr>
-    <td><strong>${p.firstName} ${p.lastName}</strong></td>
-    <td>${p.email}</td>
-    <td>${p.position || '—'}</td>
-    <td>${p.date || '—'}</td>
-    <td style="font-size:.78rem;color:var(--muted);">${new Date(p.timestamp).toLocaleDateString()}</td>
-  </tr>`).join('');
+  tbody.innerHTML = allPickup.map(p => {
+    const displayName = `${p.firstName || '?'} ${(p.lastName||'?')[0].toUpperCase()}.`;
+    return `<tr>
+      <td><strong>${displayName}</strong></td>
+      <td>${p.email}</td>
+      <td>${p.position || '—'}</td>
+      <td>${p.date || '—'}</td>
+      <td style="font-size:.78rem;color:var(--muted);">${p.timestamp ? new Date(p.timestamp).toLocaleDateString() : '—'}</td>
+    </tr>`;
+  }).join('');
 }
 
 // Hook into registration + pickup submit to capture session data for admin lists
@@ -4771,11 +4781,12 @@ function renderTeamsPage() {
         const playerRows = team.players.length
           ? team.players.map(p => {
               const ini = ((p.firstName||'?')[0]+(p.lastName||'?')[0]).toUpperCase();
-              const shortPos = (p.position||'').replace('Outside Hitter / ','').replace('Libero / Defensive Specialist','Libero').replace(' / Opposite','').replace('No Preference','—');
+              const displayName = `${p.firstName || '?'} ${(p.lastName||'?')[0].toUpperCase()}.`;
+              const shortPos = (p.position||'').replace('Outside Hitter / ','').replace(' / Opposite','').replace('No Preference','—');
               return `<li class="team-player-row">
                 <div class="player-initials" style="background:${team.color}">${ini}</div>
                 <div class="player-info">
-                  <div class="pname">${p.firstName} ${p.lastName}</div>
+                  <div class="pname">${displayName}</div>
                   <div class="ppos">${p.position || '—'}</div>
                 </div>
                 <span class="pos-chip" style="${posChipStyle(p.position)}">${shortPos||'—'}</span>
@@ -4848,11 +4859,12 @@ function renderTeamAssignUI() {
     pool.innerHTML = unassigned.map(p => {
       const isSelected = selectedAssignPlayer === p.email;
       const ini = ((p.firstName||'?')[0]+(p.lastName||'?')[0]).toUpperCase();
+      const displayName = `${p.firstName || '?'} ${(p.lastName||'?')[0].toUpperCase()}.`;
       return `<div class="assign-player-chip${isSelected?' selected':''}" onclick="selectAssignPlayer('${p.email}')" data-email="${p.email}">
         <div class="player-initials" style="background:var(--sky);width:26px;height:26px;font-size:.65rem;">${ini}</div>
         <div style="flex:1;min-width:0;">
-          <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.firstName} ${p.lastName}</div>
-          <div style="font-size:.72rem;color:var(--muted);">${(p.position||'').replace('Outside Hitter / ','OH/').replace('Libero / Defensive Specialist','Libero')}</div>
+          <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${displayName}</div>
+          <div style="font-size:.72rem;color:var(--muted);">${(p.position||'').replace('Outside Hitter / ','OH/').replace(' / Opposite','')}</div>
         </div>
         ${isSelected ? '<span style="color:var(--sky);font-size:.8rem;">← assign</span>' : ''}
       </div>`;
@@ -4866,9 +4878,10 @@ function renderTeamAssignUI() {
     teamList.innerHTML = teamsData.map(team => {
       const playerRows = team.players.map(p => {
         const ini = ((p.firstName||'?')[0]+(p.lastName||'?')[0]).toUpperCase();
+        const chipName = `${p.firstName || '?'} ${(p.lastName||'?')[0].toUpperCase()}.`;
         return `<div class="assigned-chip">
           <div class="player-initials" style="background:${team.color};width:24px;height:24px;font-size:.62rem;">${ini}</div>
-          <span style="font-weight:600;">${p.firstName} ${p.lastName}</span>
+          <span style="font-weight:600;">${chipName}</span>
           <span style="font-size:.72rem;color:var(--muted);margin-left:.2rem;">${(p.position||'').split('/')[0].trim()}</span>
           <button class="btn-remove-assign" onclick="removeFromTeam('${team.id}','${p.email}')" title="Remove from team">✕</button>
         </div>`;
