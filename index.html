@@ -2971,13 +2971,14 @@ async function loadSheetData() {
   showLoadingBanner('Loading league data…');
 
   try {
-    const [regResult, puResult, teamsResult, playersResult, weeksResult, gamesResult] = await Promise.all([
+    const [regResult, puResult, teamsResult, playersResult, weeksResult, gamesResult, scoresResult] = await Promise.all([
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Registrations' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Pickup Signups' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Teams' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Team Players' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Schedule' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Schedule Games' }),
+      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Scores' }),
     ]);
 
     // ── Registrations ──────────────────────────────────────────
@@ -3087,6 +3088,26 @@ async function loadSheetData() {
       try { localStorage.setItem('gvb_schedule', JSON.stringify(scheduleData)); } catch(e) {}
       renderSchedule();
       renderScheduleMgr();
+    }
+
+    // ── Scores ─────────────────────────────────────────────────
+    if (scoresResult.ok && scoresResult.rows && scoresResult.rows.length) {
+      const sheetScores = scoresResult.rows.map(r => ({
+        id:        r['Score ID']      || uid(),
+        timestamp: r['Timestamp']     || '',
+        gameDate:  r['Game Date']     || '',
+        homeTeam:  r['Home Team']     || '',
+        homeScore: r['Home Score']    || '0',
+        awayTeam:  r['Away Team']     || '',
+        awayScore: r['Away Score']    || '0',
+        court:     r['Court']         || '',
+        submitter: r['Submitted By']  || '',
+      }));
+      // Sheet is authoritative — replace local data
+      allScores = sheetScores;
+      try { localStorage.setItem('gvb_scores', JSON.stringify(allScores)); } catch(e) {}
+      renderScoresTable();
+      if (document.getElementById('standings')?.classList.contains('active')) renderStandings();
     }
 
     refreshAdminData();
@@ -4286,6 +4307,10 @@ let allScores = JSON.parse(localStorage.getItem('gvb_scores') || 'null') || DEFA
 
 function saveScores() {
   try { localStorage.setItem('gvb_scores', JSON.stringify(allScores)); } catch(e) {}
+  // Persist full scores array to Sheets (fire-and-forget)
+  if (!DEMO_MODE) {
+    postToSheets(SCRIPT_URL, { type: 'saveScores', scoresJson: JSON.stringify(allScores) });
+  }
 }
 
 async function submitScore() {
