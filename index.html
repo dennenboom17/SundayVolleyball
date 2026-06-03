@@ -2025,9 +2025,9 @@
 <section id="home" class="active">
   <!-- Sliding background photos — real Pexels volleyball shots by Pavel Danilyuk (free, no attribution required) -->
   <div class="hero-photo-strip" id="hero-strip">
-    <img id="hslide-0" src="https://images.pexels.com/photos/6203541/pexels-photo-6203541.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Indoor volleyball match" class="visible">
-    <img id="hslide-1" src="https://images.pexels.com/photos/6203594/pexels-photo-6203594.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Players jumping for the ball">
-    <img id="hslide-2" src="https://images.pexels.com/photos/6203501/pexels-photo-6203501.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Player spiking the volleyball">
+    <img id="hslide-0" src="https://images.pexels.com/photos/6203541/pexels-photo-6203541.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Indoor volleyball match" class="visible">
+    <img id="hslide-1" src="https://images.pexels.com/photos/6203594/pexels-photo-6203594.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Players jumping for the ball">
+    <img id="hslide-2" src="https://images.pexels.com/photos/6203501/pexels-photo-6203501.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Player spiking the volleyball">
   </div>
 
   <div class="hero-bg"></div>
@@ -2704,8 +2704,13 @@
 
             <!-- Recent results table -->
             <div class="admin-card">
-              <h3>📊 Recent Results</h3>
-              <p class="card-sub">All submitted scores — updates the standings automatically.</p>
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:.5rem;">
+                <div>
+                  <h3 style="margin-bottom:.15rem;">📊 Recent Results</h3>
+                  <p class="card-sub" style="margin-bottom:0;">All submitted scores — updates standings automatically. Click ✏️ to edit a row.</p>
+                </div>
+                <button onclick="resetStandings()" class="btn btn-outline" style="font-size:.8rem;padding:.45rem 1rem;color:var(--coral);border-color:var(--coral);" title="Clear all scores and reset standings">🔄 Reset Standings</button>
+              </div>
               <div style="overflow-x:auto;">
                 <table class="scores-table" id="scores-table">
                   <thead>
@@ -2715,6 +2720,7 @@
                       <th>Score</th>
                       <th>Away Team</th>
                       <th>Court</th>
+                      <th style="width:64px;"></th>
                     </tr>
                   </thead>
                   <tbody id="scores-body"></tbody>
@@ -2885,6 +2891,18 @@
   </div>
 </div>
 
+<!-- LOADING BANNER -->
+<div id="loading-banner" style="
+  display:none; position:fixed; top:64px; left:0; right:0; z-index:200;
+  background:var(--navy); color:rgba(255,255,255,.85);
+  padding:.55rem 1.5rem; font-size:.82rem;
+  display:none; align-items:center; gap:.75rem;
+  border-bottom:1px solid rgba(255,255,255,.08);
+">
+  <span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0;"></span>
+  <span id="loading-banner-msg">Loading league data…</span>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast">
   <span class="toast-icon" id="toast-icon">✅</span>
@@ -2933,7 +2951,6 @@ async function postToSheets(endpoint, data) {
 }
 
 // ── FETCH FROM SHEETS (readable JSON via CORS) ──────────────
-// Apps Script deployed with "Anyone" access returns JSON we can read.
 async function fetchFromSheets(endpoint, params) {
   if (DEMO_MODE) return { ok: true, rows: [], demo: true };
   try {
@@ -2949,17 +2966,23 @@ async function fetchFromSheets(endpoint, params) {
 
 // ── LOAD SHEET DATA ON STARTUP ──────────────────────────────
 async function loadSheetData() {
-  if (DEMO_MODE) return; // skip in demo mode
+  if (DEMO_MODE) return;
+
+  showLoadingBanner('Loading league data…');
 
   try {
-    const [regResult, puResult] = await Promise.all([
-      fetchFromSheets(SHEETS_ENDPOINTS.getData, { type: 'getData', sheet: 'Registrations' }),
-      fetchFromSheets(SHEETS_ENDPOINTS.getData, { type: 'getData', sheet: 'Pickup Signups' }),
+    const [regResult, puResult, teamsResult, playersResult, weeksResult, gamesResult] = await Promise.all([
+      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Registrations' }),
+      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Pickup Signups' }),
+      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Teams' }),
+      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Team Players' }),
+      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Schedule' }),
+      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Schedule Games' }),
     ]);
 
-    if (regResult.ok && regResult.rows) {
+    // ── Registrations ──────────────────────────────────────────
+    if (regResult.ok && regResult.rows && regResult.rows.length) {
       sheetRegistered = regResult.rows;
-      // Seed sessionRegistered so admin panel shows existing players
       regResult.rows.forEach(r => {
         const email = (r['Email'] || '').toLowerCase();
         if (!sessionRegistered.find(p => p.email === email)) {
@@ -2974,10 +2997,10 @@ async function loadSheetData() {
           });
         }
       });
-      refreshAdminData();
     }
 
-    if (puResult.ok && puResult.rows) {
+    // ── Pickup Signups ─────────────────────────────────────────
+    if (puResult.ok && puResult.rows && puResult.rows.length) {
       sheetPickup = puResult.rows;
       puResult.rows.forEach(r => {
         const email = (r['Email'] || '').toLowerCase();
@@ -2992,10 +3015,85 @@ async function loadSheetData() {
           });
         }
       });
-      refreshAdminData();
     }
+
+    // ── Teams ──────────────────────────────────────────────────
+    if (teamsResult.ok && teamsResult.rows && teamsResult.rows.length) {
+      // Build teams from sheet — start with empty player arrays
+      const sheetTeams = teamsResult.rows.map(r => ({
+        id:      r['ID']    || uid(),
+        name:    r['Name']  || 'Unnamed',
+        color:   r['Color'] || '#4DB8D4',
+        players: [],
+      }));
+
+      // ── Team Players ────────────────────────────────────────
+      if (playersResult.ok && playersResult.rows && playersResult.rows.length) {
+        playersResult.rows.forEach(r => {
+          const team = sheetTeams.find(t => t.id === r['Team ID']);
+          if (team) {
+            const email = (r['Email'] || '').toLowerCase();
+            if (!team.players.find(p => p.email === email)) {
+              team.players.push({
+                email,
+                firstName: r['First Name'] || '',
+                lastName:  r['Last Name']  || '',
+                position:  r['Position']   || '',
+                skill:     r['Skill']      || '',
+              });
+            }
+          }
+        });
+      }
+
+      // Merge: keep any locally-created teams not yet in sheet,
+      // but prefer sheet data for teams that exist there
+      const sheetIds = new Set(sheetTeams.map(t => t.id));
+      const localOnly = teamsData.filter(t => !sheetIds.has(t.id));
+      teamsData = [...sheetTeams, ...localOnly];
+      try { localStorage.setItem('gvb_teams', JSON.stringify(teamsData)); } catch(e) {}
+      renderTeamsPage();
+      renderTeamAssignUI();
+      renderPlayerTable();
+    }
+
+    // ── Schedule ───────────────────────────────────────────────
+    if (weeksResult.ok && weeksResult.rows && weeksResult.rows.length) {
+      const sheetWeeks = weeksResult.rows.map(r => ({
+        id:      r['ID']           || uid(),
+        week:    r['Week Label']   || '',
+        date:    r['Date Display'] || '',
+        dateISO: r['Date ISO']     || '',
+        games:   [],
+      }));
+
+      if (gamesResult.ok && gamesResult.rows && gamesResult.rows.length) {
+        gamesResult.rows.forEach(r => {
+          const week = sheetWeeks.find(w => w.id === r['Week ID']);
+          if (week) {
+            week.games.push({
+              id:    r['Game ID'] || uid(),
+              time:  r['Time']        || '',
+              h:     r['Home Team']   || '',
+              a:     r['Away Team']   || '',
+              court: r['Court']       || 'A',
+            });
+          }
+        });
+      }
+
+      // Only overwrite if sheet has data (prefer sheet over default seed)
+      scheduleData = sheetWeeks;
+      try { localStorage.setItem('gvb_schedule', JSON.stringify(scheduleData)); } catch(e) {}
+      renderSchedule();
+      renderScheduleMgr();
+    }
+
+    refreshAdminData();
+    hideLoadingBanner();
   } catch(e) {
     console.warn('Could not load sheet data:', e.message);
+    hideLoadingBanner();
   }
 }
 
@@ -3264,7 +3362,6 @@ function getStreak(results) {
 }
 
 function renderStandings() {
-  const allScores = [...localScores, ...sampleScores];
   const standings = computeStandings(allScores);
 
   // Mini stat cards
@@ -3355,7 +3452,6 @@ function renderH2H() {
     if (el) el.innerHTML = '<p style="color:var(--muted)">Select two different teams.</p>';
     return;
   }
-  const allScores = [...localScores, ...sampleScores];
   const matchups = allScores.filter(s =>
     (s.homeTeam === a && s.awayTeam === b) || (s.homeTeam === b && s.awayTeam === a)
   );
@@ -3818,6 +3914,20 @@ function showToast(msg, success = true) {
   setTimeout(() => t.classList.remove('show'), 4000);
 }
 
+// ── LOADING BANNER ───────────────────────────────────────────
+function showLoadingBanner(msg) {
+  const b = document.getElementById('loading-banner');
+  const m = document.getElementById('loading-banner-msg');
+  if (!b) return;
+  if (m) m.textContent = msg || 'Loading…';
+  b.style.display = 'flex';
+}
+
+function hideLoadingBanner() {
+  const b = document.getElementById('loading-banner');
+  if (b) b.style.display = 'none';
+}
+
 // ── BOT PROTECTION ───────────────────────────────────────────
 // Three layers: honeypot, time-based check, and per-email rate limiting
 
@@ -4163,7 +4273,20 @@ async function submitPickup() {
 }
 
 // ── SCORES ────────────────────────────────────────────────────
-const localScores = [];
+// ── SCORES DATA (localStorage-backed, editable) ───────────────
+const DEFAULT_SCORES = [
+  { id:'sc1', gameDate:'2026-05-04', homeTeam:'The Blockers',  homeScore:'25', awayTeam:'Spike Squad',    awayScore:'21', court:'Court A – GCVI', submitter:'' },
+  { id:'sc2', gameDate:'2026-05-04', homeTeam:'Net Ninjas',    homeScore:'18', awayTeam:'Volley Llamas',  awayScore:'25', court:'Court B – GCVI', submitter:'' },
+  { id:'sc3', gameDate:'2026-04-27', homeTeam:'Dig Dug FC',    homeScore:'25', awayTeam:'Block Party',    awayScore:'23', court:'Court A – GCVI', submitter:'' },
+  { id:'sc4', gameDate:'2026-04-27', homeTeam:'Spike Squad',   homeScore:'25', awayTeam:'Dig Dug FC',     awayScore:'14', court:'Court B – GCVI', submitter:'' },
+  { id:'sc5', gameDate:'2026-04-20', homeTeam:'Volley Llamas', homeScore:'22', awayTeam:'The Blockers',   awayScore:'25', court:'Court A – GCVI', submitter:'' },
+];
+
+let allScores = JSON.parse(localStorage.getItem('gvb_scores') || 'null') || DEFAULT_SCORES;
+
+function saveScores() {
+  try { localStorage.setItem('gvb_scores', JSON.stringify(allScores)); } catch(e) {}
+}
 
 async function submitScore() {
   const t1 = val('sc-team1'), t2 = val('sc-team2'), s1 = val('sc-score1'), s2 = val('sc-score2');
@@ -4171,24 +4294,27 @@ async function submitScore() {
   if (!t1 || !t2 || !s1 || !s2 || !date) { showToast('Please fill in all score fields.', false); return; }
 
   setLoading('sc-btn', true);
-  const data = {
-    timestamp:  new Date().toISOString(),
-    gameDate:   date,
-    homeTeam:   t1,
-    homeScore:  s1,
-    awayTeam:   t2,
-    awayScore:  s2,
-    court:      val('sc-court'),
-    submitter:  submitter,
-    type:       'score'
+  const entry = {
+    id:        uid(),
+    timestamp: new Date().toISOString(),
+    gameDate:  date,
+    homeTeam:  t1,
+    homeScore: s1,
+    awayTeam:  t2,
+    awayScore: s2,
+    court:     val('sc-court'),
+    submitter,
+    type:      'score'
   };
 
   try {
-    await postToSheets(SHEETS_ENDPOINTS.scores, data);
-    localScores.unshift(data);
+    await postToSheets(SCRIPT_URL, entry);
+    allScores.unshift(entry);
+    saveScores();
     renderScoresTable();
-    showToast('Score submitted! Thanks for keeping the records up to date.');
-    ['sc-team1','sc-team2','sc-score1','sc-score2','sc-date','sc-submitter'].forEach(id => { document.getElementById(id).value = ''; });
+    showToast('Score submitted!');
+    ['sc-team1','sc-team2','sc-score1','sc-score2','sc-submitter'].forEach(id => { document.getElementById(id).value = ''; });
+    document.getElementById('sc-date').value = new Date().toISOString().slice(0,10);
   } catch(e) {
     showToast('Something went wrong. Please try again.', false);
   }
@@ -4199,30 +4325,96 @@ async function submitScore() {
 
 function renderScoresTable() {
   const tbody = document.getElementById('scores-body');
-  const allScores = [...localScores, ...sampleScores];
+  if (!tbody) return;
+  if (!allScores.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);font-style:italic;padding:1.25rem;">No scores yet.</td></tr>`;
+    return;
+  }
   tbody.innerHTML = allScores.map(s => {
     const h = parseInt(s.homeScore), a = parseInt(s.awayScore);
     const homeClass = h > a ? 'win' : 'lose';
     const awayClass = a > h ? 'win' : 'lose';
     const d = s.gameDate ? new Date(s.gameDate + 'T12:00:00').toLocaleDateString('en-CA', {month:'short',day:'numeric',year:'numeric'}) : '—';
-    return `<tr>
+    const isAdmin = window.currentUser && window.currentUser.email === ADMIN_EMAIL;
+    const adminCtrls = isAdmin ? `
+      <td style="white-space:nowrap;">
+        <button onclick="editScore('${s.id}')" title="Edit" style="background:none;border:none;cursor:pointer;font-size:.85rem;padding:.15rem .3rem;border-radius:4px;color:var(--muted);transition:color .2s;" onmouseover="this.style.color='var(--sky)'" onmouseout="this.style.color='var(--muted)'">✏️</button>
+        <button onclick="deleteScore('${s.id}')" title="Delete" style="background:none;border:none;cursor:pointer;font-size:.85rem;padding:.15rem .3rem;border-radius:4px;color:var(--muted);transition:color .2s;" onmouseover="this.style.color='var(--coral)'" onmouseout="this.style.color='var(--muted)'">🗑️</button>
+      </td>` : '';
+    return `<tr id="score-row-${s.id}">
       <td>${d}</td>
       <td class="${homeClass}">${s.homeTeam}</td>
       <td><span class="score-pill">${s.homeScore} – ${s.awayScore}</span></td>
       <td class="${awayClass}">${s.awayTeam}</td>
       <td><small>${s.court || '—'}</small></td>
+      ${adminCtrls}
     </tr>`;
   }).join('');
 }
 
-// ── SAMPLE DATA ───────────────────────────────────────────────
-const sampleScores = [
-  { gameDate:'2026-05-04', homeTeam:'The Blockers',  homeScore:'25', awayTeam:'Spike Squad',     awayScore:'21', court:'Court A – GCVI' },
-  { gameDate:'2026-05-04', homeTeam:'Net Ninjas',     homeScore:'18', awayTeam:'Volley Llamas',   awayScore:'25', court:'Court B – GCVI' },
-  { gameDate:'2026-04-27', homeTeam:'Dig Dug FC',     homeScore:'25', awayTeam:'Block Party',     awayScore:'23', court:'Court A – GCVI' },
-  { gameDate:'2026-04-27', homeTeam:'Spike Squad',    homeScore:'25', awayTeam:'Dig Dug FC',      awayScore:'14', court:'Court B – GCVI' },
-  { gameDate:'2026-04-20', homeTeam:'Volley Llamas',  homeScore:'22', awayTeam:'The Blockers',    awayScore:'25', court:'Court A – GCVI' },
-];
+function editScore(id) {
+  const s = allScores.find(x => x.id === id);
+  if (!s) return;
+  const row = document.getElementById('score-row-' + id);
+  if (!row) return;
+  const courtOpts = ['Court A – GCVI','Court B – GCVI','Centennial CVI','Other']
+    .map(c => `<option${c===s.court?' selected':''}>${c}</option>`).join('');
+  row.innerHTML = `
+    <td><input type="date" id="se-date-${id}" value="${s.gameDate}" style="${scEditInputStyle()}"></td>
+    <td><input type="text" id="se-h-${id}"    value="${s.homeTeam}"  placeholder="Home" style="${scEditInputStyle()}"></td>
+    <td style="white-space:nowrap;">
+      <input type="number" id="se-hs-${id}" value="${s.homeScore}" min="0" style="${scEditInputStyle('54px')}">
+      <span style="color:var(--muted);margin:0 3px;">–</span>
+      <input type="number" id="se-as-${id}" value="${s.awayScore}" min="0" style="${scEditInputStyle('54px')}">
+    </td>
+    <td><input type="text" id="se-a-${id}"    value="${s.awayTeam}"  placeholder="Away" style="${scEditInputStyle()}"></td>
+    <td><select id="se-court-${id}" style="${scEditInputStyle()}">${courtOpts}</select></td>
+    <td style="white-space:nowrap;">
+      <button onclick="saveEditScore('${id}')" style="background:var(--sky);color:var(--navy);border:none;border-radius:6px;padding:.25rem .6rem;font-size:.78rem;font-weight:700;cursor:pointer;margin-right:.2rem;">Save</button>
+      <button onclick="renderScoresTable()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:.25rem .55rem;font-size:.78rem;cursor:pointer;color:var(--muted);">✕</button>
+    </td>`;
+  row.querySelector(`#se-h-${id}`)?.focus();
+}
+
+function scEditInputStyle(w) {
+  return `width:${w||'100%'};padding:.3rem .5rem;border:1.5px solid var(--sky);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.82rem;background:var(--white);color:var(--navy);outline:none;`;
+}
+
+function saveEditScore(id) {
+  const s = allScores.find(x => x.id === id);
+  if (!s) return;
+  s.gameDate  = document.getElementById('se-date-' + id)?.value  || s.gameDate;
+  s.homeTeam  = document.getElementById('se-h-'    + id)?.value  || s.homeTeam;
+  s.homeScore = document.getElementById('se-hs-'   + id)?.value  || s.homeScore;
+  s.awayScore = document.getElementById('se-as-'   + id)?.value  || s.awayScore;
+  s.awayTeam  = document.getElementById('se-a-'    + id)?.value  || s.awayTeam;
+  s.court     = document.getElementById('se-court-'+ id)?.value  || s.court;
+  saveScores();
+  renderScoresTable();
+  if (document.getElementById('standings')?.classList.contains('active')) renderStandings();
+  showToast('Score updated!');
+}
+
+function deleteScore(id) {
+  const s = allScores.find(x => x.id === id);
+  if (!s) return;
+  const d = s.gameDate ? new Date(s.gameDate + 'T12:00:00').toLocaleDateString('en-CA',{month:'short',day:'numeric'}) : 'this game';
+  if (!confirm(`Delete the score for ${s.homeTeam} vs ${s.awayTeam} on ${d}?`)) return;
+  allScores = allScores.filter(x => x.id !== id);
+  saveScores();
+  renderScoresTable();
+  if (document.getElementById('standings')?.classList.contains('active')) renderStandings();
+  showToast('Score deleted.');
+}
+
+function resetStandings() {
+  if (!confirm('Reset all standings? This will permanently delete ALL submitted scores and cannot be undone.')) return;
+  allScores = [];
+  saveScores();
+  renderScoresTable();
+  if (document.getElementById('standings')?.classList.contains('active')) renderStandings();
+  showToast('Standings reset — all scores cleared.');
+}
 
 const DEFAULT_PICKUP = [
   { id:'pu1', date:'May 18, 2026', dateISO:'2026-05-18', time:'1:00–3:00 PM', location:'GCVI Gym', spots:8,  max:18 },
@@ -4263,6 +4455,18 @@ let scheduleData = JSON.parse(localStorage.getItem('gvb_schedule') || 'null') ||
 
 function saveSchedule() {
   try { localStorage.setItem('gvb_schedule', JSON.stringify(scheduleData)); } catch(e) {}
+  if (!DEMO_MODE) {
+    const weeksPayload = scheduleData.map(w => ({ id: w.id, week: w.week, date: w.date, dateISO: w.dateISO || '' }));
+    const gamesPayload = [];
+    scheduleData.forEach(w => w.games.forEach(g => gamesPayload.push({
+      weekId: w.id, id: g.id, time: g.time, h: g.h, a: g.a, court: g.court
+    })));
+    postToSheets(SCRIPT_URL, {
+      type: 'saveSchedule',
+      weeksJson: JSON.stringify(weeksPayload),
+      gamesJson: JSON.stringify(gamesPayload)
+    });
+  }
 }
 
 function uid() { return 'id' + Date.now() + Math.random().toString(36).slice(2,6); }
@@ -4724,7 +4928,22 @@ if (!teamsData.length) {
 }
 
 function saveTeams() {
+  // Keep localStorage as fast local cache
   try { localStorage.setItem('gvb_teams', JSON.stringify(teamsData)); } catch(e) {}
+  // Persist to Google Sheets (fire-and-forget, no-cors write)
+  if (!DEMO_MODE) {
+    // Save team roster (without player details — those go in Team Players)
+    const teamsPayload = teamsData.map(t => ({ id: t.id, name: t.name, color: t.color }));
+    postToSheets(SCRIPT_URL, { type: 'saveTeams', teamsJson: JSON.stringify(teamsPayload) });
+    // Save all player-to-team assignments flat
+    const playersPayload = [];
+    teamsData.forEach(t => t.players.forEach(p => playersPayload.push({
+      teamId: t.id, teamName: t.name,
+      email: p.email, firstName: p.firstName, lastName: p.lastName,
+      position: p.position || '', skill: p.skill || ''
+    })));
+    postToSheets(SCRIPT_URL, { type: 'saveTeamPlayers', playersJson: JSON.stringify(playersPayload) });
+  }
 }
 
 function getAllAssignedEmails() {
@@ -5029,7 +5248,6 @@ formatPhoneInput('reg-phone');
 // Load existing players from Google Sheets (no-op in demo mode)
 loadSheetData();
 
-// Patch submitScore to also refresh standings when on that tab
 // Patch submitScore to also refresh standings when on that tab
 const _patchedSubmitScore = submitScore;
 submitScore = async function() {
