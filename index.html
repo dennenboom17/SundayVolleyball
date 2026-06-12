@@ -2,8 +2,54 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SundayGVB">
+<meta name="application-name" content="SundayGVB">
+<meta name="theme-color" content="#0D1B2A" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0D1B2A">
+<meta name="msapplication-TileColor" content="#0D1B2A">
+<meta name="msapplication-navbutton-color" content="#0D1B2A">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="Intermediate/competitive co-ed volleyball every Sunday during the school year in Guelph, Ontario. Register, sign up for pick-up, and track standings.">
+
+<!-- Open Graph / Social -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.sundayguelphvb.com">
+<meta property="og:title" content="Sunday Guelph Volleyball">
+<meta property="og:description" content="Intermediate/competitive co-ed volleyball every Sunday during the school year in Guelph, Ontario.">
+<meta property="og:image" content="https://images.pexels.com/photos/6203541/pexels-photo-6203541.jpeg?w=1200&auto=compress">
+<meta name="twitter:card" content="summary_large_image">
+
 <title>Sunday Guelph Volleyball</title>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- iOS Icons -->
+<link rel="apple-touch-icon" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="72x72"   href="icons/icon-72.png">
+<link rel="apple-touch-icon" sizes="96x96"   href="icons/icon-96.png">
+<link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+<link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+
+<!-- iOS Splash Screens (portrait) -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" href="icons/splash-1290x2796.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" href="icons/splash-1179x2556.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="icons/splash-1170x2532.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="icons/splash-1125x2436.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="icons/splash-828x1792.png">
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="shortcut icon" href="icons/icon-192.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -16,6 +62,62 @@
     --white: #FDFAF4;
     --muted: #8A8070;
     --border: rgba(13,27,42,0.12);
+    /* Safe area insets for iOS notch / Dynamic Island */
+    --sat: env(safe-area-inset-top, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+  }
+
+  /* PWA Install Prompt Banner */
+  #install-banner {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 500;
+    background: var(--navy);
+    border-top: 2px solid var(--gold);
+    padding: 1rem 1.25rem calc(1rem + var(--sab));
+    display: none;
+    flex-direction: column;
+    gap: .5rem;
+    box-shadow: 0 -4px 32px rgba(0,0,0,.4);
+  }
+  #install-banner.show { display: flex; }
+  .install-banner-inner {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  }
+  .install-banner-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--gold); color: var(--navy);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: .9rem; letter-spacing: 1px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .install-banner-text { flex: 1; min-width: 0; }
+  .install-banner-text strong {
+    display: block; color: var(--white);
+    font-size: .95rem;
+  }
+  .install-banner-text span {
+    font-size: .78rem; color: rgba(255,255,255,.5);
+  }
+  .install-banner-actions { display: flex; gap: .6rem; flex-shrink: 0; }
+
+  /* iOS-specific: Add to Home Screen hint */
+  #ios-hint {
+    display: none;
+    font-size: .78rem;
+    color: rgba(255,255,255,.55);
+    text-align: center;
+    padding-top: .25rem;
+  }
+  #ios-hint span { color: var(--gold); }
+
+  /* Account for iOS bottom bar in fixed-bottom elements */
+  .toast {
+    bottom: calc(1rem + var(--sab));
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,7 +137,8 @@
     background: var(--navy);
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 2rem;
-    height: 64px;
+    padding-top: var(--sat);
+    height: calc(64px + var(--sat));
     box-shadow: 0 2px 20px rgba(0,0,0,.35);
   }
 
@@ -2509,6 +2612,9 @@
             <span class="item-icon">🏐</span> Manage Pick-Up
             <span class="item-badge" id="badge-pickup">0</span>
           </button>
+          <button class="admin-nav-item" id="anav-settings" onclick="switchAdminTab('settings')">
+            <span class="item-icon">⚙️</span> Settings
+          </button>
         </div>
 
         <!-- Main content -->
@@ -2654,6 +2760,50 @@
 
           </div><!-- /apanel-pickup -->
 
+          <!-- SETTINGS -->
+          <div class="admin-panel" id="apanel-settings">
+
+            <div class="admin-card">
+              <h3>📧 MailerSend Configuration</h3>
+              <p class="card-sub">Enter your MailerSend API key to enable transactional emails (registration confirmations, pick-up confirmations) and bulk email broadcasts to players. The key is stored securely in Google Apps Script Properties — it is never exposed to the browser.</p>
+
+              <div class="note" style="margin-bottom:1.25rem;">
+                🔑 Get your API key from <a href="https://app.mailersend.com/api-tokens" target="_blank" rel="noopener" style="color:var(--sky);">app.mailersend.com/api-tokens</a>. Your sending domain (<code>sundayguelphvb.com</code>) must be verified in MailerSend before emails will deliver.
+              </div>
+
+              <div class="form-group">
+                <label>MailerSend API Key</label>
+                <div style="display:flex;gap:.6rem;">
+                  <input type="password" id="ms-api-key" placeholder="mlsn.xxxxxxxxxxxxxxxxxxxxxx" style="flex:1;padding:.75rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Mono',monospace;font-size:.85rem;background:var(--sand);color:var(--navy);outline:none;transition:border-color .2s;"
+                    onfocus="this.style.borderColor='var(--sky)'" onblur="this.style.borderColor='var(--border)'">
+                  <button onclick="toggleApiKeyVisibility()" id="ms-toggle-btn" class="btn btn-outline" style="padding:.75rem 1rem;font-size:.85rem;white-space:nowrap;">👁 Show</button>
+                </div>
+              </div>
+              <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.5rem;">
+                <button class="btn btn-primary" onclick="saveApiKey()" id="ms-save-btn">💾 Save API Key</button>
+                <button class="btn btn-outline" onclick="testEmail()" id="ms-test-btn">🧪 Send Test Email</button>
+              </div>
+              <div id="ms-status" style="margin-top:.9rem;font-size:.83rem;display:none;"></div>
+            </div>
+
+            <div class="admin-card">
+              <h3>📋 Email Integration Status</h3>
+              <p class="card-sub">Current configuration and what each email trigger does.</p>
+              <table style="width:100%;font-size:.85rem;border-collapse:collapse;">
+                <thead><tr>
+                  <th style="text-align:left;padding:.5rem .75rem;background:var(--navy);color:var(--gold);border-radius:8px 0 0 0;font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:1px;">TRIGGER</th>
+                  <th style="text-align:left;padding:.5rem .75rem;background:var(--navy);color:var(--gold);border-radius:0 8px 0 0;font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:1px;">WHAT HAPPENS</th>
+                </tr></thead>
+                <tbody>
+                  <tr><td style="padding:.65rem .75rem;border-bottom:1px solid var(--border);">Player registers</td><td style="padding:.65rem .75rem;border-bottom:1px solid var(--border);color:var(--muted);">Confirmation email sent via MailerSend transactional API</td></tr>
+                  <tr><td style="padding:.65rem .75rem;border-bottom:1px solid var(--border);">Pick-up signup</td><td style="padding:.65rem .75rem;border-bottom:1px solid var(--border);color:var(--muted);">Confirmation email sent via MailerSend transactional API</td></tr>
+                  <tr><td style="padding:.65rem .75rem;">Admin broadcasts email</td><td style="padding:.65rem .75rem;color:var(--muted);">Bulk send via MailerSend /bulk-email endpoint (up to 500/batch)</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div><!-- /apanel-settings -->
+
           <!-- SCORES -->
           <div class="admin-panel" id="apanel-scores">
             <div class="admin-card">
@@ -2720,7 +2870,6 @@
                       <th>Score</th>
                       <th>Away Team</th>
                       <th>Court</th>
-                      <th style="width:64px;"></th>
                     </tr>
                   </thead>
                   <tbody id="scores-body"></tbody>
@@ -2921,7 +3070,7 @@
 // ── GOOGLE SHEETS INTEGRATION ──────────────────────────────
 // Replace with your actual Google Apps Script Web App URL
 // One URL handles all types: registration, pickup, score, getData, checkDuplicate
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFEp3EU9ytPgDHql-InigZvePgHaUClwuRMDqr9oITAQAbqUZaKaM1KFNMG1IlEHUc/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec';
 
 const SHEETS_ENDPOINTS = {
   registration: SCRIPT_URL,
@@ -3576,13 +3725,84 @@ function refreshAdminData() {
 }
 
 function switchAdminTab(tab) {
-  ['email','scores','teams','players','pickup','schedule-mgr'].forEach(t => {
+  ['email','scores','teams','players','pickup','schedule-mgr','settings'].forEach(t => {
     document.getElementById('apanel-' + t)?.classList.toggle('active', t === tab);
     document.getElementById('anav-'   + t)?.classList.toggle('active', t === tab);
   });
   if (tab === 'teams')        renderTeamAssignUI();
   if (tab === 'schedule-mgr') renderScheduleMgr();
   if (tab === 'pickup')       renderPickupAdminTab();
+}
+
+// ── MAILERSEND SETTINGS ───────────────────────────────────────
+function toggleApiKeyVisibility() {
+  const inp = document.getElementById('ms-api-key');
+  const btn = document.getElementById('ms-toggle-btn');
+  if (!inp) return;
+  const showing = inp.type === 'text';
+  inp.type     = showing ? 'password' : 'text';
+  btn.textContent = showing ? '👁 Show' : '🙈 Hide';
+}
+
+async function saveApiKey() {
+  const key = document.getElementById('ms-api-key')?.value.trim();
+  const statusEl = document.getElementById('ms-status');
+  if (!key) { showToast('Please enter your MailerSend API key.', false); return; }
+
+  const btn = document.getElementById('ms-save-btn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  try {
+    const res  = await fetch(`${SCRIPT_URL}?type=setApiKey&apiKey=${encodeURIComponent(key)}`);
+    const data = await res.json();
+    if (data.ok) {
+      showToast('✅ MailerSend API key saved successfully!');
+      statusEl.style.display = 'block';
+      statusEl.style.color   = '#1a7a3e';
+      statusEl.textContent   = '✅ API key saved. Confirmation emails are now active.';
+      document.getElementById('ms-api-key').value = '';
+    } else {
+      showToast('Failed to save key: ' + (data.error || 'unknown error'), false);
+    }
+  } catch(e) {
+    showToast('Network error saving API key.', false);
+  }
+  btn.disabled = false; btn.textContent = '💾 Save API Key';
+}
+
+async function testEmail() {
+  const adminEmail = currentUser?.email;
+  if (!adminEmail) { showToast('You must be logged in to send a test email.', false); return; }
+
+  const btn = document.getElementById('ms-test-btn');
+  const statusEl = document.getElementById('ms-status');
+  btn.disabled = true; btn.textContent = '⏳ Sending…';
+
+  try {
+    const params = new URLSearchParams({
+      type:       'sendAdminEmail',
+      subject:    '🧪 Test Email – Sunday Guelph VB',
+      body:       'Hi [First Name],\n\nThis is a test email from Sunday Guelph Volleyball admin panel. If you received this, MailerSend is configured correctly!\n\n— Sunday GVB Team',
+      recipients: JSON.stringify([{ firstName: 'Admin', lastName: '', email: adminEmail }])
+    });
+    const res  = await fetch(SCRIPT_URL + '?' + params.toString());
+    const data = await res.json();
+    if (data.ok && data.sent > 0) {
+      showToast(`✅ Test email sent to ${adminEmail}`);
+      statusEl.style.display = 'block';
+      statusEl.style.color   = '#1a7a3e';
+      statusEl.textContent   = `✅ Test email sent to ${adminEmail}. Check your inbox!`;
+    } else {
+      const err = data.error || 'Unknown error';
+      showToast('Test failed: ' + err, false);
+      statusEl.style.display = 'block';
+      statusEl.style.color   = 'var(--coral)';
+      statusEl.textContent   = '❌ ' + err;
+    }
+  } catch(e) {
+    showToast('Network error sending test email.', false);
+  }
+  btn.disabled = false; btn.textContent = '🧪 Send Test Email';
 }
 
 // ── AUDIENCE SELECTOR ────────────────────────────────────────
@@ -3755,28 +3975,62 @@ async function sendEmail() {
   if (!recipients.length) { showToast('No recipients selected. Register some players first.', false); return; }
 
   const btn = document.getElementById('send-btn');
-  btn.disabled    = true;
-  btn.innerHTML   = `<span class="spinner"></span> Sending…`;
+  btn.disabled  = true;
+  btn.innerHTML = `<span class="spinner"></span> Sending via MailerSend…`;
 
-  // Simulate sending (in production, POST to your Google Apps Script or email API)
-  await new Promise(r => setTimeout(r, 1200));
+  try {
+    // Build recipient list for Apps Script (which calls MailerSend bulk API)
+    const recipientData = recipients.map(r => ({
+      firstName: r.firstName || '',
+      lastName:  r.lastName  || '',
+      email:     r.email     || ''
+    }));
 
-  // Log it
-  const entry = {
-    timestamp:  new Date().toLocaleString(),
-    subject,
-    count:      recipients.length,
-    audiences:  [...selectedAudiences].join(', '),
-    recipients: recipients.map(r => `${r.firstName} ${r.lastName} <${r.email}>`),
-  };
-  sentLog.unshift(entry);
-  renderSentLog();
+    const params = new URLSearchParams({
+      type:       'sendAdminEmail',
+      subject,
+      body,
+      recipients: JSON.stringify(recipientData)
+    });
 
-  showToast(`✉️ Email sent to ${recipients.length} recipient${recipients.length !== 1 ? 's' : ''}!`);
+    let result = { ok: true, sent: recipients.length, failed: 0 };
 
-  // Reset form
-  document.getElementById('email-subject').value = '';
-  document.getElementById('email-body').value    = '';
+    if (!DEMO_MODE) {
+      const res = await fetch(SCRIPT_URL + '?' + params.toString(), { method: 'GET' });
+      result = await res.json();
+    }
+
+    if (result.ok) {
+      // Log the send
+      const entry = {
+        timestamp:  new Date().toLocaleString(),
+        subject,
+        count:      result.sent || recipients.length,
+        failed:     result.failed || 0,
+        audiences:  [...selectedAudiences].join(', '),
+        recipients: recipients.map(r => `${r.firstName} ${r.lastName} <${r.email}>`),
+      };
+      sentLog.unshift(entry);
+      renderSentLog();
+
+      const failNote = result.failed > 0 ? ` (${result.failed} failed)` : '';
+      showToast(`✉️ Email sent to ${result.sent || recipients.length} recipient${recipients.length !== 1 ? 's' : ''}${failNote}!`);
+
+      document.getElementById('email-subject').value = '';
+      document.getElementById('email-body').value    = '';
+    } else {
+      const errMsg = result.error || 'Send failed';
+      if (errMsg.includes('API key')) {
+        showToast('MailerSend API key not set. Go to Admin → Settings to add it.', false);
+      } else {
+        showToast('Send failed: ' + errMsg, false);
+      }
+    }
+  } catch(e) {
+    showToast('Network error — could not reach the email service.', false);
+    console.error('sendEmail error:', e);
+  }
+
   btn.disabled  = false;
   btn.innerHTML = '✉️ Send Email';
 }
@@ -4352,7 +4606,7 @@ function renderScoresTable() {
   const tbody = document.getElementById('scores-body');
   if (!tbody) return;
   if (!allScores.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);font-style:italic;padding:1.25rem;">No scores yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:1.25rem;">No scores yet.</td></tr>`;
     return;
   }
   tbody.innerHTML = allScores.map(s => {
@@ -4360,19 +4614,12 @@ function renderScoresTable() {
     const homeClass = h > a ? 'win' : 'lose';
     const awayClass = a > h ? 'win' : 'lose';
     const d = s.gameDate ? new Date(s.gameDate + 'T12:00:00').toLocaleDateString('en-CA', {month:'short',day:'numeric',year:'numeric'}) : '—';
-    const isAdmin = window.currentUser && window.currentUser.email === ADMIN_EMAIL;
-    const adminCtrls = isAdmin ? `
-      <td style="white-space:nowrap;">
-        <button onclick="editScore('${s.id}')" title="Edit" style="background:none;border:none;cursor:pointer;font-size:.85rem;padding:.15rem .3rem;border-radius:4px;color:var(--muted);transition:color .2s;" onmouseover="this.style.color='var(--sky)'" onmouseout="this.style.color='var(--muted)'">✏️</button>
-        <button onclick="deleteScore('${s.id}')" title="Delete" style="background:none;border:none;cursor:pointer;font-size:.85rem;padding:.15rem .3rem;border-radius:4px;color:var(--muted);transition:color .2s;" onmouseover="this.style.color='var(--coral)'" onmouseout="this.style.color='var(--muted)'">🗑️</button>
-      </td>` : '';
     return `<tr id="score-row-${s.id}">
       <td>${d}</td>
       <td class="${homeClass}">${s.homeTeam}</td>
       <td><span class="score-pill">${s.homeScore} – ${s.awayScore}</span></td>
       <td class="${awayClass}">${s.awayTeam}</td>
       <td><small>${s.court || '—'}</small></td>
-      ${adminCtrls}
     </tr>`;
   }).join('');
 }
@@ -4789,18 +5036,20 @@ function renderPickupSessionAdmin() {
   }
 
   list.innerHTML = pickupData.map(p => {
-    const open     = p.max - p.spots;
-    const pct      = p.max > 0 ? Math.round((p.spots / p.max) * 100) : 0;
+    const signedUp = countSignupsForSession(p);
+    const filled   = Math.max(p.spots, signedUp);
+    const open     = Math.max(0, p.max - filled);
+    const pct      = p.max > 0 ? Math.round((filled / p.max) * 100) : 0;
     const isOpen   = openPickupSessions.has(p.id);
     const dotColor = open === 0 ? 'var(--coral)' : open <= 3 ? 'var(--gold)' : 'var(--sky)';
-    const statusTxt = open === 0 ? 'FULL' : `${open} spots open`;
+    const statusTxt = open === 0 ? 'FULL' : `${open} spot${open !== 1 ? 's' : ''} open`;
 
     return `<div class="pu-session-row" id="purow-${p.id}">
       <div class="pu-session-header" onclick="togglePickupAccordion('${p.id}')">
         <div class="pu-status-dot" style="background:${dotColor}"></div>
         <div class="pu-session-info">
           <div class="pu-session-date">${p.date}</div>
-          <div class="pu-session-meta">${p.time} · ${p.location||'GCVI Gym'} · ${p.spots}/${p.max} · ${statusTxt}</div>
+          <div class="pu-session-meta">${p.time} · ${p.location||'GCVI Gym'} · ${filled}/${p.max} · ${statusTxt}</div>
         </div>
         <div class="pu-session-actions" onclick="event.stopPropagation()">
           <button onclick="togglePickupAccordion('${p.id}')" title="${isOpen?'Collapse':'Edit'}">✏️</button>
@@ -4814,7 +5063,7 @@ function renderPickupSessionAdmin() {
           <div class="pu-spot-bar-fill">
             <div class="pu-spot-bar-inner" style="width:${pct}%;background:${dotColor};"></div>
           </div>
-          <div class="pu-spot-bar-label" style="color:${dotColor}">${p.spots}/${p.max} filled</div>
+          <div class="pu-spot-bar-label" style="color:${dotColor}">${filled}/${p.max} filled</div>
         </div>
         <!-- Edit fields -->
         <div class="pu-edit-grid">
@@ -4834,15 +5083,37 @@ function renderPickupSessionAdmin() {
             <label>Max Spots</label>
             <input type="number" id="pue-max-${p.id}" value="${p.max}" min="1" max="100">
           </div>
-          <div class="form-group">
-            <label>Spots Filled (signed up)</label>
-            <input type="number" id="pue-spots-${p.id}" value="${p.spots}" min="0">
-          </div>
         </div>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
           <button class="btn btn-primary" style="font-size:.85rem;padding:.5rem 1.2rem;" onclick="savePickupSession('${p.id}')">💾 Save Changes</button>
           <button class="btn btn-outline" style="font-size:.85rem;padding:.5rem 1rem;" onclick="togglePickupAccordion('${p.id}')">Cancel</button>
         </div>
+
+        <!-- Signed-up players for this session -->
+        ${(() => {
+          const sessionPlayers = sessionPickup.filter(sp => {
+            const d = (sp.date || '').toLowerCase();
+            const sd = (p.date || '').toLowerCase();
+            return d === sd || d.startsWith(sd);
+          });
+          if (!sessionPlayers.length) return `<div style="margin-top:1rem;padding:.6rem .75rem;background:var(--sand);border-radius:8px;font-size:.82rem;color:var(--muted);font-style:italic;">No signups for this session yet.</div>`;
+          return `<div style="margin-top:1rem;">
+            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--navy);margin-bottom:.5rem;">Signed-Up Players (${sessionPlayers.length})</div>
+            ${sessionPlayers.map((sp, idx) => {
+              const ini = ((sp.firstName||'?')[0]+(sp.lastName||'?')[0]).toUpperCase();
+              const displayName = sp.firstName + ' ' + (sp.lastName||'?')[0].toUpperCase() + '.';
+              const posOpts = ['Setter','Outside Hitter / Power','Middle Blocker','Right Side / Opposite','No Preference']
+                .map(o => `<option${o===sp.position?' selected':''}>${o}</option>`).join('');
+              return `<div class="assigned-chip" id="pup-${p.id}-${idx}" style="margin-bottom:.35rem;gap:.6rem;padding:.5rem .7rem;">
+                <div class="player-initials" style="background:var(--sky);width:26px;height:26px;font-size:.65rem;flex-shrink:0;">${ini}</div>
+                <span style="font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${displayName}</span>
+                <span style="font-size:.75rem;color:var(--muted);flex-shrink:0;">${sp.email}</span>
+                <select onchange="updatePickupPlayerPosition('${sp.email}','${p.date}',this.value)" style="font-size:.75rem;padding:.2rem .4rem;border:1px solid var(--border);border-radius:5px;background:var(--sand);color:var(--navy);cursor:pointer;flex-shrink:0;max-width:130px;">${posOpts}</select>
+                <button onclick="removePickupPlayer('${sp.email}','${p.date}','${p.id}')" title="Remove player" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.9rem;padding:.1rem .25rem;border-radius:4px;transition:color .2s;flex-shrink:0;" onmouseover="this.style.color='var(--coral)'" onmouseout="this.style.color='var(--muted)'">✕</button>
+              </div>`;
+            }).join('')}
+          </div>`;
+        })()}
       </div>
     </div>`;
   }).join('');
@@ -4855,18 +5126,49 @@ function savePickupSession(id) {
   const timeV  = document.getElementById(`pue-time-${id}`)?.value.trim();
   const locV   = document.getElementById(`pue-loc-${id}`)?.value.trim();
   const maxV   = parseInt(document.getElementById(`pue-max-${id}`)?.value);
-  const spotsV = parseInt(document.getElementById(`pue-spots-${id}`)?.value);
-  if (dateV)            { s.dateISO = dateV; s.date = fmtDate(dateV); }
-  if (timeV)              s.time     = timeV;
-  if (locV)               s.location = locV;
-  if (!isNaN(maxV))       s.max      = Math.max(1, maxV);
-  if (!isNaN(spotsV))     s.spots    = Math.max(0, Math.min(spotsV, s.max));
+  if (dateV)          { s.dateISO = dateV; s.date = fmtDate(dateV); }
+  if (timeV)            s.time     = timeV;
+  if (locV)             s.location = locV;
+  if (!isNaN(maxV))     s.max      = Math.max(1, maxV);
   savePickupSessions();
   openPickupSessions.delete(id);
   showToast('Session updated!');
   renderPickup();
   renderPickupSessionAdmin();
   syncPickupDateDropdown();
+}
+
+function removePickupPlayer(email, sessionDate, sessionId) {
+  const e = email.toLowerCase();
+  const d = (sessionDate || '').toLowerCase();
+  const before = sessionPickup.length;
+  // Remove from in-memory list
+  const idx = sessionPickup.findIndex(p =>
+    p.email.toLowerCase() === e && (p.date || '').toLowerCase().startsWith(d)
+  );
+  if (idx === -1) { showToast('Player not found.', false); return; }
+  const player = sessionPickup[idx];
+  const displayName = player.firstName + ' ' + (player.lastName||'?')[0].toUpperCase() + '.';
+  if (!confirm(`Remove ${displayName} from this session?`)) return;
+  sessionPickup.splice(idx, 1);
+  showToast(`${displayName} removed from session.`);
+  renderPickup();
+  renderPickupSessionAdmin();
+  renderPickupTable();
+  syncPickupDateDropdown();
+}
+
+function updatePickupPlayerPosition(email, sessionDate, newPosition) {
+  const e = email.toLowerCase();
+  const d = (sessionDate || '').toLowerCase();
+  const player = sessionPickup.find(p =>
+    p.email.toLowerCase() === e && (p.date || '').toLowerCase().startsWith(d)
+  );
+  if (player) {
+    player.position = newPosition;
+    renderPickupTable();
+    showToast('Position updated.');
+  }
 }
 
 // Keep the sign-up form's date dropdown in sync with pickupData
@@ -4876,7 +5178,10 @@ function syncPickupDateDropdown() {
   const current = sel.value;
   sel.innerHTML = `<option value="">— Select a session —</option>` +
     pickupData
-      .filter(p => p.max - p.spots > 0)
+      .filter(p => {
+        const filled = Math.max(p.spots, countSignupsForSession(p));
+        return p.max - filled > 0;
+      })
       .map(p => `<option value="${p.date} – ${p.time}"${current===`${p.date} – ${p.time}`?' selected':''}>${p.date} – ${p.time}</option>`)
       .join('');
 }
@@ -4887,10 +5192,21 @@ function renderPickupAdminTab() {
   renderPickupTable();
 }
 
+function countSignupsForSession(session) {
+  // Match signups where date string starts with session.date
+  return sessionPickup.filter(p => {
+    const d = (p.date || '').toLowerCase();
+    const sd = (session.date || '').toLowerCase();
+    return d === sd || d.startsWith(sd);
+  }).length;
+}
+
 function renderPickup() {
   document.getElementById('pickup-slots').innerHTML = pickupData.map(p => {
-    const open = p.max - p.spots;
-    let cls = 'open', badge = 'badge-open', label = `${open} spots left`;
+    const signedUp = countSignupsForSession(p);
+    const filled   = Math.max(p.spots, signedUp); // use whichever is higher
+    const open     = Math.max(0, p.max - filled);
+    let cls = 'open', badge = 'badge-open', label = `${open} spot${open !== 1 ? 's' : ''} left`;
     if (open === 0)     { cls = 'full';    badge = 'badge-full';    label = 'FULL'; }
     else if (open <= 3) { cls = 'filling'; badge = 'badge-filling'; }
     const loc = p.location || 'GCVI Gym';
@@ -4899,7 +5215,7 @@ function renderPickup() {
       <div class="slot-time">🕐 ${p.time} · ${loc}</div>
       <div class="slot-spots">
         <span class="spots-badge ${badge}">${label}</span>
-        <span style="color:var(--muted);font-size:.8rem;">${p.spots}/${p.max} signed up</span>
+        <span style="color:var(--muted);font-size:.8rem;">${filled}/${p.max} signed up</span>
       </div>
       ${open > 0
         ? `<button class="btn btn-sky" style="width:100%;padding:.6rem;" onclick="document.getElementById('pu-date').value='${p.date} – ${p.time}';showSection('pickup');document.getElementById('pu-date').scrollIntoView();">Sign Up →</button>`
@@ -5272,6 +5588,8 @@ stampFormLoad();
 formatPhoneInput('reg-phone');
 // Load existing players from Google Sheets (no-op in demo mode)
 loadSheetData();
+// Register service worker for PWA support
+registerServiceWorker();
 
 // Patch submitScore to also refresh standings when on that tab
 const _patchedSubmitScore = submitScore;
@@ -5279,6 +5597,110 @@ submitScore = async function() {
   await _patchedSubmitScore.apply(this, arguments);
   if (document.getElementById('standings')?.classList.contains('active')) renderStandings();
 };
+
+// ── SERVICE WORKER & PWA ──────────────────────────────────────
+let deferredInstallPrompt = null;
+
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('./sw.js', { scope: './' })
+    .then(reg => {
+      console.log('[SW] Registered, scope:', reg.scope);
+      // Listen for updates
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // New content available — show update toast
+            showToast('🔄 Update available! Refresh to get the latest version.');
+          }
+        });
+      });
+    })
+    .catch(err => console.warn('[SW] Registration failed:', err));
+
+  // Relay messages from SW
+  navigator.serviceWorker.addEventListener('message', event => {
+    if (event.data?.type === 'SYNC_QUEUE') {
+      // Retry any queued offline form submissions
+      console.log('[PWA] Background sync triggered');
+    }
+  });
+}
+
+// Capture the beforeinstallprompt event (Android / Chrome)
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  // Only show if not dismissed recently
+  const dismissed = localStorage.getItem('gvb_install_dismissed');
+  if (!dismissed || Date.now() - parseInt(dismissed) > 7 * 24 * 60 * 60 * 1000) {
+    setTimeout(() => showInstallBanner(), 3000);
+  }
+});
+
+// Detect iOS Safari (no beforeinstallprompt support)
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+function isInStandaloneMode() {
+  return window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+}
+
+function showInstallBanner() {
+  if (isInStandaloneMode()) return; // already installed
+  const banner = document.getElementById('install-banner');
+  if (!banner) return;
+  if (isIOS()) {
+    document.getElementById('ios-hint').style.display = 'block';
+  }
+  banner.classList.add('show');
+}
+
+async function installPWA() {
+  const banner = document.getElementById('install-banner');
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    if (outcome === 'accepted') {
+      showToast('🏐 App installed! Find it on your home screen.');
+    }
+    deferredInstallPrompt = null;
+  }
+  if (banner) banner.classList.remove('show');
+  localStorage.setItem('gvb_install_dismissed', Date.now().toString());
+}
+
+function dismissInstall() {
+  const banner = document.getElementById('install-banner');
+  if (banner) banner.classList.remove('show');
+  localStorage.setItem('gvb_install_dismissed', Date.now().toString());
+}
+
+window.addEventListener('appinstalled', () => {
+  showToast('🏐 Sunday GVB installed successfully!');
+  const banner = document.getElementById('install-banner');
+  if (banner) banner.classList.remove('show');
+  deferredInstallPrompt = null;
+});
 </script>
+<!-- PWA INSTALL BANNER -->
+<div id="install-banner">
+  <div class="install-banner-inner">
+    <div class="install-banner-icon">GVB</div>
+    <div class="install-banner-text">
+      <strong>Add to Home Screen</strong>
+      <span>Install Sunday Guelph VB for quick access</span>
+    </div>
+    <div class="install-banner-actions">
+      <button class="btn btn-primary" style="padding:.55rem 1.1rem;font-size:.85rem;" onclick="installPWA()">Install</button>
+      <button class="btn btn-outline" style="padding:.55rem .9rem;font-size:.85rem;color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.2);" onclick="dismissInstall()">✕</button>
+    </div>
+  </div>
+  <div id="ios-hint">Tap <span>Share ↑</span> then <span>"Add to Home Screen"</span> to install</div>
+</div>
+
 </body>
 </html>
