@@ -2812,11 +2812,15 @@
               <div class="form-row">
                 <div class="form-group">
                   <label>Home Team <span style="color:var(--coral)">*</span></label>
-                  <input type="text" id="sc-team1" placeholder="The Blockers">
+                  <select id="sc-team1">
+                    <option value="">— Select home team —</option>
+                  </select>
                 </div>
                 <div class="form-group">
                   <label>Away Team <span style="color:var(--coral)">*</span></label>
-                  <input type="text" id="sc-team2" placeholder="Spike Squad">
+                  <select id="sc-team2">
+                    <option value="">— Select away team —</option>
+                  </select>
                 </div>
               </div>
               <div class="form-row">
@@ -2870,6 +2874,7 @@
                       <th>Score</th>
                       <th>Away Team</th>
                       <th>Court</th>
+                      <th style="width:72px;text-align:center;">Edit</th>
                     </tr>
                   </thead>
                   <tbody id="scores-body"></tbody>
@@ -3120,7 +3125,7 @@ async function loadSheetData() {
   showLoadingBanner('Loading league data…');
 
   try {
-    const [regResult, puResult, teamsResult, playersResult, weeksResult, gamesResult, scoresResult] = await Promise.all([
+    const [regResult, puResult, teamsResult, playersResult, weeksResult, gamesResult, scoresResult, standingsResult] = await Promise.all([
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Registrations' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Pickup Signups' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Teams' }),
@@ -3128,6 +3133,7 @@ async function loadSheetData() {
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Schedule' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Schedule Games' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Scores' }),
+      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Standings' }),
     ]);
 
     // ── Registrations ──────────────────────────────────────────
@@ -3205,6 +3211,7 @@ async function loadSheetData() {
       renderTeamsPage();
       renderTeamAssignUI();
       renderPlayerTable();
+      syncScoreTeamDropdowns(); // keep score-submit dropdowns fresh
     }
 
     // ── Schedule ───────────────────────────────────────────────
@@ -3252,12 +3259,22 @@ async function loadSheetData() {
         court:     r['Court']         || '',
         submitter: r['Submitted By']  || '',
       }));
-      // Sheet is authoritative — replace local data
       allScores = sheetScores;
       try { localStorage.setItem('gvb_scores', JSON.stringify(allScores)); } catch(e) {}
       renderScoresTable();
-      if (document.getElementById('standings')?.classList.contains('active')) renderStandings();
     }
+
+    // ── Standings ──────────────────────────────────────────────
+    // Phase 1: If the standings sheet has rows, render them immediately as a
+    // fast snapshot while scores finish loading (or if Scores sheet is empty).
+    if (standingsResult.ok && standingsResult.rows && standingsResult.rows.length) {
+      renderStandingsFromSheet(standingsResult.rows);
+    }
+
+    // Phase 2: Always recompute standings from the authoritative Scores data
+    // and push a fresh snapshot back to the sheet so they stay in sync.
+    renderStandings();
+    saveStandings();
 
     refreshAdminData();
     hideLoadingBanner();
@@ -3486,6 +3503,65 @@ const TEAM_COLORS = {
   'Block Party':   '#FF7F50',
 };
 
+// ── STANDINGS FROM SHEET SNAPSHOT ────────────────────────────
+// Renders a quick snapshot from the Standings sheet rows while
+// the full scores are recomputed. Called on page load.
+function renderStandingsFromSheet(rows) {
+  const standingsBody = document.getElementById('standings-body');
+  const miniStats     = document.getElementById('standings-mini-stats');
+  if (!standingsBody) return;
+
+  // Mini stat cards
+  if (miniStats) {
+    const totalGames = allScores.length;
+    const topTeam    = rows[0]?.['Team'] || '—';
+    const totalPts   = allScores.reduce((s,g) => s + parseInt(g.homeScore||0) + parseInt(g.awayScore||0), 0);
+    miniStats.innerHTML = [
+      { num: rows.length, label: 'Teams'         },
+      { num: totalGames,  label: 'Games Played'  },
+      { num: totalPts,    label: 'Points Scored' },
+      { num: topTeam,     label: 'League Leader' },
+    ].map(s => `<div class="stat-card-mini"><div class="scm-num">${s.num}</div><div class="scm-label">${s.label}</div></div>`).join('');
+  }
+
+  standingsBody.innerHTML = rows.map(r => {
+    const rank     = parseInt(r['Rank'] || '0');
+    const color    = r['Color'] || getTeamColor(r['Team'] || '');
+    const rankCls  = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-n';
+    const diff     = parseInt(r['Diff'] || '0');
+    const diffStr  = diff > 0 ? `+${diff}` : `${diff}`;
+    const pctNum   = parseFloat(r['Pct'] || '0');
+    const streak   = r['Streak'] || '—';
+    const streakCls = streak.startsWith('W') ? 'streak-w' : streak.startsWith('L') ? 'streak-l' : '';
+    const streakHtml = streakCls
+      ? `<span class="streak-badge ${streakCls}">${streak}</span>`
+      : streak;
+    return `<tr>
+      <td><span class="rank-badge ${rankCls}">${rank}</span></td>
+      <td><div class="team-name-cell"><span class="team-dot" style="background:${color}"></span>${r['Team']||'—'}</div></td>
+      <td>${r['GP']||0}</td>
+      <td class="win-cell">${r['W']||0}</td>
+      <td class="lose-cell">${r['L']||0}</td>
+      <td>${r['PF']||0}</td>
+      <td>${r['PA']||0}</td>
+      <td style="font-weight:600;color:${diff>=0?'#1a7a3e':'var(--coral)'}">${diffStr}</td>
+      <td>
+        ${r['Pct']||'0%'}
+        <div class="pct-bar-wrap"><div class="pct-bar" style="width:${pctNum}%;background:${color}"></div></div>
+      </td>
+      <td>${streakHtml}</td>
+    </tr>`;
+  }).join('');
+
+  // Populate H2H selects with teams from sheet
+  const teamNames = rows.map(r => r['Team'] || '').filter(Boolean);
+  ['h2h-a','h2h-b'].forEach((id, idx) => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = teamNames.map((n,i) => `<option${i===idx?' selected':''}>${n}</option>`).join('');
+  });
+}
+
 function computeStandings(scores) {
   const teams = {};
 
@@ -3552,7 +3628,7 @@ function renderStandings() {
     const pct     = t.gp ? (t.w / t.gp) : 0;
     const diff    = t.pf - t.pa;
     const streak  = getStreak(t.results);
-    const color   = TEAM_COLORS[t.name] || '#8A8070';
+    const color   = getTeamColor(t.name);
     const rankCls = rank <= 3 ? `rank-${rank}` : 'rank-n';
     const diffStr = diff > 0 ? `+${diff}` : `${diff}`;
     const streakHtml = streak.count
@@ -3579,7 +3655,7 @@ function renderStandings() {
   document.getElementById('teamstats-body').innerHTML = standings.map(t => {
     const avgPF = t.gp ? (t.pf/t.gp).toFixed(1) : '—';
     const avgPA = t.gp ? (t.pa/t.gp).toFixed(1) : '—';
-    const color = TEAM_COLORS[t.name] || '#8A8070';
+    const color = getTeamColor(t.name);
     // best win = largest margin where team won
     let bestWin = '—', worstLoss = '—';
     t.games.forEach(g => {
@@ -3702,6 +3778,7 @@ function renderAdminUI() {
     ui.style.display   = 'block';
     document.getElementById('admin-greeting').textContent = `Welcome, ${currentUser.firstName || 'Admin'}`;
     refreshAdminData();
+    syncScoreTeamDropdowns(); // populate score submission dropdowns
   } else {
     gate.style.display = 'block';
     ui.style.display   = 'none';
@@ -3732,6 +3809,7 @@ function switchAdminTab(tab) {
   if (tab === 'teams')        renderTeamAssignUI();
   if (tab === 'schedule-mgr') renderScheduleMgr();
   if (tab === 'pickup')       renderPickupAdminTab();
+  if (tab === 'scores')       syncScoreTeamDropdowns();
 }
 
 // ── MAILERSEND SETTINGS ───────────────────────────────────────
@@ -4561,10 +4639,43 @@ let allScores = JSON.parse(localStorage.getItem('gvb_scores') || 'null') || DEFA
 
 function saveScores() {
   try { localStorage.setItem('gvb_scores', JSON.stringify(allScores)); } catch(e) {}
-  // Persist full scores array to Sheets (fire-and-forget)
   if (!DEMO_MODE) {
     postToSheets(SCRIPT_URL, { type: 'saveScores', scoresJson: JSON.stringify(allScores) });
   }
+  // Always save a standings snapshot whenever scores change
+  saveStandings();
+}
+
+function saveStandings() {
+  if (DEMO_MODE) return;
+  const standings = computeStandings(allScores);
+  const payload = standings.map((t, i) => {
+    const pct    = t.gp ? (t.w / t.gp * 100).toFixed(1) + '%' : '0%';
+    const diff   = t.pf - t.pa;
+    const streak = getStreak(t.results);
+    const color  = getTeamColor(t.name);
+    return {
+      rank:     i + 1,
+      teamName: t.name,
+      teamColor: color,
+      gp:       t.gp,
+      w:        t.w,
+      l:        t.l,
+      pf:       t.pf,
+      pa:       t.pa,
+      diff:     diff,
+      pct:      pct,
+      streak:   streak.count ? streak.type + streak.count : '—',
+    };
+  });
+  postToSheets(SCRIPT_URL, { type: 'saveStandings', standingsJson: JSON.stringify(payload) });
+}
+
+function getTeamColor(teamName) {
+  // Prefer live teamsData color over the static TEAM_COLORS map
+  const liveTeam = teamsData.find(t => t.name === teamName);
+  if (liveTeam) return liveTeam.color;
+  return TEAM_COLORS[teamName] || '#8A8070';
 }
 
 async function submitScore() {
@@ -4592,8 +4703,14 @@ async function submitScore() {
     saveScores();
     renderScoresTable();
     showToast('Score submitted!');
-    ['sc-team1','sc-team2','sc-score1','sc-score2','sc-submitter'].forEach(id => { document.getElementById(id).value = ''; });
+    // Reset form fields
+    ['sc-score1','sc-score2','sc-submitter'].forEach(id => { document.getElementById(id).value = ''; });
     document.getElementById('sc-date').value = new Date().toISOString().slice(0,10);
+    // Reset team dropdowns back to placeholder
+    ['sc-team1','sc-team2'].forEach(id => {
+      const sel = document.getElementById(id);
+      if (sel) sel.selectedIndex = 0;
+    });
   } catch(e) {
     showToast('Something went wrong. Please try again.', false);
   }
@@ -4602,24 +4719,49 @@ async function submitScore() {
   document.getElementById('sc-btn').textContent = 'Submit Score';
 }
 
+// ── SCORE TEAM DROPDOWNS ──────────────────────────────────────
+function teamOptions(selectedName) {
+  const names = teamsData.map(t => t.name);
+  if (selectedName && !names.includes(selectedName)) names.push(selectedName);
+  return names.map(n => `<option value="${n}"${n === selectedName ? ' selected' : ''}>${n}</option>`).join('');
+}
+
+function syncScoreTeamDropdowns() {
+  ['sc-team1','sc-team2'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = `<option value="">— Select team —</option>` + teamOptions(cur || '');
+  });
+}
+
 function renderScoresTable() {
   const tbody = document.getElementById('scores-body');
   if (!tbody) return;
   if (!allScores.length) {
-    tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:1.25rem;">No scores yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);font-style:italic;padding:1.25rem;">No scores yet. Submit a game above.</td></tr>`;
     return;
   }
   tbody.innerHTML = allScores.map(s => {
     const h = parseInt(s.homeScore), a = parseInt(s.awayScore);
-    const homeClass = h > a ? 'win' : 'lose';
-    const awayClass = a > h ? 'win' : 'lose';
-    const d = s.gameDate ? new Date(s.gameDate + 'T12:00:00').toLocaleDateString('en-CA', {month:'short',day:'numeric',year:'numeric'}) : '—';
+    const homeClass  = h > a ? 'win' : 'lose';
+    const awayClass  = a > h ? 'win' : 'lose';
+    const d          = s.gameDate
+      ? new Date(s.gameDate + 'T12:00:00').toLocaleDateString('en-CA', {month:'short', day:'numeric', year:'numeric'})
+      : '—';
+    const homeColor  = getTeamColor(s.homeTeam);
+    const awayColor  = getTeamColor(s.awayTeam);
+    const dot = c => `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${c};margin-right:5px;vertical-align:middle;flex-shrink:0;"></span>`;
     return `<tr id="score-row-${s.id}">
       <td>${d}</td>
-      <td class="${homeClass}">${s.homeTeam}</td>
+      <td class="${homeClass}" style="white-space:nowrap;">${dot(homeColor)}${s.homeTeam}</td>
       <td><span class="score-pill">${s.homeScore} – ${s.awayScore}</span></td>
-      <td class="${awayClass}">${s.awayTeam}</td>
+      <td class="${awayClass}" style="white-space:nowrap;">${dot(awayColor)}${s.awayTeam}</td>
       <td><small>${s.court || '—'}</small></td>
+      <td style="white-space:nowrap;text-align:center;">
+        <button onclick="editScore('${s.id}')" title="Edit score" style="background:none;border:none;cursor:pointer;font-size:.9rem;padding:.15rem .35rem;border-radius:4px;color:var(--muted);transition:color .2s;" onmouseover="this.style.color='var(--sky)'" onmouseout="this.style.color='var(--muted)'">✏️</button>
+        <button onclick="deleteScore('${s.id}')" title="Delete score" style="background:none;border:none;cursor:pointer;font-size:.9rem;padding:.15rem .35rem;border-radius:4px;color:var(--muted);transition:color .2s;" onmouseover="this.style.color='var(--coral)'" onmouseout="this.style.color='var(--muted)'">🗑️</button>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -4630,37 +4772,50 @@ function editScore(id) {
   const row = document.getElementById('score-row-' + id);
   if (!row) return;
   const courtOpts = ['Court A – GCVI','Court B – GCVI','Centennial CVI','Other']
-    .map(c => `<option${c===s.court?' selected':''}>${c}</option>`).join('');
+    .map(c => `<option${c === s.court ? ' selected' : ''}>${c}</option>`).join('');
+  const hasTeams = teamsData.length > 0;
+  const homeInput = hasTeams
+    ? `<select id="se-h-${id}" style="${scEditInputStyle()}">${teamOptions(s.homeTeam)}</select>`
+    : `<input type="text" id="se-h-${id}" value="${s.homeTeam}" style="${scEditInputStyle()}">`;
+  const awayInput = hasTeams
+    ? `<select id="se-a-${id}" style="${scEditInputStyle()}">${teamOptions(s.awayTeam)}</select>`
+    : `<input type="text" id="se-a-${id}" value="${s.awayTeam}" style="${scEditInputStyle()}">`;
   row.innerHTML = `
     <td><input type="date" id="se-date-${id}" value="${s.gameDate}" style="${scEditInputStyle()}"></td>
-    <td><input type="text" id="se-h-${id}"    value="${s.homeTeam}"  placeholder="Home" style="${scEditInputStyle()}"></td>
+    <td>${homeInput}</td>
     <td style="white-space:nowrap;">
-      <input type="number" id="se-hs-${id}" value="${s.homeScore}" min="0" style="${scEditInputStyle('54px')}">
+      <input type="number" id="se-hs-${id}" value="${s.homeScore}" min="0" style="${scEditInputStyle('58px')}">
       <span style="color:var(--muted);margin:0 3px;">–</span>
-      <input type="number" id="se-as-${id}" value="${s.awayScore}" min="0" style="${scEditInputStyle('54px')}">
+      <input type="number" id="se-as-${id}" value="${s.awayScore}" min="0" style="${scEditInputStyle('58px')}">
     </td>
-    <td><input type="text" id="se-a-${id}"    value="${s.awayTeam}"  placeholder="Away" style="${scEditInputStyle()}"></td>
+    <td>${awayInput}</td>
     <td><select id="se-court-${id}" style="${scEditInputStyle()}">${courtOpts}</select></td>
-    <td style="white-space:nowrap;">
-      <button onclick="saveEditScore('${id}')" style="background:var(--sky);color:var(--navy);border:none;border-radius:6px;padding:.25rem .6rem;font-size:.78rem;font-weight:700;cursor:pointer;margin-right:.2rem;">Save</button>
-      <button onclick="renderScoresTable()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:.25rem .55rem;font-size:.78rem;cursor:pointer;color:var(--muted);">✕</button>
+    <td style="white-space:nowrap;text-align:center;">
+      <button onclick="saveEditScore('${id}')" style="background:var(--sky);color:var(--navy);border:none;border-radius:6px;padding:.3rem .65rem;font-size:.78rem;font-weight:700;cursor:pointer;margin-right:.2rem;">✓</button>
+      <button onclick="renderScoresTable()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:.3rem .55rem;font-size:.78rem;cursor:pointer;color:var(--muted);">✕</button>
     </td>`;
-  row.querySelector(`#se-h-${id}`)?.focus();
+  document.getElementById('se-hs-' + id)?.focus();
 }
 
 function scEditInputStyle(w) {
-  return `width:${w||'100%'};padding:.3rem .5rem;border:1.5px solid var(--sky);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.82rem;background:var(--white);color:var(--navy);outline:none;`;
+  return `width:${w||'100%'};padding:.35rem .55rem;border:1.5px solid var(--sky);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.82rem;background:var(--white);color:var(--navy);outline:none;`;
 }
 
 function saveEditScore(id) {
   const s = allScores.find(x => x.id === id);
   if (!s) return;
-  s.gameDate  = document.getElementById('se-date-' + id)?.value  || s.gameDate;
-  s.homeTeam  = document.getElementById('se-h-'    + id)?.value  || s.homeTeam;
-  s.homeScore = document.getElementById('se-hs-'   + id)?.value  || s.homeScore;
-  s.awayScore = document.getElementById('se-as-'   + id)?.value  || s.awayScore;
-  s.awayTeam  = document.getElementById('se-a-'    + id)?.value  || s.awayTeam;
-  s.court     = document.getElementById('se-court-'+ id)?.value  || s.court;
+  const dateVal  = document.getElementById('se-date-' + id)?.value;
+  const homeTeam = document.getElementById('se-h-'    + id)?.value;
+  const homeSc   = document.getElementById('se-hs-'   + id)?.value;
+  const awaySc   = document.getElementById('se-as-'   + id)?.value;
+  const awayTeam = document.getElementById('se-a-'    + id)?.value;
+  const court    = document.getElementById('se-court-'+ id)?.value;
+  if (dateVal)  s.gameDate  = dateVal;
+  if (homeTeam) s.homeTeam  = homeTeam;
+  if (homeSc !== '') s.homeScore = homeSc;
+  if (awaySc !== '') s.awayScore = awaySc;
+  if (awayTeam) s.awayTeam  = awayTeam;
+  if (court)    s.court     = court;
   saveScores();
   renderScoresTable();
   if (document.getElementById('standings')?.classList.contains('active')) renderStandings();
@@ -4670,7 +4825,9 @@ function saveEditScore(id) {
 function deleteScore(id) {
   const s = allScores.find(x => x.id === id);
   if (!s) return;
-  const d = s.gameDate ? new Date(s.gameDate + 'T12:00:00').toLocaleDateString('en-CA',{month:'short',day:'numeric'}) : 'this game';
+  const d = s.gameDate
+    ? new Date(s.gameDate + 'T12:00:00').toLocaleDateString('en-CA', {month:'short', day:'numeric'})
+    : 'this game';
   if (!confirm(`Delete the score for ${s.homeTeam} vs ${s.awayTeam} on ${d}?`)) return;
   allScores = allScores.filter(x => x.id !== id);
   saveScores();
@@ -4687,6 +4844,7 @@ function resetStandings() {
   if (document.getElementById('standings')?.classList.contains('active')) renderStandings();
   showToast('Standings reset — all scores cleared.');
 }
+
 
 const DEFAULT_PICKUP = [
   { id:'pu1', date:'May 18, 2026', dateISO:'2026-05-18', time:'1:00–3:00 PM', location:'GCVI Gym', spots:8,  max:18 },
@@ -5285,6 +5443,8 @@ function saveTeams() {
     })));
     postToSheets(SCRIPT_URL, { type: 'saveTeamPlayers', playersJson: JSON.stringify(playersPayload) });
   }
+  // Keep score submission dropdowns in sync with current team list
+  syncScoreTeamDropdowns();
 }
 
 function getAllAssignedEmails() {
