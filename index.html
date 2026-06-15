@@ -3075,8 +3075,7 @@
 // ── GOOGLE SHEETS INTEGRATION ──────────────────────────────
 // Replace with your actual Google Apps Script Web App URL
 // One URL handles all types: registration, pickup, score, getData, checkDuplicate
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAldjZEQtkQb9NZhT564DH_XVG_CMt0owWyj1kpiUvDSpdTiu7XX8Zb_sEIcLxfQ9F/exec';
-
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWQ6veNWCzyXi6fH7WT8E1fyF7SCP-kRz4MvBzpL7VJcBh2fX6l6YMiRQNrOlXwBfb/exec';
 
 const SHEETS_ENDPOINTS = {
   registration: SCRIPT_URL,
@@ -3126,7 +3125,7 @@ async function loadSheetData() {
   showLoadingBanner('Loading league data…');
 
   try {
-    const [regResult, puResult, teamsResult, playersResult, weeksResult, gamesResult, scoresResult, standingsResult] = await Promise.all([
+    const [regResult, puResult, teamsResult, playersResult, weeksResult, gamesResult, scoresResult, standingsResult, pickupSessionsResult] = await Promise.all([
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Registrations' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Pickup Signups' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Teams' }),
@@ -3135,6 +3134,7 @@ async function loadSheetData() {
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Schedule Games' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Scores' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Standings' }),
+      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Pickup Sessions' }),
     ]);
 
     // ── Registrations ──────────────────────────────────────────
@@ -3263,6 +3263,25 @@ async function loadSheetData() {
       allScores = sheetScores;
       try { localStorage.setItem('gvb_scores', JSON.stringify(allScores)); } catch(e) {}
       renderScoresTable();
+    }
+
+    // ── Pickup Sessions ────────────────────────────────────────
+    if (pickupSessionsResult.ok && pickupSessionsResult.rows && pickupSessionsResult.rows.length) {
+      const sheetSessions = pickupSessionsResult.rows.map(r => ({
+        id:       r['Session ID']  || uid(),
+        date:     r['Date Display']|| '',
+        dateISO:  r['Date ISO']    || '',
+        time:     r['Time']        || '',
+        location: r['Location']    || 'GCVI Gym',
+        max:      parseInt(r['Max Spots']) || 18,
+        spots:    0, // derived from actual signups — not stored
+      }));
+      // Sheet is authoritative — replace local data
+      pickupData = sheetSessions;
+      try { localStorage.setItem('gvb_pickup_sessions', JSON.stringify(pickupData)); } catch(e) {}
+      renderPickup();
+      renderPickupSessionAdmin();
+      syncPickupDateDropdown();
     }
 
     // ── Standings ──────────────────────────────────────────────
@@ -4858,6 +4877,19 @@ let pickupData = JSON.parse(localStorage.getItem('gvb_pickup_sessions') || 'null
 
 function savePickupSessions() {
   try { localStorage.setItem('gvb_pickup_sessions', JSON.stringify(pickupData)); } catch(e) {}
+  if (!DEMO_MODE) {
+    postToSheets(SCRIPT_URL, {
+      type:         'savePickupSessions',
+      sessionsJson: JSON.stringify(pickupData.map(s => ({
+        id:       s.id,
+        date:     s.date,
+        dateISO:  s.dateISO || '',
+        time:     s.time,
+        location: s.location || 'GCVI Gym',
+        max:      s.max,
+      })))
+    });
+  }
 }
 
 // ── SCHEDULE DATA (localStorage-backed) ──────────────────────
