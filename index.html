@@ -2400,10 +2400,6 @@
         <label>Select Date <span style="color:var(--coral)">*</span></label>
         <select id="pu-date" required>
           <option value="">— Select a session —</option>
-          <option value="May 18, 2026 – 1:00–3:00 PM">May 18, 2026 – 1:00–3:00 PM</option>
-          <option value="May 25, 2026 – 1:00–3:00 PM">May 25, 2026 – 1:00–3:00 PM</option>
-          <option value="June 1, 2026 – 1:00–3:00 PM">June 1, 2026 – 1:00–3:00 PM</option>
-          <option value="June 8, 2026 – 1:00–3:00 PM">June 8, 2026 – 1:00–3:00 PM</option>
         </select>
       </div>
       <div class="form-group">
@@ -2983,65 +2979,20 @@
   <div class="modal">
     <button class="modal-close" onclick="closeLoginModal()">✕</button>
     <div class="modal-logo">SUNDAY<span>GVB</span></div>
-    <p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem;">Player Portal — Track standings, view your stats, submit scores.</p>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:1.25rem;">Admin login — manage scores, teams, schedule and player communications.</p>
 
-    <div class="modal-tabs">
-      <button class="modal-tab active" id="tab-login-btn"  onclick="switchModalTab('login')">Sign In</button>
-      <button class="modal-tab"        id="tab-signup-btn" onclick="switchModalTab('signup')">Create Account</button>
-    </div>
+    <div class="error-msg"   id="login-error"></div>
+    <div class="success-msg" id="login-success"></div>
 
-    <!-- SIGN IN -->
-    <div class="modal-panel active" id="panel-login">
-      <div class="error-msg"   id="login-error"></div>
-      <div class="success-msg" id="login-success"></div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="login-email" placeholder="jane@example.com" onkeydown="if(event.key==='Enter')doLogin()">
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-      </div>
-      <button class="btn btn-primary form-submit" style="margin-top:1rem;" onclick="doLogin()">Sign In</button>
-      <p class="modal-footer-text">Demo: use any email + password "volleyball"</p>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="admin@sundayguelphvb.com" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-
-    <!-- SIGN UP -->
-    <div class="modal-panel" id="panel-signup">
-      <div class="error-msg"   id="signup-error"></div>
-      <div class="success-msg" id="signup-success"></div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>First Name</label>
-          <input type="text" id="signup-first" placeholder="Jane">
-        </div>
-        <div class="form-group">
-          <label>Last Name</label>
-          <input type="text" id="signup-last" placeholder="Smith">
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="signup-email" placeholder="jane@example.com">
-      </div>
-      <div class="form-group">
-        <label>Team Name</label>
-        <select id="signup-team">
-          <option value="">— Select your team —</option>
-          <option>The Blockers</option>
-          <option>Spike Squad</option>
-          <option>Net Ninjas</option>
-          <option>Volley Llamas</option>
-          <option>Dig Dug FC</option>
-          <option>Block Party</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="signup-password" placeholder="Min 6 characters">
-      </div>
-      <button class="btn btn-primary form-submit" style="margin-top:1rem;" onclick="doSignup()">Create Account</button>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
+    <button class="btn btn-primary form-submit" style="margin-top:1rem;" onclick="doLogin()">Sign In</button>
   </div>
 </div>
 
@@ -3367,43 +3318,43 @@ function showSection(id) {
 let currentUser = null;
 let pendingSection = null;
 
-// Simple in-memory user store (in production, use a real backend / Google Sheets)
-const userStore = JSON.parse(localStorage.getItem('gvb_users') || '{}');
-
-function saveUsers() {
-  try { localStorage.setItem('gvb_users', JSON.stringify(userStore)); } catch(e) {}
-}
-
 function loadSession() {
   try {
-    const s = localStorage.getItem('gvb_session');
-    if (s) { currentUser = JSON.parse(s); updateNavAuth(); }
+    const s = localStorage.getItem('gvb_admin_session');
+    if (s) {
+      const user = JSON.parse(s);
+      // Only restore if it's a valid admin session
+      if (user && user.email === ADMIN_EMAIL) {
+        currentUser = user;
+        updateNavAuth();
+      }
+    }
   } catch(e) {}
 }
 
 function saveSession(user) {
-  try { localStorage.setItem('gvb_session', JSON.stringify(user)); } catch(e) {}
+  try { localStorage.setItem('gvb_admin_session', JSON.stringify(user)); } catch(e) {}
 }
 
 function clearSession() {
-  try { localStorage.removeItem('gvb_session'); } catch(e) {}
+  try { localStorage.removeItem('gvb_admin_session'); } catch(e) {}
 }
 
 function updateNavAuth() {
-  const loginBtn  = document.getElementById('nav-login-btn');
-  const userPill  = document.getElementById('nav-user-pill');
-  const avatar    = document.getElementById('nav-avatar');
-  const username  = document.getElementById('nav-username');
-  const adminBtn  = document.getElementById('nav-admin');
+  const loginBtn = document.getElementById('nav-login-btn');
+  const userPill = document.getElementById('nav-user-pill');
+  const avatar   = document.getElementById('nav-avatar');
+  const username = document.getElementById('nav-username');
+  const adminBtn = document.getElementById('nav-admin');
   if (currentUser) {
-    loginBtn.style.display  = 'none';
-    userPill.style.display  = 'flex';
-    avatar.textContent      = (currentUser.firstName || currentUser.email)[0].toUpperCase();
-    username.textContent    = currentUser.firstName || currentUser.email.split('@')[0];
-    if (adminBtn) adminBtn.style.display = isAdmin() ? '' : 'none';
+    loginBtn.style.display = 'none';
+    userPill.style.display = 'flex';
+    avatar.textContent     = 'A';
+    username.textContent   = 'Admin';
+    if (adminBtn) adminBtn.style.display = '';
   } else {
-    loginBtn.style.display  = '';
-    userPill.style.display  = 'none';
+    loginBtn.style.display = '';
+    userPill.style.display = 'none';
     if (adminBtn) adminBtn.style.display = 'none';
   }
 }
@@ -3413,17 +3364,18 @@ function logout() {
   clearSession();
   updateNavAuth();
   showSection('home');
-  showToast('You\'ve been signed out.');
+  showToast('Signed out.');
 }
 
 // ── LOGIN MODAL ───────────────────────────────────────────────
 function openLoginModal() {
   document.getElementById('login-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
-  // reset errors
-  ['login-error','login-success','signup-error','signup-success'].forEach(id => {
-    document.getElementById(id).classList.remove('show');
-  });
+  const errEl = document.getElementById('login-error');
+  const sucEl = document.getElementById('login-success');
+  if (errEl) errEl.classList.remove('show');
+  if (sucEl) sucEl.classList.remove('show');
+  setTimeout(() => document.getElementById('login-email')?.focus(), 100);
 }
 
 function closeLoginModal() {
@@ -3436,81 +3388,36 @@ function handleModalOverlayClick(e) {
   if (e.target === document.getElementById('login-modal')) closeLoginModal();
 }
 
-function switchModalTab(tab) {
-  ['login','signup'].forEach(t => {
-    document.getElementById('panel-' + t).classList.toggle('active', t === tab);
-    document.getElementById('tab-' + t + '-btn').classList.toggle('active', t === tab);
-  });
-}
-
-function showModalError(panelId, msg) {
-  const el = document.getElementById(panelId + '-error');
-  el.textContent = msg;
-  el.classList.add('show');
-}
-
-function showModalSuccess(panelId, msg) {
-  const el = document.getElementById(panelId + '-success');
-  el.textContent = msg;
-  el.classList.add('show');
-}
-
 function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
   const pass  = document.getElementById('login-password').value;
-  document.getElementById('login-error').classList.remove('show');
+  const errEl = document.getElementById('login-error');
+  if (errEl) errEl.classList.remove('show');
 
-  if (!email || !pass) { showModalError('login', 'Please enter your email and password.'); return; }
-
-  // Demo mode: any email + password "volleyball"
-  let user = userStore[email.toLowerCase()];
-  if (!user) {
-    if (pass === 'volleyball') {
-      // auto-create demo user
-      user = { email: email.toLowerCase(), firstName: email.split('@')[0], lastName: '', team: '', password: 'volleyball' };
-      userStore[email.toLowerCase()] = user;
-      saveUsers();
-    } else {
-      showModalError('login', 'No account found. Try password "volleyball" for demo access or create an account.');
-      return;
-    }
+  if (!email || !pass) {
+    showLoginError('Please enter your email and password.');
+    return;
   }
 
-  if (user.password !== pass) { showModalError('login', 'Incorrect password. Try "volleyball" for demo access.'); return; }
+  if (email !== ADMIN_EMAIL || pass !== ADMIN_PASSWORD) {
+    showLoginError('Invalid email or password.');
+    return;
+  }
 
+  const user = { email: ADMIN_EMAIL, firstName: 'Admin', lastName: '', team: '' };
   currentUser = user;
   saveSession(user);
   updateNavAuth();
   closeLoginModal();
-  showToast(`Welcome back, ${user.firstName || user.email.split('@')[0]}! 🏐`);
+  showToast('Welcome back, Admin! 🏐');
   if (pendingSection) { const s = pendingSection; pendingSection = null; showSection(s); }
 }
 
-function doSignup() {
-  const first = document.getElementById('signup-first').value.trim();
-  const last  = document.getElementById('signup-last').value.trim();
-  const email = document.getElementById('signup-email').value.trim().toLowerCase();
-  const team  = document.getElementById('signup-team').value;
-  const pass  = document.getElementById('signup-password').value;
-  document.getElementById('signup-error').classList.remove('show');
-
-  if (!first || !email || !pass) { showModalError('signup', 'Please fill in all required fields.'); return; }
-  if (pass.length < 6)           { showModalError('signup', 'Password must be at least 6 characters.'); return; }
-  if (userStore[email])          { showModalError('signup', 'An account with this email already exists. Sign in instead.'); return; }
-
-  const user = { email, firstName: first, lastName: last, team, password: pass };
-  userStore[email] = user;
-  saveUsers();
-
-  currentUser = user;
-  saveSession(user);
-  updateNavAuth();
-  showModalSuccess('signup', `Account created! Welcome, ${first}!`);
-  setTimeout(() => {
-    closeLoginModal();
-    showToast(`Account created! Welcome to Sunday GVB, ${first}! 🏐`);
-    if (pendingSection) { const s = pendingSection; pendingSection = null; showSection(s); }
-  }, 1200);
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
 }
 
 // ── STANDINGS ENGINE ──────────────────────────────────────────
@@ -4866,13 +4773,10 @@ function resetStandings() {
 }
 
 
-const DEFAULT_PICKUP = [
-  { id:'pu1', date:'May 18, 2026', dateISO:'2026-05-18', time:'1:00–3:00 PM', location:'GCVI Gym', spots:8,  max:18 },
-  { id:'pu2', date:'May 25, 2026', dateISO:'2026-05-25', time:'1:00–3:00 PM', location:'GCVI Gym', spots:11, max:18 },
-  { id:'pu3', date:'June 1, 2026', dateISO:'2026-06-01', time:'1:00–3:00 PM', location:'GCVI Gym', spots:5,  max:18 },
-  { id:'pu4', date:'June 8, 2026', dateISO:'2026-06-08', time:'1:00–3:00 PM', location:'GCVI Gym', spots:0,  max:18 },
-];
+const DEFAULT_PICKUP = [];
 
+// Start empty — sessions are authoritative from Google Sheets.
+// localStorage is used only as a within-session cache after the sheet loads.
 let pickupData = JSON.parse(localStorage.getItem('gvb_pickup_sessions') || 'null') || DEFAULT_PICKUP;
 
 function savePickupSessions() {
