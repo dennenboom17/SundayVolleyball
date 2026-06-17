@@ -976,37 +976,6 @@
   }
   .modal-logo span { color: var(--sky); }
 
-  .modal-tabs {
-    display: flex; gap: 0;
-    background: var(--sand);
-    border-radius: 8px;
-    padding: 3px;
-    margin: 1.25rem 0;
-  }
-  .modal-tab {
-    flex: 1; text-align: center;
-    padding: .5rem;
-    font-size: .85rem;
-    font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-    border: none;
-    background: none;
-    color: var(--muted);
-    transition: all .2s;
-  }
-  .modal-tab.active { background: var(--white); color: var(--navy); box-shadow: 0 1px 6px rgba(0,0,0,.1); }
-
-  .modal-panel { display: none; }
-  .modal-panel.active { display: block; }
-
-  .modal-footer-text {
-    margin-top: 1rem;
-    font-size: .8rem;
-    color: var(--muted);
-    text-align: center;
-  }
-
   .error-msg {
     background: rgba(232,80,42,.1);
     border: 1px solid rgba(232,80,42,.25);
@@ -2108,7 +2077,7 @@
   <div style="display:flex;align-items:center;gap:.5rem;">
     <div class="nav-auth">
       <!-- Logged-out state -->
-      <button class="btn-nav-login" id="nav-login-btn" onclick="openLoginModal()">🔐 Login</button>
+      <button class="btn-nav-login" id="nav-login-btn" onclick="openLoginModal()">⚙ Admin</button>
       <!-- Logged-in state -->
       <div class="nav-user-pill" id="nav-user-pill">
         <div class="avatar" id="nav-avatar">?</div>
