@@ -2995,7 +2995,7 @@
 // ── GOOGLE SHEETS INTEGRATION ──────────────────────────────
 // Replace with your actual Google Apps Script Web App URL
 // One URL handles all types: registration, pickup, score, getData, checkDuplicate
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyqAyEKAev-1FhxJByMXvF7_uMJBXtcR4iTApBGjk1ajgDPQH-I7LStf8tfGY894sGo/exec';
 
 const SHEETS_ENDPOINTS = {
   registration: SCRIPT_URL,
@@ -4765,27 +4765,9 @@ function savePickupSessions() {
   }
 }
 
-// ── SCHEDULE DATA (localStorage-backed) ──────────────────────
-const DEFAULT_SCHEDULE = [
-  {
-    id: 'w17', week: 'Week 17', date: 'May 18, 2026', dateISO: '2026-05-18',
-    games: [
-      { id:'g1', time:'1:00 PM', h:'The Blockers', a:'Net Ninjas',    court:'A' },
-      { id:'g2', time:'2:00 PM', h:'Spike Squad',  a:'Volley Llamas', court:'B' },
-      { id:'g3', time:'3:00 PM', h:'Dig Dug FC',   a:'Block Party',   court:'A' },
-      { id:'g4', time:'4:00 PM', h:'Net Ninjas',   a:'Dig Dug FC',    court:'B' },
-    ]
-  },
-  {
-    id: 'w16', week: 'Week 16', date: 'May 11, 2026', dateISO: '2026-05-11',
-    games: [
-      { id:'g5', time:'1:00 PM', h:'Block Party',   a:'The Blockers',  court:'A' },
-      { id:'g6', time:'2:00 PM', h:'Volley Llamas', a:'Net Ninjas',    court:'B' },
-      { id:'g7', time:'3:00 PM', h:'Dig Dug FC',    a:'Spike Squad',   court:'A' },
-      { id:'g8', time:'4:00 PM', h:'The Blockers',  a:'Volley Llamas', court:'B' },
-    ]
-  },
-];
+// ── SCHEDULE DATA (localStorage-backed, sheet-authoritative) ──
+// No default seed — all data comes from Google Sheets.
+const DEFAULT_SCHEDULE = [];
 
 let scheduleData = JSON.parse(localStorage.getItem('gvb_schedule') || 'null') || DEFAULT_SCHEDULE;
 
@@ -5641,6 +5623,10 @@ function confirmRenameTeam(teamId) {
 }
 
 // ── INIT ──────────────────────────────────────────────────────
+// Clear any stale localStorage schedule/pickup caches so the sheet is always
+// the authoritative source. They get repopulated by loadSheetData().
+try { localStorage.removeItem('gvb_schedule'); } catch(e) {}
+try { localStorage.removeItem('gvb_pickup_sessions'); } catch(e) {}
 renderPickup();
 renderSchedule();
 renderScoresTable();
