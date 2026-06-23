@@ -2995,7 +2995,7 @@
 // ── GOOGLE SHEETS INTEGRATION ──────────────────────────────
 // Replace with your actual Google Apps Script Web App URL
 // One URL handles all types: registration, pickup, score, getData, checkDuplicate
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyqAyEKAev-1FhxJByMXvF7_uMJBXtcR4iTApBGjk1ajgDPQH-I7LStf8tfGY894sGo/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec';
 
 const SHEETS_ENDPOINTS = {
   registration: SCRIPT_URL,
@@ -3607,7 +3607,7 @@ function renderH2H() {
     const aIsHome = s.homeTeam === a;
     const aScore = aIsHome ? h : av, bScore = aIsHome ? av : h;
     if (aScore > bScore) aW++; else bW++;
-    const d = s.gameDate ? new Date(s.gameDate + 'T12:00:00').toLocaleDateString('en-CA',{month:'short',day:'numeric'}) : '—';
+    const d = s.gameDate ? simplifyDate(s.gameDate) : '—';
     return `<tr>
       <td>${d}</td>
       <td class="${aScore>bScore?'win-cell':'lose-cell'}">${a}</td>
@@ -3977,7 +3977,7 @@ async function sendEmail() {
     if (result.ok) {
       // Log the send
       const entry = {
-        timestamp:  new Date().toLocaleString(),
+        timestamp:  `${simplifyDate(new Date().toISOString())} ${simplifyTime(new Date().toISOString())}`,
         subject,
         count:      result.sent || recipients.length,
         failed:     result.failed || 0,
@@ -4046,7 +4046,7 @@ function renderPlayerTable() {
       <td>${p.skill || '—'}</td>
       <td>${p.season || '—'}</td>
       <td>${teamCell}</td>
-      <td style="font-size:.78rem;color:var(--muted);">${new Date(p.timestamp).toLocaleDateString()}</td>
+      <td style="font-size:.78rem;color:var(--muted);">${simplifyDate(p.timestamp)}</td>
     </tr>`;
   }).join('');
 }
@@ -4072,7 +4072,7 @@ function renderPickupTable() {
       <td>${p.email}</td>
       <td>${p.position || '—'}</td>
       <td>${p.date || '—'}</td>
-      <td style="font-size:.78rem;color:var(--muted);">${p.timestamp ? new Date(p.timestamp).toLocaleDateString() : '—'}</td>
+      <td style="font-size:.78rem;color:var(--muted);">${p.timestamp ? simplifyDate(p.timestamp) : '—'}</td>
     </tr>`;
   }).join('');
 }
@@ -4642,9 +4642,7 @@ function renderScoresTable() {
     const h = parseInt(s.homeScore), a = parseInt(s.awayScore);
     const homeClass  = h > a ? 'win' : 'lose';
     const awayClass  = a > h ? 'win' : 'lose';
-    const d          = s.gameDate
-      ? new Date(s.gameDate + 'T12:00:00').toLocaleDateString('en-CA', {month:'short', day:'numeric', year:'numeric'})
-      : '—';
+    const d          = s.gameDate ? simplifyDate(s.gameDate) : '—';
     const homeColor  = getTeamColor(s.homeTeam);
     const awayColor  = getTeamColor(s.awayTeam);
     const dot = c => `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${c};margin-right:5px;vertical-align:middle;flex-shrink:0;"></span>`;
@@ -4721,9 +4719,7 @@ function saveEditScore(id) {
 function deleteScore(id) {
   const s = allScores.find(x => x.id === id);
   if (!s) return;
-  const d = s.gameDate
-    ? new Date(s.gameDate + 'T12:00:00').toLocaleDateString('en-CA', {month:'short', day:'numeric'})
-    : 'this game';
+  const d = s.gameDate ? simplifyDate(s.gameDate) : 'this game';
   if (!confirm(`Delete the score for ${s.homeTeam} vs ${s.awayTeam} on ${d}?`)) return;
   allScores = allScores.filter(x => x.id !== id);
   saveScores();
@@ -4851,7 +4847,7 @@ function renderScheduleMgr() {
         <div class="swm-header" onclick="toggleWeekAccordion('${w.id}')">
           <div class="swm-header-text">
             <div class="swm-week">${w.week}</div>
-            <div class="swm-date">${w.date} · ${w.games.length} game${w.games.length!==1?'s':''}</div>
+            <div class="swm-date">${simplifyDate(w.date)} · ${w.games.length} game${w.games.length!==1?'s':''}</div>
           </div>
           <div class="swm-actions" onclick="event.stopPropagation()">
             <button class="swm-icon-btn" onclick="startEditWeekHeader('${w.id}')" title="Edit week name & date">✏️</button>
@@ -5089,13 +5085,14 @@ function renderPickupSessionAdmin() {
     const isOpen   = openPickupSessions.has(p.id);
     const dotColor = open === 0 ? 'var(--coral)' : open <= 3 ? 'var(--gold)' : 'var(--sky)';
     const statusTxt = open === 0 ? 'FULL' : `${open} spot${open !== 1 ? 's' : ''} open`;
+    const dispTime = simplifyTime(p.time);
 
     return `<div class="pu-session-row" id="purow-${p.id}">
       <div class="pu-session-header" onclick="togglePickupAccordion('${p.id}')">
         <div class="pu-status-dot" style="background:${dotColor}"></div>
         <div class="pu-session-info">
-          <div class="pu-session-date">${p.date}</div>
-          <div class="pu-session-meta">${p.time} · ${p.location||'GCVI Gym'} · ${filled}/${p.max} · ${statusTxt}</div>
+          <div class="pu-session-date">${simplifyDate(p.date)}</div>
+          <div class="pu-session-meta">${dispTime} · ${p.location||'GCVI Gym'} · ${filled}/${p.max} · ${statusTxt}</div>
         </div>
         <div class="pu-session-actions" onclick="event.stopPropagation()">
           <button onclick="togglePickupAccordion('${p.id}')" title="${isOpen?'Collapse':'Edit'}">✏️</button>
@@ -5228,7 +5225,10 @@ function syncPickupDateDropdown() {
         const filled = Math.max(p.spots, countSignupsForSession(p));
         return p.max - filled > 0;
       })
-      .map(p => `<option value="${p.date} – ${p.time}"${current===`${p.date} – ${p.time}`?' selected':''}>${p.date} – ${p.time}</option>`)
+      .map(p => {
+        const dispTime = simplifyTime(p.time);
+        return `<option value="${p.date} – ${dispTime}"${current===`${p.date} – ${dispTime}`?' selected':''}>${p.date} – ${dispTime}</option>`;
+      })
       .join('');
 }
 
@@ -5247,24 +5247,126 @@ function countSignupsForSession(session) {
   }).length;
 }
 
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+/** Parse any raw date value → JS Date, or null */
+function parseAnyDate(raw) {
+  if (!raw) return null;
+  raw = String(raw).trim().split('T')[0]  // strip time portion
+    .replace(/\s+\d{2}:\d{2}.*$/, '')
+    .replace(/\s*(UTC|GMT|EST|EDT|CST|CDT|MST|MDT|PST|PDT)\b/gi, '')
+    .trim();
+  // YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    const d = new Date(raw + 'T12:00:00');
+    if (!isNaN(d)) return d;
+  }
+  // M/D/YYYY or MM/DD/YYYY
+  const slash = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (slash) {
+    const d = new Date(`${slash[3]}-${pad2(slash[1])}-${pad2(slash[2])}T12:00:00`);
+    if (!isNaN(d)) return d;
+  }
+  // Named month "May 18, 2026"
+  if (/^[A-Za-z]/.test(raw)) {
+    const d = new Date(raw);
+    if (!isNaN(d)) return d;
+  }
+  return null;
+}
+
+/** Parse any raw time string → minutes-since-midnight, or null */
+function parseAnyTimeMins(raw) {
+  if (!raw) return null;
+  raw = String(raw).trim();
+  // Decimal fraction of day (Google Sheets)
+  if (/^\d*\.\d+$/.test(raw) && parseFloat(raw) < 1)
+    return Math.round(parseFloat(raw) * 1440);
+  // Strip timezone
+  raw = raw.replace(/\s*(UTC|GMT|EST|EDT|CST|CDT|MST|MDT|PST|PDT|ET|CT|MT|PT)\b/gi, '')
+           .replace(/\s*[+-]\d{2}:?\d{2}$/, '').trim();
+  // ISO "T" portion
+  if (raw.includes('T')) {
+    const t = raw.split('T')[1] || '';
+    const m = t.match(/^(\d{2}):(\d{2})/);
+    if (m) return parseInt(m[1]) * 60 + parseInt(m[2]);
+  }
+  // HH:MM 24h
+  const hhmm = raw.match(/^(\d{1,2}):(\d{2})$/);
+  if (hhmm) return parseInt(hhmm[1]) * 60 + parseInt(hhmm[2]);
+  // H(:MM) AM/PM
+  const ampm = raw.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i);
+  if (ampm) {
+    let h = parseInt(ampm[1]);
+    const m = parseInt(ampm[2] || '0');
+    if (/PM/i.test(ampm[3]) && h !== 12) h += 12;
+    if (/AM/i.test(ampm[3]) && h === 12) h = 0;
+    return h * 60 + m;
+  }
+  return null;
+}
+
+function minsToHHMM(mins) {
+  return `${pad2(Math.floor(mins / 60))}:${pad2(mins % 60)}`;
+}
+
+/** Display date as MMM DD (e.g. May 18) */
+function simplifyDate(raw) {
+  if (!raw) return '';
+  const d = parseAnyDate(String(raw));
+  if (d) {
+    const month = d.toLocaleDateString('en-CA', { month: 'short' });
+    return `${month} ${d.getDate()}`;
+  }
+  // Fallback: strip time/tz suffix
+  return String(raw).split('T')[0].replace(/\s+\d{2}:\d{2}.*$/, '').trim();
+}
+
+/** Display time as HH (hour only, 24h, no timezone). For ranges returns HH–HH. */
+function simplifyTime(raw) {
+  if (!raw) return '';
+  raw = String(raw).trim();
+  // Decimal fraction
+  if (/^\d*\.\d+$/.test(raw) && parseFloat(raw) < 1)
+    return pad2(Math.floor(Math.round(parseFloat(raw) * 1440) / 60));
+  // Strip timezone
+  raw = raw.replace(/\s*(UTC|GMT|EST|EDT|CST|CDT|MST|MDT|PST|PDT|ET|CT|MT|PT)\b/gi, '')
+           .replace(/\s*[+-]\d{2}:?\d{2}$/, '').trim();
+  // Range detection
+  const range = raw.match(/^(.+?)(?:\s*[–\-]\s*|\s+to\s+)(.+)$/i);
+  if (range) {
+    let a = range[1].trim(), b = range[2].trim();
+    const bp = b.match(/(AM|PM)$/i);
+    if (bp && !/(AM|PM)$/i.test(a)) a = `${a} ${bp[1]}`;
+    const ta = parseAnyTimeMins(a), tb = parseAnyTimeMins(b);
+    if (ta !== null && tb !== null)
+      return `${pad2(Math.floor(ta / 60))}–${pad2(Math.floor(tb / 60))}`;
+    if (ta !== null) return pad2(Math.floor(ta / 60));
+  }
+  const t = parseAnyTimeMins(raw);
+  return t !== null ? pad2(Math.floor(t / 60)) : raw;
+}
+
 function renderPickup() {
   document.getElementById('pickup-slots').innerHTML = pickupData.map(p => {
     const signedUp = countSignupsForSession(p);
-    const filled   = Math.max(p.spots, signedUp); // use whichever is higher
+    const filled   = Math.max(p.spots, signedUp);
     const open     = Math.max(0, p.max - filled);
     let cls = 'open', badge = 'badge-open', label = `${open} spot${open !== 1 ? 's' : ''} left`;
     if (open === 0)     { cls = 'full';    badge = 'badge-full';    label = 'FULL'; }
     else if (open <= 3) { cls = 'filling'; badge = 'badge-filling'; }
-    const loc = p.location || 'GCVI Gym';
+    const loc      = p.location || 'GCVI Gym';
+    const dispTime = simplifyTime(String(p.time || ''));
+    const dispDate = simplifyDate(String(p.date || ''));
     return `<div class="pickup-slot ${cls}">
-      <div class="slot-date">${p.date}</div>
-      <div class="slot-time">🕐 ${p.time} · ${loc}</div>
+      <div class="slot-date">${dispDate}</div>
+      <div class="slot-time">🕐 ${dispTime} · ${loc}</div>
       <div class="slot-spots">
         <span class="spots-badge ${badge}">${label}</span>
         <span style="color:var(--muted);font-size:.8rem;">${filled}/${p.max} signed up</span>
       </div>
       ${open > 0
-        ? `<button class="btn btn-sky" style="width:100%;padding:.6rem;" onclick="document.getElementById('pu-date').value='${p.date} – ${p.time}';showSection('pickup');document.getElementById('pu-date').scrollIntoView();">Sign Up →</button>`
+        ? `<button class="btn btn-sky" style="width:100%;padding:.6rem;" onclick="document.getElementById('pu-date').value='${p.date} – ${dispTime}';showSection('pickup');document.getElementById('pu-date').scrollIntoView();">Sign Up →</button>`
         : `<button class="btn" style="width:100%;padding:.6rem;opacity:.4;cursor:not-allowed;" disabled>Session Full</button>`}
     </div>`;
   }).join('');
@@ -5276,11 +5378,11 @@ function renderSchedule() {
     <div class="schedule-week">
       <div class="schedule-week-header">
         <span>${w.week}</span>
-        <span class="week-date">${w.date}</span>
+        <span class="week-date">${simplifyDate(w.date)}</span>
       </div>
       ${w.games.map(g => `
         <div class="schedule-game">
-          <div class="game-time">${g.time}</div>
+          <div class="game-time">${simplifyTime(g.time)}</div>
           <div class="game-teams"><strong>${g.h}</strong><span class="game-vs">vs</span><strong>${g.a}</strong></div>
           <div class="game-court">Court ${g.court}</div>
         </div>
