@@ -2995,7 +2995,7 @@
 // ── GOOGLE SHEETS INTEGRATION ──────────────────────────────
 // Replace with your actual Google Apps Script Web App URL
 // One URL handles all types: registration, pickup, score, getData, checkDuplicate
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7mvaqc0xu3wsxNQ1hlFGeY-ud7GoG_JTz92_DhKCyKUkdjt6AQKSfQxlHfFhL-V-x/exec';
 
 const SHEETS_ENDPOINTS = {
   registration: SCRIPT_URL,
@@ -3014,12 +3014,21 @@ let sheetPickup     = []; // rows loaded from Pickup Signups sheet
 async function postToSheets(endpoint, data) {
   if (DEMO_MODE) return { ok: true, demo: true };
   try {
-    const params = new URLSearchParams(data);
-    // Use no-cors for write operations (can't read response, but Apps Script records it)
-    await fetch(endpoint + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
-    return { ok: true };
+    // Apps Script GET requests support CORS when deployed as "Anyone" —
+    // use a readable fetch so we can verify the write succeeded.
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(data)) {
+      params.append(k, String(v));
+    }
+    const res  = await fetch(endpoint + '?' + params.toString(), { method: 'GET' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if (json && !json.ok) {
+      console.warn('[Sheets] Write warning:', json.error || JSON.stringify(json));
+    }
+    return json || { ok: true };
   } catch(e) {
-    console.error('postToSheets error:', e);
+    console.error('[Sheets] postToSheets error:', e.message);
     return { ok: false, error: e.message };
   }
 }
@@ -4757,6 +4766,8 @@ function savePickupSessions() {
         location: s.location || 'GCVI Gym',
         max:      s.max,
       })))
+    }).then(r => {
+      if (r && !r.ok && !r.demo) console.warn('[Sheets] Pickup sessions save failed:', r.error);
     });
   }
 }
@@ -4779,6 +4790,8 @@ function saveSchedule() {
       type: 'saveSchedule',
       weeksJson: JSON.stringify(weeksPayload),
       gamesJson: JSON.stringify(gamesPayload)
+    }).then(r => {
+      if (r && !r.ok && !r.demo) console.warn('[Sheets] Schedule save failed:', r.error);
     });
   }
 }
