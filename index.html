@@ -5322,13 +5322,20 @@ function simplifyDate(raw) {
   return String(raw).split('T')[0].replace(/\s+\d{2}:\d{2}.*$/, '').trim();
 }
 
-/** Display time as HH (hour only, 24h, no timezone). For ranges returns HH–HH. */
+function minsToH12(mins) {
+  const totalH = Math.floor(mins / 60);
+  const period = totalH < 12 ? 'AM' : 'PM';
+  const h12    = totalH % 12 || 12;
+  return `${h12}${period}`;
+}
+
+/** Display time as H AM/PM (12-hour, no timezone). For ranges returns H AM/PM–H AM/PM. */
 function simplifyTime(raw) {
   if (!raw) return '';
   raw = String(raw).trim();
-  // Decimal fraction
+  // Decimal fraction of day (Google Sheets)
   if (/^\d*\.\d+$/.test(raw) && parseFloat(raw) < 1)
-    return pad2(Math.floor(Math.round(parseFloat(raw) * 1440) / 60));
+    return minsToH12(Math.round(parseFloat(raw) * 1440));
   // Strip timezone
   raw = raw.replace(/\s*(UTC|GMT|EST|EDT|CST|CDT|MST|MDT|PST|PDT|ET|CT|MT|PT)\b/gi, '')
            .replace(/\s*[+-]\d{2}:?\d{2}$/, '').trim();
@@ -5339,12 +5346,11 @@ function simplifyTime(raw) {
     const bp = b.match(/(AM|PM)$/i);
     if (bp && !/(AM|PM)$/i.test(a)) a = `${a} ${bp[1]}`;
     const ta = parseAnyTimeMins(a), tb = parseAnyTimeMins(b);
-    if (ta !== null && tb !== null)
-      return `${pad2(Math.floor(ta / 60))}–${pad2(Math.floor(tb / 60))}`;
-    if (ta !== null) return pad2(Math.floor(ta / 60));
+    if (ta !== null && tb !== null) return `${minsToH12(ta)}–${minsToH12(tb)}`;
+    if (ta !== null) return minsToH12(ta);
   }
   const t = parseAnyTimeMins(raw);
-  return t !== null ? pad2(Math.floor(t / 60)) : raw;
+  return t !== null ? minsToH12(t) : raw;
 }
 
 function renderPickup() {
