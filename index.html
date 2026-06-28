@@ -5298,15 +5298,15 @@ function parseAnyTimeMins(raw) {
   // Strip timezone
   raw = raw.replace(/\s*(UTC|GMT|EST|EDT|CST|CDT|MST|MDT|PST|PDT|ET|CT|MT|PT)\b/gi, '')
            .replace(/\s*[+-]\d{2}:?\d{2}$/, '').trim();
-  // ISO "T" portion
+  // ISO "T" portion  e.g. "1899-12-30T13:00:00" or "2026-05-18T13:00:00Z"
   if (raw.includes('T')) {
     const t = raw.split('T')[1] || '';
     const m = t.match(/^(\d{2}):(\d{2})/);
     if (m) return parseInt(m[1]) * 60 + parseInt(m[2]);
   }
-  // HH:MM 24h
-  const hhmm = raw.match(/^(\d{1,2}):(\d{2})$/);
-  if (hhmm) return parseInt(hhmm[1]) * 60 + parseInt(hhmm[2]);
+  // HH:MM:SS  (with optional seconds)
+  const hhmmss = raw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  if (hhmmss) return parseInt(hhmmss[1]) * 60 + parseInt(hhmmss[2]);
   // H(:MM) AM/PM
   const ampm = raw.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i);
   if (ampm) {
@@ -5336,13 +5336,14 @@ function simplifyDate(raw) {
 }
 
 function minsToH12(mins) {
-  const totalH = Math.floor(mins / 60);
-  const period = totalH < 12 ? 'AM' : 'PM';
-  const h12    = totalH % 12 || 12;
-  return `${h12}${period}`;
+  const h24     = Math.floor(mins / 60);
+  const m       = mins % 60;
+  const period  = h24 < 12 ? 'AM' : 'PM';
+  const h12     = h24 % 12 || 12;
+  return `${h12}:${pad2(m)} ${period}`;
 }
 
-/** Display time as H AM/PM (12-hour, no timezone). For ranges returns H AM/PM–H AM/PM. */
+/** Display time as H:MM AM/PM (12-hour, no timezone). For ranges returns H:MM AM/PM – H:MM AM/PM. */
 function simplifyTime(raw) {
   if (!raw) return '';
   raw = String(raw).trim();
@@ -5359,7 +5360,7 @@ function simplifyTime(raw) {
     const bp = b.match(/(AM|PM)$/i);
     if (bp && !/(AM|PM)$/i.test(a)) a = `${a} ${bp[1]}`;
     const ta = parseAnyTimeMins(a), tb = parseAnyTimeMins(b);
-    if (ta !== null && tb !== null) return `${minsToH12(ta)}–${minsToH12(tb)}`;
+    if (ta !== null && tb !== null) return `${minsToH12(ta)} – ${minsToH12(tb)}`;
     if (ta !== null) return minsToH12(ta);
   }
   const t = parseAnyTimeMins(raw);
@@ -5392,6 +5393,27 @@ function renderPickup() {
 }
 
 // ── RENDER SCHEDULE ────────────────────────────────────────────
+/** Display time as HH:MM 24-hour. Delegates parsing to parseAnyTimeMins. */
+function simplifyTimeHHMM(raw) {
+  if (!raw) return '';
+  raw = String(raw).trim();
+  if (/^\d*\.\d+$/.test(raw) && parseFloat(raw) < 1)
+    return minsToHHMM(Math.round(parseFloat(raw) * 1440));
+  raw = raw.replace(/\s*(UTC|GMT|EST|EDT|CST|CDT|MST|MDT|PST|PDT|ET|CT|MT|PT)\b/gi, '')
+           .replace(/\s*[+-]\d{2}:?\d{2}$/, '').trim();
+  const range = raw.match(/^(.+?)(?:\s*[–\-]\s*|\s+to\s+)(.+)$/i);
+  if (range) {
+    let a = range[1].trim(), b = range[2].trim();
+    const bp = b.match(/(AM|PM)$/i);
+    if (bp && !/(AM|PM)$/i.test(a)) a = `${a} ${bp[1]}`;
+    const ta = parseAnyTimeMins(a), tb = parseAnyTimeMins(b);
+    if (ta !== null && tb !== null) return `${minsToHHMM(ta)} – ${minsToHHMM(tb)}`;
+    if (ta !== null) return minsToHHMM(ta);
+  }
+  const t = parseAnyTimeMins(raw);
+  return t !== null ? minsToHHMM(t) : raw;
+}
+
 function renderSchedule() {
   document.getElementById('schedule-list').innerHTML = scheduleData.map(w => `
     <div class="schedule-week">
@@ -5399,13 +5421,15 @@ function renderSchedule() {
         <span>${w.week}</span>
         <span class="week-date">${simplifyDate(w.date)}</span>
       </div>
-      ${w.games.map(g => `
+      ${w.games.map(g => {
+        const dispTime = simplifyTime(g.time);
+        return `
         <div class="schedule-game">
-          <div class="game-time">${simplifyTime(g.time)}</div>
+          <div class="game-time">${dispTime}</div>
           <div class="game-teams"><strong>${g.h}</strong><span class="game-vs">vs</span><strong>${g.a}</strong></div>
           <div class="game-court">Court ${g.court}</div>
-        </div>
-      `).join('')}
+        </div>`;
+      }).join('')}
     </div>
   `).join('');
 }
