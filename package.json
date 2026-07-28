@@ -1,0 +1,17 @@
+{
+  "name": "sunday-guelph-vb-functions",
+  "version": "1.0.0",
+  "description": "Firebase Cloud Functions — email proxy for Sunday Guelph VB",
+  "main": "index.js",
+  "engines": { "node": "22" },
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0",
+    "firebase-functions": "^6.6.0",
+    "node-fetch": "^2.7.0"
+  },
+  "private": true
+}

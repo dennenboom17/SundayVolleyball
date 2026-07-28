@@ -1,0 +1,45 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "database.rules.json",
+      ".firebaserc",
+      "**/.*",
+      "**/node_modules/**",
+      "google-apps-script.js",
+      "functions/**",
+      "tests/**",
+      "package.json"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/sendEmail",
+        "function": "sendEmail",
+        "region": "us-central1"
+      },
+      {
+        "source": "/api/sendBulkEmail",
+        "function": "sendBulkEmail",
+        "region": "us-central1"
+      },
+      {
+        "source": "/api/saveApiKey",
+        "function": "saveApiKey",
+        "region": "us-central1"
+      },
+      {
+        "source": "/api/sendNotification",
+        "function": "sendNotification",
+        "region": "us-central1"
+      }
+    ]
+  },
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs22"
+  },
+  "database": {
+    "rules": "database.rules.json"
+  }
+}

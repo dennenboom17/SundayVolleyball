@@ -28,30 +28,21 @@
 <!-- PWA Manifest -->
 <link rel="manifest" href="manifest.json">
 
-<!-- iOS Icons -->
-<link rel="apple-touch-icon" href="icons/icon-152.png">
-<link rel="apple-touch-icon" sizes="72x72"   href="icons/icon-72.png">
-<link rel="apple-touch-icon" sizes="96x96"   href="icons/icon-96.png">
-<link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
-<link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
-<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
-<link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
-
-<!-- iOS Splash Screens (portrait) -->
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" href="icons/splash-1290x2796.png">
-<link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" href="icons/splash-1179x2556.png">
-<link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="icons/splash-1170x2532.png">
-<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="icons/splash-1125x2436.png">
-<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="icons/splash-828x1792.png">
+<!-- iOS Icon -->
+<link rel="apple-touch-icon" href="icons/icon.svg">
 
 <!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-<link rel="shortcut icon" href="icons/icon-192.png">
+<link rel="shortcut icon" href="icons/icon.svg">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 <style>
   :root {
     --sand: #F5EFE0;
@@ -2078,6 +2069,7 @@
     <div class="nav-auth">
       <!-- Logged-out state -->
       <button class="btn-nav-login" id="nav-login-btn" onclick="openLoginModal()">⚙ Admin</button>
+      <button id="nav-notif-btn" onclick="toggleNotifications()" title="Enable notifications" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.6);font-size:1.2rem;padding:.25rem .5rem;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='rgba(255,255,255,.6)'">🔔</button>
       <!-- Logged-in state -->
       <div class="nav-user-pill" id="nav-user-pill">
         <div class="avatar" id="nav-avatar">?</div>
@@ -2097,9 +2089,9 @@
 <section id="home" class="active">
   <!-- Sliding background photos — real Pexels volleyball shots by Pavel Danilyuk (free, no attribution required) -->
   <div class="hero-photo-strip" id="hero-strip">
-    <img id="hslide-0" src="https://images.pexels.com/photos/6203541/pexels-photo-6203541.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Indoor volleyball match" class="visible">
-    <img id="hslide-1" src="https://images.pexels.com/photos/6203594/pexels-photo-6203594.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Players jumping for the ball">
-    <img id="hslide-2" src="https://images.pexels.com/photos/6203501/pexels-photo-6203501.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Player spiking the volleyball">
+    <img id="hslide-0" src="https://images.pexels.com/photos/6203541/pexels-photo-6203541.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Indoor volleyball match" class="visible">
+    <img id="hslide-1" src="https://images.pexels.com/photos/6203594/pexels-photo-6203594.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Players jumping for the ball">
+    <img id="hslide-2" src="https://images.pexels.com/photos/6203501/pexels-photo-6203501.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Player spiking the volleyball">
   </div>
 
   <div class="hero-bg"></div>
@@ -2580,6 +2572,9 @@
           <button class="admin-nav-item" id="anav-settings" onclick="switchAdminTab('settings')">
             <span class="item-icon">⚙️</span> Settings
           </button>
+          <button class="admin-nav-item" id="anav-notifications" onclick="switchAdminTab('notifications')">
+            <span class="item-icon">🔔</span> Notifications
+          </button>
         </div>
 
         <!-- Main content -->
@@ -2660,10 +2655,10 @@
               <div style="overflow-x:auto;">
                 <table class="player-list-table" id="reg-player-table">
                   <thead><tr>
-                    <th>Name</th><th>Email</th><th>Position</th><th>Skill</th><th>Season</th><th>Team</th><th>Date</th>
+                    <th>Name</th><th>Email</th><th>Position</th><th>Skill</th><th>Season</th><th>Team</th><th>Date</th><th style="width:72px;"></th>
                   </tr></thead>
                   <tbody id="reg-player-body">
-                    <tr><td colspan="7" style="color:var(--muted);font-style:italic;padding:1.5rem;">No registrations yet this session.</td></tr>
+                    <tr><td colspan="8" style="color:var(--muted);font-style:italic;padding:1.5rem;">No registrations yet this session.</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -2714,10 +2709,10 @@
               <div style="overflow-x:auto;">
                 <table class="player-list-table">
                   <thead><tr>
-                    <th>Name</th><th>Email</th><th>Position</th><th>Session</th><th>Signed Up</th>
+                    <th>Name</th><th>Email</th><th>Position</th><th>Session</th><th>Signed Up</th><th style="width:72px;"></th>
                   </tr></thead>
                   <tbody id="pickup-player-body">
-                    <tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:1.5rem;">No pick-up signups yet this session.</td></tr>
+                    <tr><td colspan="6" style="color:var(--muted);font-style:italic;padding:1.5rem;">No pick-up signups yet this session.</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -2730,7 +2725,7 @@
 
             <div class="admin-card">
               <h3>📧 MailerSend Configuration</h3>
-              <p class="card-sub">Enter your MailerSend API key to enable transactional emails (registration confirmations, pick-up confirmations) and bulk email broadcasts to players. The key is stored securely in Google Apps Script Properties — it is never exposed to the browser.</p>
+              <p class="card-sub">Enter your MailerSend API key to enable transactional emails (registration confirmations, pick-up confirmations) and bulk email broadcasts to players. The key is stored securely in Firebase — it is never exposed in the HTML source.</p>
 
               <div class="note" style="margin-bottom:1.25rem;">
                 🔑 Get your API key from <a href="https://app.mailersend.com/api-tokens" target="_blank" rel="noopener" style="color:var(--sky);">app.mailersend.com/api-tokens</a>. Your sending domain (<code>sundayguelphvb.com</code>) must be verified in MailerSend before emails will deliver.
@@ -2768,6 +2763,32 @@
             </div>
 
           </div><!-- /apanel-settings -->
+
+          <!-- NOTIFICATIONS ADMIN -->
+          <div class="admin-panel" id="apanel-notifications">
+            <div class="admin-card">
+              <h3>🔔 Push Notifications</h3>
+              <p class="card-sub">Send push notifications to all subscribed players for schedule updates, game reminders, and cancellations.</p>
+              <div class="form-group">
+                <label>Notification Title</label>
+                <input type="text" id="notif-title" placeholder="e.g. Game Reminder" maxlength="100">
+              </div>
+              <div class="form-group">
+                <label>Message Body</label>
+                <textarea id="notif-body" placeholder="e.g. Sunday game at GCVI — 1:00 PM. See you there!" rows="3"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Link (optional)</label>
+                <input type="url" id="notif-url" placeholder="https://sundayguelphvb.web.app/#schedule">
+              </div>
+              <button class="btn btn-primary" onclick="sendAdminNotification()">📤 Send Notification</button>
+            </div>
+            <div class="admin-card">
+              <h3>📱 Subscribed Devices</h3>
+              <p class="card-sub">Devices that have enabled push notifications.</p>
+              <div id="notif-tokens-list" style="font-size:.83rem;color:var(--muted);">Loading…</div>
+            </div>
+          </div>
 
           <!-- SCORES -->
           <div class="admin-panel" id="apanel-scores">
@@ -2995,7 +3016,175 @@
 // ── GOOGLE SHEETS INTEGRATION ──────────────────────────────
 // Replace with your actual Google Apps Script Web App URL
 // One URL handles all types: registration, pickup, score, getData, checkDuplicate
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7mvaqc0xu3wsxNQ1hlFGeY-ud7GoG_JTz92_DhKCyKUkdjt6AQKSfQxlHfFhL-V-x/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhBng4E7GFuQbKIcODdaPPIjmMczDKv7T_RDV40FhVwURPuMCILPzlBGGvMYmpjzXf/exec';
+
+// Shared write secret — must match WRITE_SECRET in Apps Script → Script Properties.
+// Set WRITE_SECRET in the Apps Script editor: Project Settings → Script Properties
+// Set the same value here. Do NOT commit this to a public repo.
+const WRITE_TOKEN = ''; // ← paste your secret token here
+
+// ── FIREBASE CONFIG ─────────────────────────────────────────
+const FIREBASE_CONFIG = {
+  apiKey:            'AIzaSyAN4usQ93wBELRc5MqKaeYfOF1Bu__xMKA',
+  authDomain:        'sundayguelphvb.firebaseapp.com',
+  databaseURL:       'https://sundayguelphvb.firebaseio.com',
+  projectId:         'sundayguelphvb',
+  storageBucket:     'sundayguelphvb.firebasestorage.app',
+  messagingSenderId: '543345950199',
+  appId:             '1:543345950199:web:58efa03e43be85abc502f2',
+};
+
+// Initialize Firebase (guard against double-init on hot reload)
+if (!firebase.apps.length) {
+  firebase.initializeApp(FIREBASE_CONFIG);
+}
+const fbAuth = firebase.auth();
+const fbDb   = firebase.database(); // Realtime Database
+
+// ── FIREBASE CLOUD MESSAGING ──────────────────────────────────
+// VAPID key from Firebase Console → Project Settings → Cloud Messaging → Web Push certificates
+const FCM_VAPID_KEY = 'BPWiOA2wpkH0kBb7rD2BgcMk_cUFtadZo4jjUKyat25cKwxfOgVFEZaf457x3XpxFyTi1rUT89eRBlxndItrJtE'; // ← replace with your VAPID key from Firebase Console → Project Settings → Cloud Messaging
+
+let fbMsg = null;
+
+// Generate a stable unique device ID stored in localStorage
+function getDeviceId() {
+  let id = localStorage.getItem('sgvb_device_id');
+  if (!id) {
+    id = 'dev_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
+    localStorage.setItem('sgvb_device_id', id);
+  }
+  return id;
+}
+
+// Detect iOS Safari — FCM push is not supported
+function isIOSSafari() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+
+async function initMessaging() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) {
+    console.log('[FCM] Notifications not supported');
+    return;
+  }
+  if (isIOSSafari()) {
+    console.log('[FCM] iOS Safari — FCM push not supported');
+    return;
+  }
+  if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+    console.log('[FCM] Notifications require HTTPS');
+    return;
+  }
+  if (FCM_VAPID_KEY === 'YOUR_VAPID_KEY_HERE') {
+    console.warn('[FCM] VAPID key not configured — notifications disabled');
+    return;
+  }
+  try {
+    fbMsg = firebase.messaging();
+
+    // Foreground messages — app is open
+    fbMsg.onMessage(payload => {
+      console.log('[FCM] Foreground message:', payload);
+      const { title, body, icon } = payload.notification || {};
+      showToast(`🔔 ${title || 'Notification'}: ${body || ''}`, true);
+      if (Notification.permission === 'granted') {
+        new Notification(title || 'Sunday GVB', {
+          body:  body  || '',
+          icon:  icon  || '/icons/icon.svg',
+          badge: '/icons/icon.svg',
+          tag:   'sgvb-notification',
+        });
+      }
+    });
+
+    console.log('[FCM] Messaging initialized');
+  } catch(e) {
+    console.warn('[FCM] Messaging init failed:', e.message);
+    fbMsg = null;
+  }
+}
+
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    showToast('Notifications are not supported on this browser.', false);
+    return null;
+  }
+  if (isIOSSafari()) {
+    showToast('Push notifications are not supported on iOS Safari. Try Chrome or Firefox.', false);
+    return null;
+  }
+  if (FCM_VAPID_KEY === 'YOUR_VAPID_KEY_HERE') {
+    showToast('Notifications not configured yet. Contact the admin.', false);
+    return null;
+  }
+
+  let permission = Notification.permission;
+  if (permission === 'default') {
+    permission = await Notification.requestPermission();
+  }
+  if (permission !== 'granted') {
+    showToast('Notification permission denied.', false);
+    return null;
+  }
+
+  if (!fbMsg) await initMessaging();
+  if (!fbMsg) {
+    showToast('Notification service unavailable.', false);
+    return null;
+  }
+
+  try {
+    // Register the FCM service worker explicitly so it uses our file
+    const swReg = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
+    console.log('[FCM] Service worker registered:', swReg.scope);
+
+    const token = await fbMsg.getToken({
+      vapidKey:          FCM_VAPID_KEY,
+      serviceWorkerRegistration: swReg,
+    });
+
+    if (!token) {
+      console.warn('[FCM] No token returned — check VAPID key and domain config');
+      showToast('Could not get notification token. Check browser settings.', false);
+      return null;
+    }
+
+    console.log('[FCM] Token obtained:', token.slice(0, 20) + '…');
+
+    // Use a stable per-device key so multiple devices don't overwrite each other
+    const deviceId = getDeviceId();
+    await fbDb.ref('fcmTokens/' + deviceId).set({
+      token,
+      deviceId,
+      uid:       fbAuth.currentUser?.uid || 'anonymous',
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent.slice(0, 150),
+    });
+    console.log('[FCM] Token saved to Firebase at fcmTokens/' + deviceId);
+    return token;
+  } catch(e) {
+    console.error('[FCM] getToken error:', e.message, e.stack);
+    showToast('Notification error: ' + e.message, false);
+    return null;
+  }
+}
+
+async function unsubscribeNotifications() {
+  const deviceId = getDeviceId();
+  // Delete FCM token from browser (best effort — may fail if SW not registered)
+  if (fbMsg) {
+    try { await fbMsg.deleteToken(); } catch(e) {
+      console.warn('[FCM] deleteToken browser error (non-fatal):', e.message);
+    }
+  }
+  // Always remove from Firebase regardless of fbMsg state
+  try {
+    await fbDb.ref('fcmTokens/' + deviceId).remove();
+    console.log('[FCM] Token removed from Firebase for device:', deviceId);
+  } catch(e) {
+    console.error('[FCM] Firebase token remove error:', e.message);
+  }
+}
 
 const SHEETS_ENDPOINTS = {
   registration: SCRIPT_URL,
@@ -3014,11 +3203,14 @@ let sheetPickup     = []; // rows loaded from Pickup Signups sheet
 async function postToSheets(endpoint, data) {
   if (DEMO_MODE) return { ok: true, demo: true };
   try {
-    // Apps Script GET requests support CORS when deployed as "Anyone" —
-    // use a readable fetch so we can verify the write succeeded.
     const params = new URLSearchParams();
+    // type first and lowercased — must match Apps Script switch cases
+    if (data.type) params.set('type', String(data.type).toLowerCase().trim());
+    // write token
+    if (WRITE_TOKEN) params.set('token', WRITE_TOKEN);
+    // remaining fields — use .set() to prevent duplicate keys
     for (const [k, v] of Object.entries(data)) {
-      params.append(k, String(v));
+      if (k !== 'type') params.set(k, String(v));
     }
     const res  = await fetch(endpoint + '?' + params.toString(), { method: 'GET' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -3054,19 +3246,16 @@ async function loadSheetData() {
   showLoadingBanner('Loading league data…');
 
   try {
-    const [regResult, puResult, teamsResult, playersResult, weeksResult, gamesResult, scoresResult, standingsResult, pickupSessionsResult] = await Promise.all([
+    // Sheets is a BACKUP only for data that Firebase owns.
+    // We only read Registrations, Pickup Signups, and Standings from Sheets.
+    // Teams, Schedule, Scores, and Pickup Sessions come exclusively from Firebase.
+    const [regResult, puResult, standingsResult] = await Promise.all([
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Registrations' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Pickup Signups' }),
-      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Teams' }),
-      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Team Players' }),
-      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Schedule' }),
-      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Schedule Games' }),
-      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Scores' }),
       fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Standings' }),
-      fetchFromSheets(SCRIPT_URL, { type: 'getData', sheet: 'Pickup Sessions' }),
     ]);
 
-    // ── Registrations ──────────────────────────────────────────
+    // ── Registrations (merge — Sheets may have pre-Firebase records) ─────
     if (regResult.ok && regResult.rows && regResult.rows.length) {
       sheetRegistered = regResult.rows;
       regResult.rows.forEach(r => {
@@ -3085,150 +3274,34 @@ async function loadSheetData() {
       });
     }
 
-    // ── Pickup Signups ─────────────────────────────────────────
+    // ── Pickup Signups (merge — Sheets may have pre-Firebase records) ────
     if (puResult.ok && puResult.rows && puResult.rows.length) {
       sheetPickup = puResult.rows;
       puResult.rows.forEach(r => {
         const email = (r['Email'] || '').toLowerCase();
-        if (!sessionPickup.find(p => p.email === email)) {
+        const date  = r['Session Date'] || '';
+        if (!sessionPickup.find(p => p.email === email && p.date === date)) {
           sessionPickup.push({
             firstName: r['First Name']   || '',
             lastName:  r['Last Name']    || '',
             email,
             position:  r['Position']     || '',
-            date:      r['Session Date'] || '',
+            date,
             timestamp: r['Timestamp']    || new Date().toISOString(),
           });
         }
       });
     }
 
-    // ── Teams ──────────────────────────────────────────────────
-    if (teamsResult.ok && teamsResult.rows && teamsResult.rows.length) {
-      // Build teams from sheet — start with empty player arrays
-      const sheetTeams = teamsResult.rows.map(r => ({
-        id:      r['ID']    || uid(),
-        name:    r['Name']  || 'Unnamed',
-        color:   r['Color'] || '#4DB8D4',
-        players: [],
-      }));
-
-      // ── Team Players ────────────────────────────────────────
-      if (playersResult.ok && playersResult.rows && playersResult.rows.length) {
-        playersResult.rows.forEach(r => {
-          const team = sheetTeams.find(t => t.id === r['Team ID']);
-          if (team) {
-            const email = (r['Email'] || '').toLowerCase();
-            if (!team.players.find(p => p.email === email)) {
-              team.players.push({
-                email,
-                firstName: r['First Name'] || '',
-                lastName:  r['Last Name']  || '',
-                position:  r['Position']   || '',
-                skill:     r['Skill']      || '',
-              });
-            }
-          }
-        });
-      }
-
-      // Merge: keep any locally-created teams not yet in sheet,
-      // but prefer sheet data for teams that exist there
-      const sheetIds = new Set(sheetTeams.map(t => t.id));
-      const localOnly = teamsData.filter(t => !sheetIds.has(t.id));
-      teamsData = [...sheetTeams, ...localOnly];
-      try { localStorage.setItem('gvb_teams', JSON.stringify(teamsData)); } catch(e) {}
-      renderTeamsPage();
-      renderTeamAssignUI();
-      renderPlayerTable();
-      syncScoreTeamDropdowns(); // keep score-submit dropdowns fresh
-    }
-
-    // ── Schedule ───────────────────────────────────────────────
-    if (weeksResult.ok && weeksResult.rows && weeksResult.rows.length) {
-      const sheetWeeks = weeksResult.rows.map(r => ({
-        id:      r['ID']           || uid(),
-        week:    r['Week Label']   || '',
-        date:    r['Date Display'] || '',
-        dateISO: r['Date ISO']     || '',
-        games:   [],
-      }));
-
-      if (gamesResult.ok && gamesResult.rows && gamesResult.rows.length) {
-        gamesResult.rows.forEach(r => {
-          const week = sheetWeeks.find(w => w.id === r['Week ID']);
-          if (week) {
-            week.games.push({
-              id:    r['Game ID'] || uid(),
-              time:  r['Time']        || '',
-              h:     r['Home Team']   || '',
-              a:     r['Away Team']   || '',
-              court: r['Court']       || 'A',
-            });
-          }
-        });
-      }
-
-      // Only overwrite if sheet has data (prefer sheet over default seed)
-      scheduleData = sheetWeeks;
-      try { localStorage.setItem('gvb_schedule', JSON.stringify(scheduleData)); } catch(e) {}
-      renderSchedule();
-      renderScheduleMgr();
-    }
-
-    // ── Scores ─────────────────────────────────────────────────
-    if (scoresResult.ok && scoresResult.rows && scoresResult.rows.length) {
-      const sheetScores = scoresResult.rows.map(r => ({
-        id:        r['Score ID']      || uid(),
-        timestamp: r['Timestamp']     || '',
-        gameDate:  r['Game Date']     || '',
-        homeTeam:  r['Home Team']     || '',
-        homeScore: r['Home Score']    || '0',
-        awayTeam:  r['Away Team']     || '',
-        awayScore: r['Away Score']    || '0',
-        court:     r['Court']         || '',
-        submitter: r['Submitted By']  || '',
-      }));
-      allScores = sheetScores;
-      try { localStorage.setItem('gvb_scores', JSON.stringify(allScores)); } catch(e) {}
-      renderScoresTable();
-    }
-
-    // ── Pickup Sessions ────────────────────────────────────────
-    if (pickupSessionsResult.ok && pickupSessionsResult.rows && pickupSessionsResult.rows.length) {
-      const sheetSessions = pickupSessionsResult.rows.map(r => ({
-        id:       r['Session ID']  || uid(),
-        date:     r['Date Display']|| '',
-        dateISO:  r['Date ISO']    || '',
-        time:     r['Time']        || '',
-        location: r['Location']    || 'GCVI Gym',
-        max:      parseInt(r['Max Spots']) || 18,
-        spots:    0, // derived from actual signups — not stored
-      }));
-      // Sheet is authoritative — replace local data
-      pickupData = sheetSessions;
-      try { localStorage.setItem('gvb_pickup_sessions', JSON.stringify(pickupData)); } catch(e) {}
-      renderPickup();
-      renderPickupSessionAdmin();
-      syncPickupDateDropdown();
-    }
-
-    // ── Standings ──────────────────────────────────────────────
-    // Phase 1: If the standings sheet has rows, render them immediately as a
-    // fast snapshot while scores finish loading (or if Scores sheet is empty).
+    // ── Standings snapshot (fast initial render only — Firebase scores will recompute) ─
     if (standingsResult.ok && standingsResult.rows && standingsResult.rows.length) {
       renderStandingsFromSheet(standingsResult.rows);
     }
 
-    // Phase 2: Always recompute standings from the authoritative Scores data
-    // and push a fresh snapshot back to the sheet so they stay in sync.
-    renderStandings();
-    saveStandings();
-
     refreshAdminData();
     hideLoadingBanner();
   } catch(e) {
-    console.warn('Could not load sheet data:', e.message);
+    console.warn('[Sheets] loadSheetData error:', e.message);
     hideLoadingBanner();
   }
 }
@@ -3290,112 +3363,6 @@ function showSection(id) {
   // Stamp load times for bot-time checks when forms become visible
   if (id === 'register') resetFormStamp('reg');
   if (id === 'pickup')   resetFormStamp('pu');
-}
-
-// ── AUTH STATE ────────────────────────────────────────────────
-let currentUser = null;
-let pendingSection = null;
-
-function loadSession() {
-  try {
-    const s = localStorage.getItem('gvb_admin_session');
-    if (s) {
-      const user = JSON.parse(s);
-      // Only restore if it's a valid admin session
-      if (user && user.email === ADMIN_EMAIL) {
-        currentUser = user;
-        updateNavAuth();
-      }
-    }
-  } catch(e) {}
-}
-
-function saveSession(user) {
-  try { localStorage.setItem('gvb_admin_session', JSON.stringify(user)); } catch(e) {}
-}
-
-function clearSession() {
-  try { localStorage.removeItem('gvb_admin_session'); } catch(e) {}
-}
-
-function updateNavAuth() {
-  const loginBtn = document.getElementById('nav-login-btn');
-  const userPill = document.getElementById('nav-user-pill');
-  const avatar   = document.getElementById('nav-avatar');
-  const username = document.getElementById('nav-username');
-  const adminBtn = document.getElementById('nav-admin');
-  if (currentUser) {
-    loginBtn.style.display = 'none';
-    userPill.style.display = 'flex';
-    avatar.textContent     = 'A';
-    username.textContent   = 'Admin';
-    if (adminBtn) adminBtn.style.display = '';
-  } else {
-    loginBtn.style.display = '';
-    userPill.style.display = 'none';
-    if (adminBtn) adminBtn.style.display = 'none';
-  }
-}
-
-function logout() {
-  currentUser = null;
-  clearSession();
-  updateNavAuth();
-  showSection('home');
-  showToast('Signed out.');
-}
-
-// ── LOGIN MODAL ───────────────────────────────────────────────
-function openLoginModal() {
-  document.getElementById('login-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  const errEl = document.getElementById('login-error');
-  const sucEl = document.getElementById('login-success');
-  if (errEl) errEl.classList.remove('show');
-  if (sucEl) sucEl.classList.remove('show');
-  setTimeout(() => document.getElementById('login-email')?.focus(), 100);
-}
-
-function closeLoginModal() {
-  document.getElementById('login-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  pendingSection = null;
-}
-
-function handleModalOverlayClick(e) {
-  if (e.target === document.getElementById('login-modal')) closeLoginModal();
-}
-
-function doLogin() {
-  const email = document.getElementById('login-email').value.trim().toLowerCase();
-  const pass  = document.getElementById('login-password').value;
-  const errEl = document.getElementById('login-error');
-  if (errEl) errEl.classList.remove('show');
-
-  if (!email || !pass) {
-    showLoginError('Please enter your email and password.');
-    return;
-  }
-
-  if (email !== ADMIN_EMAIL || pass !== ADMIN_PASSWORD) {
-    showLoginError('Invalid email or password.');
-    return;
-  }
-
-  const user = { email: ADMIN_EMAIL, firstName: 'Admin', lastName: '', team: '' };
-  currentUser = user;
-  saveSession(user);
-  updateNavAuth();
-  closeLoginModal();
-  showToast('Welcome back, Admin! 🏐');
-  if (pendingSection) { const s = pendingSection; pendingSection = null; showSection(s); }
-}
-
-function showLoginError(msg) {
-  const el = document.getElementById('login-error');
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add('show');
 }
 
 // ── STANDINGS ENGINE ──────────────────────────────────────────
@@ -3541,7 +3508,7 @@ function renderStandings() {
       : '—';
     return `<tr>
       <td><span class="rank-badge ${rankCls}">${rank}</span></td>
-      <td><div class="team-name-cell"><span class="team-dot" style="background:${color}"></span>${t.name}</div></td>
+      <td><div class="team-name-cell"><span class="team-dot" style="background:${color}"></span>${esc(t.name)}</div></td>
       <td>${t.gp}</td>
       <td class="win-cell">${t.w}</td>
       <td class="lose-cell">${t.l}</td>
@@ -3575,7 +3542,7 @@ function renderStandings() {
       }
     });
     return `<tr>
-      <td><div class="team-name-cell"><span class="team-dot" style="background:${color}"></span>${t.name}</div></td>
+      <td><div class="team-name-cell"><span class="team-dot" style="background:${color}"></span>${esc(t.name)}</div></td>
       <td>${avgPF}</td>
       <td>${avgPA}</td>
       <td>${bestWin !== '—' ? '+' + bestWin : '—'}</td>
@@ -3650,19 +3617,29 @@ function switchStandingsTab(tab) {
   });
 }
 
-// ── ADMIN ─────────────────────────────────────────────────────
-const ADMIN_EMAIL    = 'admin@sundayguelphvb.com';
-const ADMIN_PASSWORD = 'admin2026';
+// ── ADMIN AUTH (Firebase) ─────────────────────────────────────
+// Admin users are managed in Firebase Console → Authentication → Users.
+// Any email/password account in Firebase is treated as an admin.
+const ADMIN_EMAIL = ''; // No longer used for auth — kept for isAdmin() display only
 
-// In-session lists (populated when players register/signup in this session)
-const sessionRegistered = []; // {firstName, lastName, email, position, skill, season, timestamp}
-const sessionPickup     = []; // {firstName, lastName, email, position, date, timestamp}
-const sentLog           = [];
+let currentUser = null;
+let pendingSection = null;
 
-let selectedAudiences = new Set(['registered']);
+// ── Firebase Auth State Observer ─────────────────────────────
+fbAuth.onAuthStateChanged(function(user) {
+  if (user) {
+    currentUser = { email: user.email, firstName: user.displayName || user.email.split('@')[0], uid: user.uid };
+    updateNavAuth();
+    // If login was triggered by requireAdmin, navigate there now
+    if (pendingSection) { const s = pendingSection; pendingSection = null; showSection(s); }
+  } else {
+    currentUser = null;
+    updateNavAuth();
+  }
+});
 
 function isAdmin() {
-  return currentUser && currentUser.email === ADMIN_EMAIL;
+  return currentUser !== null; // anyone authenticated via Firebase is admin
 }
 
 function requireAdmin() {
@@ -3673,6 +3650,94 @@ function requireAdmin() {
     openLoginModal();
   }
 }
+
+function loadSession()  { /* handled by onAuthStateChanged */ }
+function saveSession()  { /* handled by Firebase */ }
+function clearSession() { /* handled by Firebase */ }
+
+function openLoginModal() {
+  document.getElementById('login-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('login-error').classList.remove('show');
+}
+
+function closeLoginModal() {
+  document.getElementById('login-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  pendingSection = null;
+}
+
+function handleModalOverlayClick(e) {
+  if (e.target === document.getElementById('login-modal')) closeLoginModal();
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.classList.remove('show');
+
+  if (!email || !pass) { errEl.textContent = 'Please enter your email and password.'; errEl.classList.add('show'); return; }
+
+  const btn = document.querySelector('#panel-login .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
+
+  try {
+    await fbAuth.signInWithEmailAndPassword(email, pass);
+    closeLoginModal();
+    showToast('Welcome back! 🏐');
+  } catch(err) {
+    let msg = 'Sign in failed. Please check your credentials.';
+    if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+      msg = 'Incorrect email or password.';
+    } else if (err.code === 'auth/invalid-email') {
+      msg = 'Please enter a valid email address.';
+    } else if (err.code === 'auth/too-many-requests') {
+      msg = 'Too many failed attempts. Please try again later.';
+    } else if (err.code === 'auth/network-request-failed') {
+      msg = 'Network error. Check your connection and try again.';
+    }
+    errEl.textContent = msg;
+    errEl.classList.add('show');
+    console.error('[Firebase Auth]', err.code, err.message);
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
+}
+
+function logout() {
+  fbAuth.signOut().then(() => {
+    showToast('You\'ve been signed out.');
+    showSection('home');
+  }).catch(err => {
+    console.error('[Firebase Auth] sign out error:', err);
+  });
+}
+
+function updateNavAuth() {
+  const loginBtn = document.getElementById('nav-login-btn');
+  const userPill = document.getElementById('nav-user-pill');
+  const avatar   = document.getElementById('nav-avatar');
+  const username = document.getElementById('nav-username');
+  const adminBtn = document.getElementById('nav-admin');
+  if (currentUser) {
+    if (loginBtn)  loginBtn.style.display  = 'none';
+    if (userPill)  userPill.style.display  = 'flex';
+    if (avatar)    avatar.textContent      = (currentUser.firstName || currentUser.email)[0].toUpperCase();
+    if (username)  username.textContent    = currentUser.firstName || currentUser.email.split('@')[0];
+    if (adminBtn)  adminBtn.style.display  = '';
+  } else {
+    if (loginBtn)  loginBtn.style.display  = '';
+    if (userPill)  userPill.style.display  = 'none';
+    if (adminBtn)  adminBtn.style.display  = 'none';
+  }
+}
+
+// ── SESSION DATA ──────────────────────────────────────────────
+const sessionRegistered = []; // populated when players register this session
+const sessionPickup     = []; // populated when pick-up signups happen this session
+const sentLog           = [];
+let   selectedAudiences = new Set(['registered']);
 
 function renderAdminUI() {
   const gate = document.getElementById('admin-gate');
@@ -3707,14 +3772,15 @@ function refreshAdminData() {
 }
 
 function switchAdminTab(tab) {
-  ['email','scores','teams','players','pickup','schedule-mgr','settings'].forEach(t => {
+  ['email','scores','teams','players','pickup','schedule-mgr','settings','notifications'].forEach(t => {
     document.getElementById('apanel-' + t)?.classList.toggle('active', t === tab);
     document.getElementById('anav-'   + t)?.classList.toggle('active', t === tab);
   });
-  if (tab === 'teams')        renderTeamAssignUI();
-  if (tab === 'schedule-mgr') renderScheduleMgr();
-  if (tab === 'pickup')       renderPickupAdminTab();
-  if (tab === 'scores')       syncScoreTeamDropdowns();
+  if (tab === 'teams')         renderTeamAssignUI();
+  if (tab === 'schedule-mgr')  renderScheduleMgr();
+  if (tab === 'pickup')        renderPickupAdminTab();
+  if (tab === 'scores')        syncScoreTeamDropdowns();
+  if (tab === 'notifications') loadNotifTokens();
 }
 
 // ── MAILERSEND SETTINGS ───────────────────────────────────────
@@ -3727,6 +3793,114 @@ function toggleApiKeyVisibility() {
   btn.textContent = showing ? '👁 Show' : '🙈 Hide';
 }
 
+// ── MAILERSEND VIA FIREBASE CLOUD FUNCTIONS ───────────────────
+// The Cloud Functions act as a server-side proxy to MailerSend.
+// The API key lives in Firebase Realtime Database (/config/mailersendApiKey).
+// The browser sends its Firebase Auth ID token for admin verification.
+
+// Email functions are proxied through Firebase Hosting rewrites (/api/*)
+// so no CORS headers are needed — same origin as the site itself.
+const CF_BASE = '/api';
+
+let _msApiKey = ''; // in-memory cache only
+
+async function getMailerSendKey() {
+  if (_msApiKey) return _msApiKey;
+  if (typeof fbDb === 'undefined') return '';
+  try {
+    const snap = await fbDb.ref('config/mailersendApiKey').once('value');
+    _msApiKey = snap.val() || '';
+  } catch(e) {
+    console.error('[MailerSend] key fetch error:', e.message);
+  }
+  return _msApiKey;
+}
+
+async function getIdToken() {
+  if (!fbAuth.currentUser) throw new Error('Not authenticated');
+  return fbAuth.currentUser.getIdToken();
+}
+
+async function mailersendSend(to, subject, textBody) {
+  const key = await getMailerSendKey();
+  if (!key) throw new Error('MailerSend API key not configured. Go to Admin → Settings.');
+  const token = await getIdToken();
+
+  const url = CF_BASE + '/sendEmail';
+  console.log('[mailersendSend] calling:', url);
+  console.log('[mailersendSend] to:', to.email, '| subject:', subject);
+
+  let res;
+  try {
+    res = await fetch(url, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ to, subject, body: textBody }),
+    });
+  } catch(networkErr) {
+    console.error('[mailersendSend] Network/fetch error:', networkErr.message);
+    console.error('[mailersendSend] URL attempted:', url);
+    console.error('[mailersendSend] Possible causes: function not deployed, wrong region in CF_BASE, or function URL blocked');
+    throw new Error(
+      'Cannot reach Cloud Function at ' + url + '. ' +
+      'Verify the function is deployed (firebase deploy --only functions) ' +
+      'and CF_BASE region is correct. Error: ' + networkErr.message
+    );
+  }
+
+  const data = await res.json();
+  console.log('[mailersendSend] HTTP', res.status, '| response:', JSON.stringify(data));
+  if (!data.ok) throw new Error(data.error || 'Send failed (HTTP ' + res.status + ')');
+  return true;
+}
+
+async function mailersendBulk(recipients, subject, bodyTemplate) {
+  const key = await getMailerSendKey();
+  if (!key) throw new Error('MailerSend API key not configured. Go to Admin → Settings.');
+  const token  = await getIdToken();
+  const BATCH  = 100;
+  let totalSent = 0, totalFailed = 0, allErrors = [];
+
+  for (let i = 0; i < recipients.length; i += BATCH) {
+    const chunk = recipients.slice(i, i + BATCH);
+    try {
+      const res = await fetch(CF_BASE + '/sendBulkEmail', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body:    JSON.stringify({ recipients: chunk, subject, body: bodyTemplate }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        totalSent   += data.sent   || chunk.length;
+        totalFailed += data.failed || 0;
+        if (data.errors?.length) allErrors.push(...data.errors);
+      } else {
+        totalFailed += chunk.length;
+        allErrors.push(data.error || 'Unknown error');
+      }
+    } catch(e) {
+      totalFailed += chunk.length;
+      allErrors.push(e.message);
+    }
+  }
+  return { sent: totalSent, failed: totalFailed, errors: allErrors };
+}
+
+function mailersendHtml(text) {
+  const lines = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .split('\n').map(l => l === '' ? '<br>' : `<p style="margin:0 0 8px">${l}</p>`).join('');
+  return `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;font-size:15px;color:#0D1B2A;max-width:600px;margin:0 auto;padding:24px">
+    <div style="background:#0D1B2A;padding:16px 24px;border-radius:8px 8px 0 0">
+      <span style="font-size:22px;font-weight:900;letter-spacing:2px;color:#E8A820">SUNDAY GVB</span>
+    </div>
+    <div style="background:#FDFAF4;padding:24px;border:1px solid #e5e0d8;border-radius:0 0 8px 8px">${lines}</div>
+    <p style="font-size:12px;color:#aaa;margin-top:16px;text-align:center">
+      Sunday Guelph Volleyball · Guelph, Ontario · <a href="https://www.sundayguelphvb.com" style="color:#4DB8D4">sundayguelphvb.com</a>
+    </p></body></html>`;
+}
+
+// ── SAVE API KEY (stored in Firebase, not Apps Script) ─────────
 async function saveApiKey() {
   const key = document.getElementById('ms-api-key')?.value.trim();
   const statusEl = document.getElementById('ms-status');
@@ -3736,23 +3910,39 @@ async function saveApiKey() {
   btn.disabled = true; btn.textContent = 'Saving…';
 
   try {
-    const res  = await fetch(`${SCRIPT_URL}?type=setApiKey&apiKey=${encodeURIComponent(key)}`);
+    const token = await getIdToken();
+    const res   = await fetch(CF_BASE + '/saveApiKey', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body:    JSON.stringify({ apiKey: key }),
+    });
     const data = await res.json();
     if (data.ok) {
-      showToast('✅ MailerSend API key saved successfully!');
-      statusEl.style.display = 'block';
-      statusEl.style.color   = '#1a7a3e';
-      statusEl.textContent   = '✅ API key saved. Confirmation emails are now active.';
+      _msApiKey = key; // update in-memory cache
+      showToast('✅ MailerSend API key saved!');
+      if (statusEl) {
+        statusEl.style.display = 'block';
+        statusEl.style.color   = '#1a7a3e';
+        statusEl.textContent   = '✅ API key saved and validated. Confirmation emails are now active.';
+      }
       document.getElementById('ms-api-key').value = '';
     } else {
-      showToast('Failed to save key: ' + (data.error || 'unknown error'), false);
+      const errMsg = data.error || 'Unknown error';
+      showToast('Failed: ' + errMsg, false);
+      if (statusEl) {
+        statusEl.style.display = 'block';
+        statusEl.style.color   = 'var(--coral)';
+        statusEl.textContent   = '❌ ' + errMsg;
+      }
     }
   } catch(e) {
-    showToast('Network error saving API key.', false);
+    showToast('Error saving key: ' + e.message, false);
+    console.error('[saveApiKey]', e);
   }
   btn.disabled = false; btn.textContent = '💾 Save API Key';
 }
 
+// ── TEST EMAIL ────────────────────────────────────────────────
 async function testEmail() {
   const adminEmail = currentUser?.email;
   if (!adminEmail) { showToast('You must be logged in to send a test email.', false); return; }
@@ -3762,30 +3952,91 @@ async function testEmail() {
   btn.disabled = true; btn.textContent = '⏳ Sending…';
 
   try {
-    const params = new URLSearchParams({
-      type:       'sendAdminEmail',
-      subject:    '🧪 Test Email – Sunday Guelph VB',
-      body:       'Hi [First Name],\n\nThis is a test email from Sunday Guelph Volleyball admin panel. If you received this, MailerSend is configured correctly!\n\n— Sunday GVB Team',
-      recipients: JSON.stringify([{ firstName: 'Admin', lastName: '', email: adminEmail }])
-    });
-    const res  = await fetch(SCRIPT_URL + '?' + params.toString());
-    const data = await res.json();
-    if (data.ok && data.sent > 0) {
-      showToast(`✅ Test email sent to ${adminEmail}`);
+    await mailersendSend(
+      { email: adminEmail, firstName: 'Admin', lastName: '' },
+      '🧪 Test Email – Sunday Guelph VB',
+      'Hi Admin,\n\nThis is a test email from the Sunday Guelph Volleyball admin panel.\n\nIf you received this, MailerSend is configured correctly!\n\n— Sunday GVB Team'
+    );
+    showToast(`✅ Test email sent to ${adminEmail}`);
+    if (statusEl) {
       statusEl.style.display = 'block';
       statusEl.style.color   = '#1a7a3e';
       statusEl.textContent   = `✅ Test email sent to ${adminEmail}. Check your inbox!`;
-    } else {
-      const err = data.error || 'Unknown error';
-      showToast('Test failed: ' + err, false);
-      statusEl.style.display = 'block';
-      statusEl.style.color   = 'var(--coral)';
-      statusEl.textContent   = '❌ ' + err;
     }
   } catch(e) {
-    showToast('Network error sending test email.', false);
+    showToast('Test failed: ' + e.message, false);
+    if (statusEl) {
+      statusEl.style.display = 'block';
+      statusEl.style.color   = 'var(--coral)';
+      statusEl.textContent   = '❌ ' + e.message;
+    }
+    console.error('[testEmail]', e);
   }
   btn.disabled = false; btn.textContent = '🧪 Send Test Email';
+}
+
+// ── SEND BULK EMAIL ───────────────────────────────────────────
+async function sendEmail() {
+  const subject    = document.getElementById('email-subject').value.trim();
+  const body       = document.getElementById('email-body').value.trim();
+  const recipients = getRecipients();
+
+  if (!subject)           { showToast('Please enter a subject line.', false); return; }
+  if (!body)              { showToast('Please write a message.', false); return; }
+  if (!recipients.length) { showToast('No recipients selected.', false); return; }
+
+  const btn = document.getElementById('send-btn');
+  btn.disabled  = true;
+  btn.innerHTML = `<span class="spinner"></span> Sending via MailerSend…`;
+
+  try {
+    const recipientData = recipients.map(r => ({
+      firstName: r.firstName || '',
+      lastName:  r.lastName  || '',
+      email:     r.email     || '',
+    }));
+
+    let totalSent = 0, totalFailed = 0, allErrors = [];
+
+    if (!DEMO_MODE) {
+      const result = await mailersendBulk(recipientData, subject, body);
+      totalSent   = result.sent;
+      totalFailed = result.failed;
+      allErrors   = result.errors;
+    } else {
+      totalSent = recipients.length;
+    }
+
+    // Log the send
+    sentLog.unshift({
+      timestamp:  `${simplifyDate(new Date().toISOString())} ${simplifyTime(new Date().toISOString())}`,
+      subject,
+      count:      totalSent,
+      failed:     totalFailed,
+      audiences:  [...selectedAudiences].join(', '),
+      recipients: recipients.map(r => `${r.firstName} ${r.lastName} <${r.email}>`),
+    });
+    renderSentLog();
+
+    if (totalSent > 0) {
+      const failNote = totalFailed > 0 ? ` (${totalFailed} failed)` : '';
+      showToast(`✉️ Sent to ${totalSent} recipient${totalSent !== 1 ? 's' : ''}${failNote}!`);
+      document.getElementById('email-subject').value = '';
+      document.getElementById('email-body').value    = '';
+    } else if (allErrors.length) {
+      const errMsg = allErrors[0] || 'Unknown error';
+      showToast('Send failed: ' + errMsg, false);
+      console.error('[MailerSend] errors:', allErrors);
+    } else {
+      showToast('No emails sent.', false);
+    }
+  } catch(e) {
+    showToast('Error: ' + e.message, false);
+    console.error('[sendEmail]', e);
+  }
+
+  btn.disabled  = false;
+  btn.innerHTML = '✉️ Send Email';
 }
 
 // ── AUDIENCE SELECTOR ────────────────────────────────────────
@@ -3948,76 +4199,6 @@ function closeEmailPreview() {
 }
 
 // ── SEND ──────────────────────────────────────────────────────
-async function sendEmail() {
-  const subject    = document.getElementById('email-subject').value.trim();
-  const body       = document.getElementById('email-body').value.trim();
-  const recipients = getRecipients();
-
-  if (!subject)           { showToast('Please enter a subject line.', false); return; }
-  if (!body)              { showToast('Please write a message.', false); return; }
-  if (!recipients.length) { showToast('No recipients selected. Register some players first.', false); return; }
-
-  const btn = document.getElementById('send-btn');
-  btn.disabled  = true;
-  btn.innerHTML = `<span class="spinner"></span> Sending via MailerSend…`;
-
-  try {
-    // Build recipient list for Apps Script (which calls MailerSend bulk API)
-    const recipientData = recipients.map(r => ({
-      firstName: r.firstName || '',
-      lastName:  r.lastName  || '',
-      email:     r.email     || ''
-    }));
-
-    const params = new URLSearchParams({
-      type:       'sendAdminEmail',
-      subject,
-      body,
-      recipients: JSON.stringify(recipientData)
-    });
-
-    let result = { ok: true, sent: recipients.length, failed: 0 };
-
-    if (!DEMO_MODE) {
-      const res = await fetch(SCRIPT_URL + '?' + params.toString(), { method: 'GET' });
-      result = await res.json();
-    }
-
-    if (result.ok) {
-      // Log the send
-      const entry = {
-        timestamp:  `${simplifyDate(new Date().toISOString())} ${simplifyTime(new Date().toISOString())}`,
-        subject,
-        count:      result.sent || recipients.length,
-        failed:     result.failed || 0,
-        audiences:  [...selectedAudiences].join(', '),
-        recipients: recipients.map(r => `${r.firstName} ${r.lastName} <${r.email}>`),
-      };
-      sentLog.unshift(entry);
-      renderSentLog();
-
-      const failNote = result.failed > 0 ? ` (${result.failed} failed)` : '';
-      showToast(`✉️ Email sent to ${result.sent || recipients.length} recipient${recipients.length !== 1 ? 's' : ''}${failNote}!`);
-
-      document.getElementById('email-subject').value = '';
-      document.getElementById('email-body').value    = '';
-    } else {
-      const errMsg = result.error || 'Send failed';
-      if (errMsg.includes('API key')) {
-        showToast('MailerSend API key not set. Go to Admin → Settings to add it.', false);
-      } else {
-        showToast('Send failed: ' + errMsg, false);
-      }
-    }
-  } catch(e) {
-    showToast('Network error — could not reach the email service.', false);
-    console.error('sendEmail error:', e);
-  }
-
-  btn.disabled  = false;
-  btn.innerHTML = '✉️ Send Email';
-}
-
 function renderSentLog() {
   const card = document.getElementById('sent-log-card');
   const log  = document.getElementById('sent-log');
@@ -4039,31 +4220,109 @@ function renderPlayerTable() {
   const tbody = document.getElementById('reg-player-body');
   if (!tbody) return;
   if (!sessionRegistered.length) {
-    tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted);font-style:italic;padding:1.5rem;">No registrations yet this session.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="color:var(--muted);font-style:italic;padding:1.5rem;">No registrations yet.</td></tr>`;
     return;
   }
-  tbody.innerHTML = sessionRegistered.map(p => {
+  const posOpts = ['Setter','Outside Hitter / Power','Middle Blocker','Right Side / Opposite','No Preference'];
+  const skillOpts = ['Recreational','Intermediate','Competitive','Advanced'];
+  tbody.innerHTML = sessionRegistered.map((p, idx) => {
     const team = teamsData.find(t => t.players.find(tp => tp.email === p.email));
     const teamCell = team
       ? `<div style="display:flex;align-items:center;gap:.4rem;"><span style="width:9px;height:9px;border-radius:50%;background:${team.color};display:inline-block;flex-shrink:0;"></span><span>${team.name}</span></div>`
       : `<span style="color:var(--muted);font-style:italic;">Unassigned</span>`;
-    const displayName = `${p.firstName || '?'} ${(p.lastName||'?')[0].toUpperCase()}.`;
-    return `<tr>
+    const displayName = `${esc(p.firstName || '?')} ${esc((p.lastName||'?')[0].toUpperCase())}.`;
+    const actBtns = `
+      <button onclick="editRegistration(${idx})" title="Edit" style="background:none;border:none;cursor:pointer;font-size:.85rem;color:var(--muted);padding:.15rem .3rem;border-radius:4px;transition:color .2s;" onmouseover="this.style.color='var(--sky)'" onmouseout="this.style.color='var(--muted)'">✏️</button>
+      <button onclick="deleteRegistration(${idx})" title="Delete" style="background:none;border:none;cursor:pointer;font-size:.85rem;color:var(--muted);padding:.15rem .3rem;border-radius:4px;transition:color .2s;" onmouseover="this.style.color='var(--coral)'" onmouseout="this.style.color='var(--muted)'">🗑️</button>`;
+    return `<tr id="reg-row-${idx}">
       <td><strong>${displayName}</strong></td>
-      <td>${p.email}</td>
-      <td>${p.position || '—'}</td>
-      <td>${p.skill || '—'}</td>
-      <td>${p.season || '—'}</td>
+      <td style="font-size:.82rem;">${esc(p.email)}</td>
+      <td>${esc(p.position || '—')}</td>
+      <td>${esc(p.skill || '—')}</td>
+      <td>${esc(p.season || '—')}</td>
       <td>${teamCell}</td>
       <td style="font-size:.78rem;color:var(--muted);">${simplifyDate(p.timestamp)}</td>
+      <td style="white-space:nowrap;">${actBtns}</td>
     </tr>`;
   }).join('');
+}
+
+function editRegistration(idx) {
+  const p = sessionRegistered[idx];
+  if (!p) return;
+  const row = document.getElementById('reg-row-' + idx);
+  if (!row) return;
+  const posOpts = ['Setter','Outside Hitter / Power','Middle Blocker','Right Side / Opposite','No Preference']
+    .map(o => `<option${o===p.position?' selected':''}>${o}</option>`).join('');
+  const skillOpts = ['Recreational','Intermediate','Competitive','Advanced']
+    .map(o => `<option${o===p.skill?' selected':''}>${o}</option>`).join('');
+  const inp = s => `style="width:100%;padding:.3rem .5rem;border:1.5px solid var(--sky);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.82rem;background:var(--white);color:var(--navy);outline:none;"`;
+  row.innerHTML = `
+    <td colspan="5" style="padding:.4rem .5rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:.4rem;align-items:center;">
+        <input id="re-fn-${idx}" value="${p.firstName||''}" placeholder="First" ${inp()}>
+        <input id="re-ln-${idx}" value="${p.lastName||''}"  placeholder="Last"  ${inp()}>
+        <input id="re-em-${idx}" value="${p.email||''}"     placeholder="Email" ${inp()}>
+        <select id="re-pos-${idx}" ${inp()}>${posOpts}</select>
+        <select id="re-sk-${idx}"  ${inp()}>${skillOpts}</select>
+      </div>
+    </td>
+    <td style="padding:.4rem .5rem;">
+      <input id="re-se-${idx}" value="${p.season||''}" placeholder="Season" ${inp()}>
+    </td>
+    <td></td>
+    <td style="white-space:nowrap;">
+      <button onclick="saveEditRegistration(${idx})" style="background:var(--sky);color:var(--navy);border:none;border-radius:6px;padding:.25rem .6rem;font-size:.78rem;font-weight:700;cursor:pointer;margin-right:.2rem;">Save</button>
+      <button onclick="renderPlayerTable()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:.25rem .55rem;font-size:.78rem;cursor:pointer;color:var(--muted);">✕</button>
+    </td>`;
+  row.querySelector(`#re-fn-${idx}`)?.focus();
+}
+
+function saveEditRegistration(idx) {
+  const p = sessionRegistered[idx];
+  if (!p) return;
+  p.firstName = document.getElementById(`re-fn-${idx}`)?.value.trim() || p.firstName;
+  p.lastName  = document.getElementById(`re-ln-${idx}`)?.value.trim() || p.lastName;
+  p.email     = (document.getElementById(`re-em-${idx}`)?.value.trim() || p.email).toLowerCase();
+  p.position  = document.getElementById(`re-pos-${idx}`)?.value || p.position;
+  p.skill     = document.getElementById(`re-sk-${idx}`)?.value  || p.skill;
+  p.season    = document.getElementById(`re-se-${idx}`)?.value.trim() || p.season;
+
+  // Update Firebase
+  if (typeof fbDb !== 'undefined') {
+    const fbKey = 'reg_' + p.timestamp?.replace(/[^a-z0-9]/gi,'_') + '_' + p.email.replace(/[.#$[\]]/g,'_');
+    fbDb.ref('registrations/' + fbKey).update({
+      firstName: p.firstName, lastName: p.lastName, email: p.email,
+      position: p.position, skill: p.skill, season: p.season,
+    }).catch(e => console.error('[Firebase] reg update error:', e.message));
+  }
+
+  showToast(`${p.firstName} ${p.lastName} updated.`);
+  renderPlayerTable();
+}
+
+function deleteRegistration(idx) {
+  const p = sessionRegistered[idx];
+  if (!p) return;
+  const displayName = `${p.firstName} ${(p.lastName||'?')[0].toUpperCase()}.`;
+  if (!confirm(`Remove registration for ${displayName} (${p.email})?`)) return;
+  sessionRegistered.splice(idx, 1);
+
+  // Remove from Firebase (search by email prefix key pattern)
+  if (typeof fbDb !== 'undefined') {
+    fbDb.ref('registrations').orderByChild('email').equalTo(p.email).once('value', snap => {
+      snap.forEach(child => child.ref.remove());
+    }).catch(e => console.error('[Firebase] reg delete error:', e.message));
+  }
+
+  showToast(`${displayName} registration removed.`);
+  renderPlayerTable();
+  refreshAdminData();
 }
 
 function renderPickupTable() {
   const tbody = document.getElementById('pickup-player-body');
   if (!tbody) return;
-  // Merge session signups with any sheet-loaded rows (dedupe by email+date)
   const seen = new Set();
   const allPickup = [...sessionPickup].filter(p => {
     const key = (p.email + '|' + p.date).toLowerCase();
@@ -4071,69 +4330,128 @@ function renderPickupTable() {
     seen.add(key); return true;
   });
   if (!allPickup.length) {
-    tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:1.5rem;">No pick-up signups yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);font-style:italic;padding:1.5rem;">No pick-up signups yet.</td></tr>`;
     return;
   }
-  tbody.innerHTML = allPickup.map(p => {
-    const displayName = `${p.firstName || '?'} ${(p.lastName||'?')[0].toUpperCase()}.`;
-    return `<tr>
+  const posOpts = ['Setter','Outside Hitter / Power','Middle Blocker','Right Side / Opposite','No Preference'];
+  tbody.innerHTML = allPickup.map((p, idx) => {
+    const displayName = `${esc(p.firstName || '?')} ${esc((p.lastName||'?')[0].toUpperCase())}.`;
+    const actBtns = `
+      <button onclick="editPickupSignup(${idx})" title="Edit" style="background:none;border:none;cursor:pointer;font-size:.85rem;color:var(--muted);padding:.15rem .3rem;border-radius:4px;transition:color .2s;" onmouseover="this.style.color='var(--sky)'" onmouseout="this.style.color='var(--muted)'">✏️</button>
+      <button onclick="deletePickupSignup(${idx})" title="Delete" style="background:none;border:none;cursor:pointer;font-size:.85rem;color:var(--muted);padding:.15rem .3rem;border-radius:4px;transition:color .2s;" onmouseover="this.style.color='var(--coral)'" onmouseout="this.style.color='var(--muted)'">🗑️</button>`;
+    return `<tr id="pu-row-${idx}">
       <td><strong>${displayName}</strong></td>
-      <td>${p.email}</td>
-      <td>${p.position || '—'}</td>
-      <td>${p.date || '—'}</td>
+      <td style="font-size:.82rem;">${esc(p.email)}</td>
+      <td>${esc(p.position || '—')}</td>
+      <td>${esc(p.date || '—')}</td>
       <td style="font-size:.78rem;color:var(--muted);">${p.timestamp ? simplifyDate(p.timestamp) : '—'}</td>
+      <td style="white-space:nowrap;">${actBtns}</td>
     </tr>`;
   }).join('');
 }
 
-// Hook into registration + pickup submit to capture session data for admin lists
+function editPickupSignup(idx) {
+  // Get deduped list the same way renderPickupTable does
+  const seen = new Set();
+  const allPickup = [...sessionPickup].filter(p => {
+    const key = (p.email+'|'+p.date).toLowerCase();
+    if (seen.has(key)) return false; seen.add(key); return true;
+  });
+  const p = allPickup[idx];
+  if (!p) return;
+  const row = document.getElementById('pu-row-' + idx);
+  if (!row) return;
+  const posOpts = ['Setter','Outside Hitter / Power','Middle Blocker','Right Side / Opposite','No Preference']
+    .map(o => `<option${o===p.position?' selected':''}>${o}</option>`).join('');
+  const sessionOpts = pickupData.map(s => `<option${s.date===p.date?' selected':''}>${s.date}</option>`).join('');
+  const inp = `style="width:100%;padding:.3rem .5rem;border:1.5px solid var(--sky);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.82rem;background:var(--white);color:var(--navy);outline:none;"`;
+  row.innerHTML = `
+    <td colspan="2" style="padding:.4rem .5rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;">
+        <input id="pe-fn-${idx}" value="${p.firstName||''}" placeholder="First" ${inp}>
+        <input id="pe-ln-${idx}" value="${p.lastName||''}"  placeholder="Last"  ${inp}>
+        <input id="pe-em-${idx}" value="${p.email||''}"     placeholder="Email" ${inp}>
+      </div>
+    </td>
+    <td style="padding:.4rem .5rem;"><select id="pe-pos-${idx}" ${inp}>${posOpts}</select></td>
+    <td style="padding:.4rem .5rem;"><select id="pe-date-${idx}" ${inp}>${sessionOpts}</select></td>
+    <td></td>
+    <td style="white-space:nowrap;">
+      <button onclick="saveEditPickupSignup(${idx})" style="background:var(--sky);color:var(--navy);border:none;border-radius:6px;padding:.25rem .6rem;font-size:.78rem;font-weight:700;cursor:pointer;margin-right:.2rem;">Save</button>
+      <button onclick="renderPickupTable()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:.25rem .55rem;font-size:.78rem;cursor:pointer;color:var(--muted);">✕</button>
+    </td>`;
+  row.querySelector(`#pe-fn-${idx}`)?.focus();
+}
 
-// Patch submitRegistration to also save to admin session list
-const _baseSubmitRegistration = submitRegistration;
-submitRegistration = async function() {
-  const snapshot = {
-    firstName: val('reg-first'), lastName: val('reg-last'),
-    email: val('reg-email'),     position: val('reg-position'),
-    skill: val('reg-skill'),     season: val('reg-season'),
-    timestamp: new Date().toISOString()
-  };
-  await _baseSubmitRegistration.apply(this, arguments);
-  // Only save if all required fields were filled (form didn't bail early)
-  if (snapshot.firstName && snapshot.lastName && snapshot.email && snapshot.position && snapshot.skill) {
-    // Avoid duplicates within same session
-    if (!sessionRegistered.find(p => p.email === snapshot.email)) {
-      sessionRegistered.push(snapshot);
-    }
-    if (isAdmin()) refreshAdminData();
+function saveEditPickupSignup(idx) {
+  const seen = new Set();
+  const allPickup = [...sessionPickup].filter(p => {
+    const key = (p.email+'|'+p.date).toLowerCase();
+    if (seen.has(key)) return false; seen.add(key); return true;
+  });
+  const p = allPickup[idx];
+  if (!p) return;
+
+  // Find the actual entry in sessionPickup and update it
+  const orig = sessionPickup.find(sp => sp.email === p.email && sp.date === p.date);
+  if (!orig) return;
+
+  orig.firstName = document.getElementById(`pe-fn-${idx}`)?.value.trim()  || orig.firstName;
+  orig.lastName  = document.getElementById(`pe-ln-${idx}`)?.value.trim()  || orig.lastName;
+  orig.email     = (document.getElementById(`pe-em-${idx}`)?.value.trim() || orig.email).toLowerCase();
+  orig.position  = document.getElementById(`pe-pos-${idx}`)?.value        || orig.position;
+  orig.date      = document.getElementById(`pe-date-${idx}`)?.value       || orig.date;
+
+  // Update Firebase
+  if (typeof fbDb !== 'undefined') {
+    fbDb.ref('pickupSignups').orderByChild('email').equalTo(p.email).once('value', snap => {
+      snap.forEach(child => {
+        if (child.val().date === p.date) {
+          child.ref.update({
+            firstName: orig.firstName, lastName: orig.lastName,
+            email: orig.email, position: orig.position, date: orig.date,
+          });
+        }
+      });
+    }).catch(e => console.error('[Firebase] pickup update error:', e.message));
   }
-};
 
-// Patch submitPickup to also save to admin session list
-const _baseSubmitPickup = submitPickup;
-submitPickup = async function() {
-  const snapshot = {
-    firstName: val('pu-first'), lastName: val('pu-last'),
-    email: val('pu-email'),     date: val('pu-date'),
-    position: val('pu-position'), timestamp: new Date().toISOString()
-  };
-  await _baseSubmitPickup.apply(this, arguments);
-  if (snapshot.firstName && snapshot.lastName && snapshot.email && snapshot.date && snapshot.position) {
-    sessionPickup.push(snapshot);
-    // Auto-increment the matching session's spots count
-    const sessionLabel = snapshot.date; // e.g. "May 18, 2026 – 1:00–3:00 PM"
-    const match = pickupData.find(p => sessionLabel.startsWith(p.date));
-    if (match && match.spots < match.max) {
-      match.spots++;
-      savePickupSessions();
-      renderPickup();
-      renderPickupSessionAdmin();
-      syncPickupDateDropdown();
-    }
-    if (isAdmin()) refreshAdminData();
+  showToast(`${orig.firstName} ${orig.lastName} updated.`);
+  renderPickupTable();
+  renderPickup();
+  syncPickupDateDropdown();
+}
+
+function deletePickupSignup(idx) {
+  const seen = new Set();
+  const allPickup = [...sessionPickup].filter(p => {
+    const key = (p.email+'|'+p.date).toLowerCase();
+    if (seen.has(key)) return false; seen.add(key); return true;
+  });
+  const p = allPickup[idx];
+  if (!p) return;
+  const displayName = `${p.firstName} ${(p.lastName||'?')[0].toUpperCase()}.`;
+  if (!confirm(`Remove ${displayName}'s signup for ${p.date}?`)) return;
+
+  // Remove from sessionPickup
+  const i = sessionPickup.findIndex(sp => sp.email === p.email && sp.date === p.date);
+  if (i !== -1) sessionPickup.splice(i, 1);
+
+  // Remove from Firebase
+  if (typeof fbDb !== 'undefined') {
+    fbDb.ref('pickupSignups').orderByChild('email').equalTo(p.email).once('value', snap => {
+      snap.forEach(child => {
+        if (child.val().date === p.date) child.ref.remove();
+      });
+    }).catch(e => console.error('[Firebase] pickup delete error:', e.message));
   }
-};
 
-
+  showToast(`${displayName} removed from ${p.date}.`);
+  renderPickupTable();
+  renderPickup();
+  syncPickupDateDropdown();
+  refreshAdminData();
+}
 
 // ── HERO SLIDESHOW ───────────────────────────────────────────
 let currentSlide = 0;
@@ -4300,6 +4618,17 @@ function setLoading(btnId, loading) {
 
 function val(id) { return document.getElementById(id)?.value?.trim() || ''; }
 
+// ── XSS SANITIZER ────────────────────────────────────────────
+// Always use esc() when interpolating user-supplied data into innerHTML
+function esc(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // ── FORMAT & VALIDATION HELPERS ──────────────────────────────
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE_RE = /^[\d\s\-\.\(\)\+]{7,20}$/;
@@ -4422,6 +4751,19 @@ async function submitRegistration() {
     if (result && result.duplicate) {
       showToast(result.message || 'You are already registered for this season.', false);
     } else {
+      // Write to Firebase Realtime Database
+      if (typeof fbDb !== 'undefined') {
+        const fbKey = 'reg_' + Date.now() + '_' + email.replace(/[.#$[\]]/g, '_');
+        fbDb.ref('registrations/' + fbKey).set(data)
+          .catch(e => console.error('[Firebase] registration write error:', e.message));
+      }
+
+      // Update admin session list directly (no patch needed)
+      if (!sessionRegistered.find(p => p.email === email)) {
+        sessionRegistered.push({ firstName: first, lastName: last, email, position, skill, season: data.season, timestamp: data.timestamp });
+      }
+      if (isAdmin()) refreshAdminData();
+
       showToast(`Welcome, ${first}! Your registration has been received.`);
       ['reg-first','reg-last','reg-email','reg-phone','reg-notes'].forEach(id => { document.getElementById(id).value = ''; });
       ['reg-position','reg-skill'].forEach(id => { document.getElementById(id).selectedIndex = 0; });
@@ -4511,6 +4853,22 @@ async function submitPickup() {
     if (result && result.duplicate) {
       showToast(result.message || 'You are already signed up for this session.', false);
     } else {
+      // Write to Firebase Realtime Database
+      if (typeof fbDb !== 'undefined') {
+        const fbKey = 'pu_' + Date.now() + '_' + email.replace(/[.#$[\]]/g, '_');
+        fbDb.ref('pickupSignups/' + fbKey).set(data)
+          .catch(e => console.error('[Firebase] pickup signup write error:', e.message));
+      }
+
+      // Update admin session list + pickup spot count directly
+      sessionPickup.push({ firstName: first, lastName: last, email, position, date, timestamp: data.timestamp });
+      const match = pickupData.find(p => date.startsWith(p.date));
+      if (match && match.spots < match.max) { match.spots++; savePickupSessions(); }
+      renderPickup();
+      renderPickupSessionAdmin();
+      syncPickupDateDropdown();
+      if (isAdmin()) refreshAdminData();
+
       showToast(`You're in, ${first}! See you on the court.`);
       ['pu-first','pu-last','pu-email'].forEach(id => { document.getElementById(id).value = ''; });
       ['pu-date','pu-position'].forEach(id => { document.getElementById(id).selectedIndex = 0; });
@@ -4532,21 +4890,28 @@ async function submitPickup() {
 
 // ── SCORES ────────────────────────────────────────────────────
 // ── SCORES DATA (localStorage-backed, editable) ───────────────
-const DEFAULT_SCORES = [
-  { id:'sc1', gameDate:'2026-05-04', homeTeam:'The Blockers',  homeScore:'25', awayTeam:'Spike Squad',    awayScore:'21', court:'Court A – GCVI', submitter:'' },
-  { id:'sc2', gameDate:'2026-05-04', homeTeam:'Net Ninjas',    homeScore:'18', awayTeam:'Volley Llamas',  awayScore:'25', court:'Court B – GCVI', submitter:'' },
-  { id:'sc3', gameDate:'2026-04-27', homeTeam:'Dig Dug FC',    homeScore:'25', awayTeam:'Block Party',    awayScore:'23', court:'Court A – GCVI', submitter:'' },
-  { id:'sc4', gameDate:'2026-04-27', homeTeam:'Spike Squad',   homeScore:'25', awayTeam:'Dig Dug FC',     awayScore:'14', court:'Court B – GCVI', submitter:'' },
-  { id:'sc5', gameDate:'2026-04-20', homeTeam:'Volley Llamas', homeScore:'22', awayTeam:'The Blockers',   awayScore:'25', court:'Court A – GCVI', submitter:'' },
-];
-
-let allScores = JSON.parse(localStorage.getItem('gvb_scores') || 'null') || DEFAULT_SCORES;
+// Scores — always start empty; Firebase listener populates this
+const DEFAULT_SCORES = [];
+let allScores = [];
 
 function saveScores() {
-  try { localStorage.setItem('gvb_scores', JSON.stringify(allScores)); } catch(e) {}
-  if (!DEMO_MODE) {
-    postToSheets(SCRIPT_URL, { type: 'saveScores', scoresJson: JSON.stringify(allScores) });
+
+
+  // Firebase Realtime Database — authoritative store
+  if (typeof fbDb !== 'undefined') {
+    const payload = {};
+    allScores.forEach(s => { payload[s.id] = s; });
+    fbDb.ref('scores').set(payload)
+      .then(() => console.log('[Firebase] Scores saved.'))
+      .catch(e => console.error('[Firebase] saveScores error:', e.message));
   }
+
+  // Google Sheets backup
+  if (!DEMO_MODE) {
+    postToSheets(SCRIPT_URL, { type: 'saveScores', scoresJson: JSON.stringify(allScores) })
+      .catch(() => {});
+  }
+
   // Always save a standings snapshot whenever scores change
   saveStandings();
 }
@@ -4607,6 +4972,7 @@ async function submitScore() {
     allScores.unshift(entry);
     saveScores();
     renderScoresTable();
+    renderStandings(); // always refresh standings after a new score
     showToast('Score submitted!');
     // Reset form fields
     ['sc-score1','sc-score2','sc-submitter'].forEach(id => { document.getElementById(id).value = ''; });
@@ -4655,15 +5021,15 @@ function renderScoresTable() {
     const homeColor  = getTeamColor(s.homeTeam);
     const awayColor  = getTeamColor(s.awayTeam);
     const dot = c => `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${c};margin-right:5px;vertical-align:middle;flex-shrink:0;"></span>`;
-    return `<tr id="score-row-${s.id}">
+    return `<tr id="score-row-${esc(s.id)}">
       <td>${d}</td>
-      <td class="${homeClass}" style="white-space:nowrap;">${dot(homeColor)}${s.homeTeam}</td>
-      <td><span class="score-pill">${s.homeScore} – ${s.awayScore}</span></td>
-      <td class="${awayClass}" style="white-space:nowrap;">${dot(awayColor)}${s.awayTeam}</td>
-      <td><small>${s.court || '—'}</small></td>
+      <td class="${homeClass}" style="white-space:nowrap;">${dot(homeColor)}${esc(s.homeTeam)}</td>
+      <td><span class="score-pill">${esc(s.homeScore)} – ${esc(s.awayScore)}</span></td>
+      <td class="${awayClass}" style="white-space:nowrap;">${dot(awayColor)}${esc(s.awayTeam)}</td>
+      <td><small>${esc(s.court || '—')}</small></td>
       <td style="white-space:nowrap;text-align:center;">
-        <button onclick="editScore('${s.id}')" title="Edit score" style="background:none;border:none;cursor:pointer;font-size:.9rem;padding:.15rem .35rem;border-radius:4px;color:var(--muted);transition:color .2s;" onmouseover="this.style.color='var(--sky)'" onmouseout="this.style.color='var(--muted)'">✏️</button>
-        <button onclick="deleteScore('${s.id}')" title="Delete score" style="background:none;border:none;cursor:pointer;font-size:.9rem;padding:.15rem .35rem;border-radius:4px;color:var(--muted);transition:color .2s;" onmouseover="this.style.color='var(--coral)'" onmouseout="this.style.color='var(--muted)'">🗑️</button>
+        <button onclick="editScore('${esc(s.id)}')" title="Edit score" style="background:none;border:none;cursor:pointer;font-size:.9rem;padding:.15rem .35rem;border-radius:4px;color:var(--muted);transition:color .2s;" onmouseover="this.style.color='var(--sky)'" onmouseout="this.style.color='var(--muted)'">✏️</button>
+        <button onclick="deleteScore('${esc(s.id)}')" title="Delete score" style="background:none;border:none;cursor:pointer;font-size:.9rem;padding:.15rem .35rem;border-radius:4px;color:var(--muted);transition:color .2s;" onmouseover="this.style.color='var(--coral)'" onmouseout="this.style.color='var(--muted)'">🗑️</button>
       </td>
     </tr>`;
   }).join('');
@@ -4684,7 +5050,7 @@ function editScore(id) {
     ? `<select id="se-a-${id}" style="${scEditInputStyle()}">${teamOptions(s.awayTeam)}</select>`
     : `<input type="text" id="se-a-${id}" value="${s.awayTeam}" style="${scEditInputStyle()}">`;
   row.innerHTML = `
-    <td><input type="date" id="se-date-${id}" value="${s.gameDate}" style="${scEditInputStyle()}"></td>
+    <td><input type="date" id="se-date-${id}" value="${toISODate(s.gameDate)}" style="${scEditInputStyle()}"></td>
     <td>${homeInput}</td>
     <td style="white-space:nowrap;">
       <input type="number" id="se-hs-${id}" value="${s.homeScore}" min="0" style="${scEditInputStyle('58px')}">
@@ -4749,37 +5115,78 @@ function resetStandings() {
 
 const DEFAULT_PICKUP = [];
 
-// Start empty — sessions are authoritative from Google Sheets.
-// localStorage is used only as a within-session cache after the sheet loads.
-let pickupData = JSON.parse(localStorage.getItem('gvb_pickup_sessions') || 'null') || DEFAULT_PICKUP;
+// Pick-up sessions — always start empty; Firebase listener populates this
+let pickupData = [];
 
 function savePickupSessions() {
-  try { localStorage.setItem('gvb_pickup_sessions', JSON.stringify(pickupData)); } catch(e) {}
+
+
+  // Firebase Realtime Database — authoritative store
+  if (typeof fbDb !== 'undefined') {
+    const payload = {};
+    pickupData.forEach(s => {
+      payload[s.id] = {
+        id:       s.id,
+        date:     s.date,
+        dateISO:  s.dateISO  || '',
+        time:     s.time,
+        location: s.location || 'GCVI Gym',
+        max:      s.max,
+      };
+    });
+    fbDb.ref('pickupSessions').set(payload)
+      .then(() => console.log('[Firebase] Pick-up sessions saved.'))
+      .catch(e => console.error('[Firebase] savePickupSessions error:', e.message));
+  }
+
+  // Google Sheets backup
   if (!DEMO_MODE) {
     postToSheets(SCRIPT_URL, {
       type:         'savePickupSessions',
       sessionsJson: JSON.stringify(pickupData.map(s => ({
         id:       s.id,
         date:     s.date,
-        dateISO:  s.dateISO || '',
+        dateISO:  s.dateISO  || '',
         time:     s.time,
         location: s.location || 'GCVI Gym',
         max:      s.max,
       })))
     }).then(r => {
       if (r && !r.ok && !r.demo) console.warn('[Sheets] Pickup sessions save failed:', r.error);
-    });
+    }).catch(() => {});
   }
 }
 
-// ── SCHEDULE DATA (localStorage-backed, sheet-authoritative) ──
-// No default seed — all data comes from Google Sheets.
+// ── SCHEDULE DATA ──────────────────────────────────────────────
+// No default seed — all data comes from Firebase.
 const DEFAULT_SCHEDULE = [];
 
-let scheduleData = JSON.parse(localStorage.getItem('gvb_schedule') || 'null') || DEFAULT_SCHEDULE;
+// Schedule — always start empty; Firebase listener populates this
+let scheduleData = [];
 
 function saveSchedule() {
-  try { localStorage.setItem('gvb_schedule', JSON.stringify(scheduleData)); } catch(e) {}
+
+
+  // Firebase Realtime Database — authoritative store
+  if (typeof fbDb !== 'undefined') {
+    const payload = {};
+    scheduleData.forEach(w => {
+      payload[w.id] = {
+        id:      w.id,
+        week:    w.week,
+        date:    w.date,
+        dateISO: w.dateISO || '',
+        games:   w.games.length
+          ? w.games.reduce((acc, g, i) => { acc[g.id || i] = g; return acc; }, {})
+          : null,
+      };
+    });
+    fbDb.ref('schedule').set(payload)
+      .then(() => console.log('[Firebase] Schedule saved.'))
+      .catch(e => console.error('[Firebase] saveSchedule error:', e.message));
+  }
+
+  // Google Sheets backup
   if (!DEMO_MODE) {
     const weeksPayload = scheduleData.map(w => ({ id: w.id, week: w.week, date: w.date, dateISO: w.dateISO || '' }));
     const gamesPayload = [];
@@ -4792,7 +5199,7 @@ function saveSchedule() {
       gamesJson: JSON.stringify(gamesPayload)
     }).then(r => {
       if (r && !r.ok && !r.demo) console.warn('[Sheets] Schedule save failed:', r.error);
-    });
+    }).catch(() => {});
   }
 }
 
@@ -4954,7 +5361,7 @@ function startEditWeekHeader(weekId) {
     <div class="swm-edit-header">
       <input id="ewhLabel-${weekId}" type="text" value="${w.week}" placeholder="Week label" maxlength="20"
         onkeydown="if(event.key==='Enter')saveWeekHeader('${weekId}')">
-      <input id="ewhDate-${weekId}"  type="date"  value="${w.dateISO||''}"
+      <input id="ewhDate-${weekId}"  type="date"  value="${toISODate(w.dateISO||w.date||'')}"
         onkeydown="if(event.key==='Enter')saveWeekHeader('${weekId}')">
       <button class="btn btn-primary" style="font-size:.82rem;padding:.45rem .9rem;" onclick="saveWeekHeader('${weekId}')">Save</button>
       <button class="btn btn-outline"  style="font-size:.82rem;padding:.45rem .8rem;" onclick="cancelWeekHeader('${weekId}')">Cancel</button>
@@ -5125,7 +5532,7 @@ function renderPickupSessionAdmin() {
         <div class="pu-edit-grid">
           <div class="form-group">
             <label>Date</label>
-            <input type="date" id="pue-date-${p.id}" value="${p.dateISO||''}">
+            <input type="date" id="pue-date-${p.id}" value="${toISODate(p.dateISO||p.date||'')}">
           </div>
           <div class="form-group">
             <label>Time</label>
@@ -5262,13 +5669,36 @@ function countSignupsForSession(session) {
 
 function pad2(n) { return String(n).padStart(2, '0'); }
 
+/** Normalize any date value to yyyy-MM-dd for <input type="date"> fields.
+ *  Handles: full Date strings, ISO timestamps, M/D/YYYY, named months, etc. */
+function toISODate(raw) {
+  if (!raw) return '';
+  raw = String(raw).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw; // already correct
+  const d = parseAnyDate(raw);
+  if (d) return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+  return '';
+}
+
 /** Parse any raw date value → JS Date, or null */
 function parseAnyDate(raw) {
   if (!raw) return null;
-  raw = String(raw).trim().split('T')[0]  // strip time portion
+  raw = String(raw).trim();
+
+  // JS Date.toString() format: "Sun Sep 27 2026 00:00:00 GMT-0400 (Eastern Daylight Time)"
+  // or "Sun Sep 27 2026 00:00:00 GMT+0000"
+  const jsdts = raw.match(/^[A-Za-z]{3}\s+([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/);
+  if (jsdts) {
+    const d = new Date(`${jsdts[1]} ${jsdts[2]} ${jsdts[3]} 12:00:00`);
+    if (!isNaN(d)) return d;
+  }
+
+  // Strip time/tz portion before other checks
+  raw = raw.split('T')[0]
     .replace(/\s+\d{2}:\d{2}.*$/, '')
     .replace(/\s*(UTC|GMT|EST|EDT|CST|CDT|MST|MDT|PST|PDT)\b/gi, '')
     .trim();
+
   // YYYY-MM-DD
   if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
     const d = new Date(raw + 'T12:00:00');
@@ -5415,7 +5845,16 @@ function simplifyTimeHHMM(raw) {
 }
 
 function renderSchedule() {
-  document.getElementById('schedule-list').innerHTML = scheduleData.map(w => `
+  // Sort weeks by dateISO ascending (earliest first); weeks with no date go last
+  const sorted = [...scheduleData].sort((a, b) => {
+    const da = a.dateISO || a.date || '';
+    const db = b.dateISO || b.date || '';
+    if (!da) return 1;
+    if (!db) return -1;
+    return da < db ? -1 : da > db ? 1 : 0;
+  });
+
+  document.getElementById('schedule-list').innerHTML = sorted.map(w => `
     <div class="schedule-week">
       <div class="schedule-week-header">
         <span>${w.week}</span>
@@ -5426,8 +5865,8 @@ function renderSchedule() {
         return `
         <div class="schedule-game">
           <div class="game-time">${dispTime}</div>
-          <div class="game-teams"><strong>${g.h}</strong><span class="game-vs">vs</span><strong>${g.a}</strong></div>
-          <div class="game-court">Court ${g.court}</div>
+          <div class="game-teams"><strong>${esc(g.h)}</strong><span class="game-vs">vs</span><strong>${esc(g.a)}</strong></div>
+          <div class="game-court">Court ${esc(g.court)}</div>
         </div>`;
       }).join('')}
     </div>
@@ -5442,40 +5881,43 @@ const TEAM_PALETTE = [
 ];
 
 // Teams store: [{ id, name, color, players: [{firstName,lastName,email,position,skill}] }]
-let teamsData = JSON.parse(localStorage.getItem('gvb_teams') || '[]');
+// Teams — always start empty; Firebase listener populates this
+let teamsData = [];
 let selectedTeamColor = TEAM_PALETTE[0];
 let selectedAssignPlayer = null; // email of player selected in the pool
 
-// Load demo teams if none exist
-if (!teamsData.length) {
-  teamsData = [
-    { id: 't1', name: 'The Blockers',  color: '#4DB8D4', players: [] },
-    { id: 't2', name: 'Spike Squad',   color: '#E8A820', players: [] },
-    { id: 't3', name: 'Net Ninjas',    color: '#E8502A', players: [] },
-    { id: 't4', name: 'Volley Llamas', color: '#7B68EE', players: [] },
-    { id: 't5', name: 'Dig Dug FC',    color: '#3CB371', players: [] },
-    { id: 't6', name: 'Block Party',   color: '#FF7F50', players: [] },
-  ];
-  saveTeams();
-}
-
 function saveTeams() {
-  // Keep localStorage as fast local cache
-  try { localStorage.setItem('gvb_teams', JSON.stringify(teamsData)); } catch(e) {}
-  // Persist to Google Sheets (fire-and-forget, no-cors write)
+  // Firebase Realtime Database — sole authoritative store (no localStorage)
+  if (typeof fbDb !== 'undefined') {
+    const payload = {};
+    teamsData.forEach(t => {
+      payload[t.id] = {
+        id:      t.id,
+        name:    t.name,
+        color:   t.color,
+        players: t.players.length
+          ? t.players.reduce((acc, p, i) => { acc[i] = p; return acc; }, {})
+          : null,
+      };
+    });
+    fbDb.ref('teams').set(payload)
+      .then(() => console.log('[Firebase] Teams saved.'))
+      .catch(e => console.error('[Firebase] saveTeams error:', e.message));
+  }
+
+  // Google Sheets backup
   if (!DEMO_MODE) {
-    // Save team roster (without player details — those go in Team Players)
-    const teamsPayload = teamsData.map(t => ({ id: t.id, name: t.name, color: t.color }));
-    postToSheets(SCRIPT_URL, { type: 'saveTeams', teamsJson: JSON.stringify(teamsPayload) });
-    // Save all player-to-team assignments flat
+    const teamsPayload   = teamsData.map(t => ({ id: t.id, name: t.name, color: t.color }));
     const playersPayload = [];
     teamsData.forEach(t => t.players.forEach(p => playersPayload.push({
       teamId: t.id, teamName: t.name,
       email: p.email, firstName: p.firstName, lastName: p.lastName,
       position: p.position || '', skill: p.skill || ''
     })));
-    postToSheets(SCRIPT_URL, { type: 'saveTeamPlayers', playersJson: JSON.stringify(playersPayload) });
+    postToSheets(SCRIPT_URL, { type: 'saveTeams',       teamsJson:   JSON.stringify(teamsPayload)   }).catch(() => {});
+    postToSheets(SCRIPT_URL, { type: 'saveTeamPlayers', playersJson: JSON.stringify(playersPayload) }).catch(() => {});
   }
+
   // Keep score submission dropdowns in sync with current team list
   syncScoreTeamDropdowns();
 }
@@ -5534,7 +5976,7 @@ function renderTeamsPage() {
         const playerRows = team.players.length
           ? team.players.map(p => {
               const ini = ((p.firstName||'?')[0]+(p.lastName||'?')[0]).toUpperCase();
-              const displayName = `${p.firstName || '?'} ${(p.lastName||'?')[0].toUpperCase()}.`;
+              const displayName = `${esc(p.firstName || '?')} ${esc((p.lastName||'?')[0].toUpperCase())}.`;
               const shortPos = (p.position||'').replace('Outside Hitter / ','').replace(' / Opposite','').replace('No Preference','—');
               return `<li class="team-player-row">
                 <div class="player-initials" style="background:${team.color}">${ini}</div>
@@ -5767,9 +6209,305 @@ function confirmRenameTeam(teamId) {
   renderTeamsPage();
 }
 
+// ── NOTIFICATION TOGGLE (nav bell) ───────────────────────────
+// Check if THIS device has an active token in Firebase
+async function isSubscribed() {
+  const deviceId = getDeviceId();
+  try {
+    const snap = await fbDb.ref('fcmTokens/' + deviceId).once('value');
+    return snap.exists();
+  } catch(e) {
+    // Fall back to browser permission as a proxy
+    return Notification.permission === 'granted';
+  }
+}
+
+async function toggleNotifications() {
+  const btn = document.getElementById('nav-notif-btn');
+
+  if (isIOSSafari()) {
+    showToast('Push notifications are not supported on iOS Safari. Use Chrome or Firefox on desktop/Android.', false);
+    return;
+  }
+  if (FCM_VAPID_KEY === 'YOUR_VAPID_KEY_HERE') {
+    showToast('Notifications not configured. Contact the admin.', false);
+    return;
+  }
+
+  if (btn) btn.textContent = '⏳';
+
+  const subscribed = await isSubscribed();
+  if (subscribed) {
+    await unsubscribeNotifications();
+    if (btn) { btn.textContent = '🔔'; btn.title = 'Enable notifications'; btn.style.color = 'rgba(255,255,255,.6)'; }
+    showToast('Notifications disabled.');
+  } else {
+    const token = await requestNotificationPermission();
+    if (token) {
+      if (btn) { btn.textContent = '🔔'; btn.title = 'Disable notifications'; btn.style.color = 'var(--gold)'; }
+      showToast('🔔 Notifications enabled!');
+    } else {
+      if (btn) { btn.textContent = '🔔'; syncNotifBell(); }
+    }
+  }
+}
+
+// Update bell icon based on Firebase token presence (not just browser permission)
+async function syncNotifBell() {
+  const btn = document.getElementById('nav-notif-btn');
+  if (!btn) return;
+  // Don't show gold if VAPID not configured or iOS
+  if (FCM_VAPID_KEY === 'YOUR_VAPID_KEY_HERE' || isIOSSafari()) {
+    btn.style.color  = 'rgba(255,255,255,.4)';
+    btn.title        = 'Notifications not available';
+    btn.style.cursor = 'not-allowed';
+    return;
+  }
+  const subscribed = await isSubscribed();
+  if (subscribed) {
+    btn.style.color = 'var(--gold)';
+    btn.title       = 'Notifications enabled — click to disable';
+  } else {
+    btn.style.color = 'rgba(255,255,255,.6)';
+    btn.title       = 'Enable notifications';
+  }
+}
+
+// ── ADMIN — SEND PUSH NOTIFICATION ───────────────────────────
+async function sendAdminNotification() {
+  const title = document.getElementById('notif-title')?.value.trim();
+  const body  = document.getElementById('notif-body')?.value.trim();
+  const url   = document.getElementById('notif-url')?.value.trim() || 'https://sundayguelphvb.web.app';
+
+  if (!title || !body) { showToast('Title and message are required.', false); return; }
+
+  // Read all FCM tokens from Firebase
+  const snap   = await fbDb.ref('fcmTokens').once('value');
+  const tokensData = snap.val() || {};
+  const tokens = Object.values(tokensData).map(t => t.token).filter(Boolean);
+
+  if (!tokens.length) { showToast('No subscribed devices found.', false); return; }
+
+  // Send via Cloud Function
+  try {
+    const idToken = await getIdToken();
+    const res = await fetch(CF_BASE + '/sendNotification', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+      body:    JSON.stringify({ tokens, title, body, url }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showToast(`🔔 Notification sent to ${data.sent || tokens.length} device${tokens.length !== 1 ? 's' : ''}!`);
+    } else {
+      showToast('Failed: ' + (data.error || 'Unknown error'), false);
+    }
+  } catch(e) {
+    showToast('Error sending notification: ' + e.message, false);
+  }
+}
+
+// ── ADMIN — LOAD TOKEN LIST ───────────────────────────────────
+async function loadNotifTokens() {
+  const el = document.getElementById('notif-tokens-list');
+  if (!el) return;
+  el.textContent = 'Loading…';
+  try {
+    const snap = await fbDb.ref('fcmTokens').once('value');
+    const data = snap.val() || {};
+    const entries = Object.entries(data);
+    if (!entries.length) {
+      el.innerHTML = '<em>No subscribed devices yet. Click the 🔔 bell to subscribe.</em>';
+      return;
+    }
+    el.innerHTML = entries.map(([uid, d]) => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);gap:.5rem;flex-wrap:wrap;">
+        <div>
+          <div style="font-weight:600;font-size:.82rem;">${esc(uid)}</div>
+          <div style="color:var(--muted);font-size:.75rem;">${esc(d.userAgent || '')} · ${simplifyDate(d.timestamp)}</div>
+        </div>
+        <button onclick="removeNotifToken('${esc(uid)}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.85rem;" title="Remove">🗑️</button>
+      </div>`).join('');
+  } catch(e) {
+    el.textContent = 'Error loading tokens: ' + e.message;
+  }
+}
+
+async function removeNotifToken(uid) {
+  await fbDb.ref('fcmTokens/' + uid).remove();
+  showToast('Device removed.');
+  loadNotifTokens();
+}
+
+// ── LOAD FROM FIREBASE ───────────────────────────────────────
+function loadFirebaseData() {
+  if (typeof fbDb === 'undefined') return;
+
+  // ── Teams ──────────────────────────────────────────────────
+  fbDb.ref('teams').on('value', snapshot => {
+    const data = snapshot.val();
+    // null means the path was deleted — clear local state
+    if (!data) {
+      teamsData = [];
+      try { localStorage.removeItem('gvb_teams'); } catch(e) {}
+      renderTeamsPage();
+      renderTeamAssignUI();
+      renderPlayerTable();
+      syncScoreTeamDropdowns();
+      console.log('[Firebase] Teams cleared (deleted from DB)');
+      return;
+    }
+    const fromFb = Object.values(data).map(t => ({
+      id:      t.id      || Object.keys(data).find(k => data[k] === t),
+      name:    t.name    || 'Unnamed',
+      color:   t.color   || '#4DB8D4',
+      players: t.players ? Object.values(t.players) : [],
+    }));
+    teamsData = fromFb;
+    renderTeamsPage();
+    renderTeamAssignUI();
+    renderPlayerTable();
+    syncScoreTeamDropdowns();
+    console.log('[Firebase] Teams loaded:', teamsData.length);
+  }, e => console.error('[Firebase] teams read error:', e.message));
+
+  // ── Schedule ───────────────────────────────────────────────
+  fbDb.ref('schedule').on('value', snapshot => {
+    const data = snapshot.val();
+    if (!data) {
+      scheduleData = [];
+      try { localStorage.removeItem('gvb_schedule'); } catch(e) {}
+      renderSchedule();
+      renderScheduleMgr();
+      console.log('[Firebase] Schedule cleared (deleted from DB)');
+      return;
+    }
+    const fromFb = Object.values(data).map(w => ({
+      id:      w.id      || '',
+      week:    w.week    || '',
+      date:    w.date    || '',
+      dateISO: w.dateISO || '',
+      games:   w.games   ? Object.values(w.games) : [],
+    }));
+    scheduleData = fromFb;
+  
+    renderSchedule();
+    renderScheduleMgr();
+    console.log('[Firebase] Schedule loaded:', scheduleData.length, 'weeks');
+  }, e => console.error('[Firebase] schedule read error:', e.message));
+
+  // ── Pick-Up Sessions ───────────────────────────────────────
+  fbDb.ref('pickupSessions').on('value', snapshot => {
+    const data = snapshot.val();
+    if (!data) {
+      pickupData = [];
+      try { localStorage.removeItem('gvb_pickup_sessions'); } catch(e) {}
+      renderPickup();
+      renderPickupSessionAdmin();
+      syncPickupDateDropdown();
+      console.log('[Firebase] Pick-up sessions cleared (deleted from DB)');
+      return;
+    }
+    const fromFb = Object.values(data).map(s => ({
+      id:       s.id       || '',
+      date:     s.date     || '',
+      dateISO:  s.dateISO  || '',
+      time:     s.time     || '',
+      location: s.location || 'GCVI Gym',
+      max:      parseInt(s.max) || 18,
+      spots:    0,
+    }));
+    pickupData = fromFb;
+  
+    renderPickup();
+    renderPickupSessionAdmin();
+    syncPickupDateDropdown();
+    console.log('[Firebase] Pick-up sessions loaded:', pickupData.length);
+  }, e => console.error('[Firebase] pickupSessions read error:', e.message));
+
+  // ── Scores ─────────────────────────────────────────────────
+  fbDb.ref('scores').on('value', snapshot => {
+    const data = snapshot.val();
+    if (!data) {
+      allScores = [];
+      try { localStorage.removeItem('gvb_scores'); } catch(e) {}
+      renderScoresTable();
+      renderStandings();
+      console.log('[Firebase] Scores cleared (deleted from DB)');
+      return;
+    }
+    const fromFb = Object.values(data).map(s => ({
+      id:        s.id        || uid(),
+      timestamp: s.timestamp || '',
+      gameDate:  s.gameDate  || '',
+      homeTeam:  s.homeTeam  || '',
+      homeScore: s.homeScore || '0',
+      awayTeam:  s.awayTeam  || '',
+      awayScore: s.awayScore || '0',
+      court:     s.court     || '',
+      submitter: s.submitter || '',
+    }));
+    allScores = fromFb;
+  
+    renderScoresTable();
+    renderStandings();
+    saveStandings();
+    console.log('[Firebase] Scores loaded:', allScores.length);
+  }, e => console.error('[Firebase] scores read error:', e.message));
+
+  // ── Registrations ──────────────────────────────────────────
+  fbDb.ref('registrations').on('value', snapshot => {
+    const data = snapshot.val();
+    if (!data) return;
+    Object.values(data).forEach(r => {
+      const email = (r.email || '').toLowerCase();
+      if (!sessionRegistered.find(p => p.email === email)) {
+        sessionRegistered.push({
+          firstName: r.firstName || '',
+          lastName:  r.lastName  || '',
+          email,
+          position:  r.position  || '',
+          skill:     r.skill     || '',
+          season:    r.season    || '',
+          timestamp: r.timestamp || '',
+        });
+      }
+    });
+    refreshAdminData();
+    console.log('[Firebase] Registrations loaded:', sessionRegistered.length);
+  }, e => console.error('[Firebase] registrations read error:', e.message));
+
+  // ── Pick-Up Signups ────────────────────────────────────────
+  fbDb.ref('pickupSignups').on('value', snapshot => {
+    const data = snapshot.val();
+    if (!data) return;
+    Object.values(data).forEach(r => {
+      const email = (r.email || '').toLowerCase();
+      const date  = r.date || '';
+      if (!sessionPickup.find(p => p.email === email && p.date === date)) {
+        sessionPickup.push({
+          firstName: r.firstName || '',
+          lastName:  r.lastName  || '',
+          email,
+          position:  r.position  || '',
+          date,
+          timestamp: r.timestamp || '',
+        });
+      }
+    });
+    refreshAdminData();
+    renderPickup();           // update spot counts based on actual signups
+    syncPickupDateDropdown();
+    console.log('[Firebase] Pick-up signups loaded:', sessionPickup.length);
+  }, e => console.error('[Firebase] pickupSignups read error:', e.message));
+}
+
 // ── INIT ──────────────────────────────────────────────────────
-// Clear any stale localStorage schedule/pickup caches so the sheet is always
-// the authoritative source. They get repopulated by loadSheetData().
+// Clear ALL Firebase-owned localStorage caches on every startup.
+// Firebase is the authoritative source — stale caches cause deleted
+// data to reappear after a page refresh.
+try { localStorage.removeItem('gvb_teams'); } catch(e) {}
+try { localStorage.removeItem('gvb_scores'); } catch(e) {}
 try { localStorage.removeItem('gvb_schedule'); } catch(e) {}
 try { localStorage.removeItem('gvb_pickup_sessions'); } catch(e) {}
 renderPickup();
@@ -5779,21 +6517,18 @@ renderTeamsPage();
 syncPickupDateDropdown();
 document.getElementById('home-gallery').style.display = 'block';
 document.getElementById('sc-date').value = new Date().toISOString().slice(0,10);
-loadSession();
+// Firebase onAuthStateChanged handles session restore — no manual loadSession() needed
 stampFormLoad();
 // Wire phone auto-formatter
 formatPhoneInput('reg-phone');
 // Load existing players from Google Sheets (no-op in demo mode)
 loadSheetData();
+// Load teams and schedule from Firebase (fast, real-time)
+loadFirebaseData();
+// Initialize FCM messaging and sync notification bell state
+initMessaging().then(() => syncNotifBell());
 // Register service worker for PWA support
 registerServiceWorker();
-
-// Patch submitScore to also refresh standings when on that tab
-const _patchedSubmitScore = submitScore;
-submitScore = async function() {
-  await _patchedSubmitScore.apply(this, arguments);
-  if (document.getElementById('standings')?.classList.contains('active')) renderStandings();
-};
 
 // ── SERVICE WORKER & PWA ──────────────────────────────────────
 let deferredInstallPrompt = null;

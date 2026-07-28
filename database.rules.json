@@ -1,0 +1,12 @@
+{
+  "rules": {
+    "teams":          { ".read": true,             ".write": "auth != null" },
+    "schedule":       { ".read": true,             ".write": "auth != null" },
+    "pickupSessions": { ".read": true,             ".write": "auth != null" },
+    "scores":         { ".read": true,             ".write": "auth != null" },
+    "registrations":  { ".read": "auth != null",   ".write": true },
+    "pickupSignups":  { ".read": "auth != null",   ".write": true },
+    "config":         { ".read": "auth != null",   ".write": "auth != null" },
+    "fcmTokens":      { ".read": "auth != null",   ".write": true }
+  }
+}
